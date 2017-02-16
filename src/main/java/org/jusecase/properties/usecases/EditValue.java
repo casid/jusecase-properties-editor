@@ -1,34 +1,37 @@
 package org.jusecase.properties.usecases;
 
 import org.jusecase.Usecase;
-import org.jusecase.properties.gateways.PropertiesGateway;
 import org.jusecase.properties.entities.Property;
+import org.jusecase.properties.gateways.PropertiesGateway;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.List;
 
 @Singleton
-public class GetProperties implements Usecase<GetProperties.Request, GetProperties.Response> {
+public class EditValue implements Usecase<EditValue.Request, EditValue.Response> {
+
     private final PropertiesGateway propertiesGateway;
 
     @Inject
-    public GetProperties(PropertiesGateway propertiesGateway) {
+    public EditValue(PropertiesGateway propertiesGateway) {
         this.propertiesGateway = propertiesGateway;
     }
 
     @Override
     public Response execute(Request request) {
-        Response response = new Response();
-        response.properties = propertiesGateway.getProperties(request.key);
-        return response;
+        if (request.property != null) {
+            request.property.value = request.value;
+            propertiesGateway.updateValue(request.property);
+        }
+        return null;
     }
 
     public static class Request {
-        public String key;
+        public Property property;
+        public String value;
     }
 
     public static class Response {
-        public List<Property> properties;
+
     }
 }

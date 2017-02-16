@@ -3,10 +3,7 @@ package org.jusecase.properties;
 import org.junit.Before;
 import org.junit.Test;
 import org.jusecase.UsecaseExecutorTest;
-import org.jusecase.properties.usecases.GetProperties;
-import org.jusecase.properties.usecases.Initialize;
-import org.jusecase.properties.usecases.LoadBundle;
-import org.jusecase.properties.usecases.Search;
+import org.jusecase.properties.usecases.*;
 
 public class BusinessLogicTest extends UsecaseExecutorTest {
     @Before
@@ -20,5 +17,6 @@ public class BusinessLogicTest extends UsecaseExecutorTest {
         thenUsecaseCanBeExecuted(Search.class);
         thenUsecaseCanBeExecuted(GetProperties.class);
         thenUsecaseCanBeExecuted(Initialize.class);
+        thenUsecaseCanBeExecuted(EditValue.class);
     }
 }

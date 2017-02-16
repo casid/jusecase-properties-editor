@@ -1,6 +1,7 @@
 package org.jusecase.properties.gateways;
 
 import org.junit.Test;
+import org.jusecase.properties.entities.Property;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -8,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.jusecase.Builders.a;
+import static org.jusecase.properties.entities.Builders.property;
 
 public abstract class PropertiesGatewayTest {
     private static final int SAMPLE_KEY_COUNT = 11;
@@ -177,6 +180,33 @@ public abstract class PropertiesGatewayTest {
         givenProperties("resources.properties");
         List<String> keys = gateway.search("Ap");
         assertThat(keys).contains("sample.long1");
+    }
+
+    @Test
+    public void updateValue_uninitialized() {
+        gateway.updateValue(a(property()));
+    }
+
+    @Test
+    public void updateValue() {
+        givenProperties("resources.properties", "resources_de.properties");
+        Property german = gateway.getProperties("sample8").get(1);
+
+        german.value = "Allmächd!!!";
+        gateway.updateValue(german);
+
+        assertThat(gateway.getProperties("sample8").get(1).value).isEqualTo("Allmächd!!!");
+    }
+
+    @Test
+    public void updateValue_null() {
+        givenProperties("resources.properties", "resources_de.properties");
+        Property german = gateway.getProperties("sample8").get(1);
+
+        german.value = null;
+        gateway.updateValue(german);
+
+        assertThat(gateway.getProperties("sample8")).hasSize(1); // Remove null property value from result list
     }
 
     private void givenProperties(String ... fileNames) {

@@ -8,6 +8,7 @@ import org.apache.lucene.index.*;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.BytesRef;
+import org.jusecase.properties.entities.Property;
 
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.util.*;
 
 @Singleton
 public class LucenePropertiesGateway implements PropertiesGateway {
+    private static final String ID = "id";
     private static final String KEY = "key";
     private static final String VALUE = "value";
     private static final String FILE_NAME = "fileName";
@@ -26,6 +28,8 @@ public class LucenePropertiesGateway implements PropertiesGateway {
     private List<String> keys;
 
     private RAMDirectory ramDirectory;
+    private IndexWriter indexWriter;
+    private DirectoryReader indexReader;
     private IndexSearcher indexSearcher;
 
     public LucenePropertiesGateway() {
@@ -37,38 +41,28 @@ public class LucenePropertiesGateway implements PropertiesGateway {
         this.files = files;
         this.keys = null;
 
-        try (IndexWriter writer = new IndexWriter(ramDirectory, new IndexWriterConfig())) {
-            for (Path file : files) {
-                loadProperties(writer, file);
-            }
-
-            writer.commit();
-
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to create lucene index!", e);
-        }
-
         try {
-            indexSearcher = new IndexSearcher(DirectoryReader.open(ramDirectory));
+            indexWriter = new IndexWriter(ramDirectory, new IndexWriterConfig());
+            for (Path file : files) {
+                loadProperties(file);
+            }
+            indexWriter.commit();
+
+            indexReader = DirectoryReader.open(ramDirectory);
+            indexSearcher = new IndexSearcher(indexReader);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new GatewayException("Failed to create lucene index!", e);
         }
     }
 
-    private void loadProperties(IndexWriter writer, Path file) {
-        try {
-            String fileName = file.getFileName().toString();
-            Map<String, String> properties = propertyParser.parse(file);
-            for (Map.Entry<String, String> property : properties.entrySet()) {
-                Document document = new Document();
-                document.add(new StringField(KEY, property.getKey(), Field.Store.YES));
-                document.add(new TextField(VALUE, property.getValue(), Field.Store.YES));
-                document.add(new StringField(FILE_NAME, fileName, Field.Store.YES));
-
-                writer.addDocument(document);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    private void loadProperties(Path file) throws IOException {
+        Property property = new Property();
+        property.fileName = file.getFileName().toString();
+        Map<String, String> properties = propertyParser.parse(file);
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            property.key = entry.getKey();
+            property.value = entry.getValue();
+            indexWriter.addDocument(createDocument(property));
         }
     }
 
@@ -93,7 +87,7 @@ public class LucenePropertiesGateway implements PropertiesGateway {
                 }
                 keys = new ArrayList<>(keySet);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new GatewayException("Failed to search for all keys", e);
             }
         }
         return keys;
@@ -121,7 +115,7 @@ public class LucenePropertiesGateway implements PropertiesGateway {
 
             return properties;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new GatewayException("Failed perform search query", e);
         }
     }
 
@@ -142,8 +136,44 @@ public class LucenePropertiesGateway implements PropertiesGateway {
 
             return new ArrayList<>(keySet);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new GatewayException("Failed perform search query", e);
         }
+    }
+
+    @Override
+    public void updateValue(Property property) {
+        updateIndex(() -> {
+            Term term = new Term(ID, createId(property));
+            if (property.value == null) {
+                indexWriter.deleteDocuments(term);
+            } else {
+                indexWriter.updateDocument(term, createDocument(property));
+            }
+        });
+    }
+
+    private void updateIndex(IndexUpdateTask task) {
+        if (!isInitialized()) {
+            return;
+        }
+
+        try {
+            task.update();
+            indexWriter.commit();
+
+            DirectoryReader newReader = DirectoryReader.openIfChanged(indexReader, indexWriter);
+            if (newReader != null) {
+                indexReader.close();
+                indexReader = newReader;
+                indexSearcher = new IndexSearcher(indexReader);
+            }
+        } catch (IOException e) {
+            throw new GatewayException("Failed to update lucene search index", e);
+        }
+    }
+
+    private boolean isInitialized() {
+        return indexSearcher != null;
     }
 
     private Query createSearchQuery(String queryString) {
@@ -168,7 +198,25 @@ public class LucenePropertiesGateway implements PropertiesGateway {
                 .build();
     }
 
-    private boolean isInitialized() {
-        return indexSearcher != null;
+    private String createId(String fileName, String key) {
+        return fileName + key;
+    }
+
+    private String createId(Property property) {
+        return createId(property.fileName, property.key);
+    }
+
+    private Document createDocument(Property property) {
+        Document document = new Document();
+        document.add(new StringField(ID, createId(property), Field.Store.YES));
+        document.add(new StringField(KEY, property.key, Field.Store.YES));
+        document.add(new TextField(VALUE, property.value, Field.Store.YES));
+        document.add(new StringField(FILE_NAME, property.fileName, Field.Store.YES));
+
+        return document;
+    }
+
+    private interface IndexUpdateTask {
+        void update() throws IOException;
     }
 }

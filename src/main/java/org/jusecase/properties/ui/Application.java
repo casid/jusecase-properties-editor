@@ -147,4 +147,8 @@ public class Application {
     public JFrame getFrame() {
         return frame;
     }
+
+    public UsecaseExecutor getUsecaseExecutor() {
+        return usecaseExecutor;
+    }
 }

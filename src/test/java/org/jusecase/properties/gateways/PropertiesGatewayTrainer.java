@@ -1,5 +1,7 @@
 package org.jusecase.properties.gateways;
 
+import org.jusecase.properties.entities.Property;
+
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
@@ -11,6 +13,7 @@ import static org.jusecase.properties.entities.Builders.testPath;
 
 public class PropertiesGatewayTrainer implements PropertiesGateway {
     private Set<Path> loadedProperties = new HashSet<>();
+    private Property updatedValue;
 
     @Override
     public void loadProperties(List<Path> files) {
@@ -32,11 +35,16 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
         return null;
     }
 
+    @Override
+    public void updateValue(Property property) {
+        updatedValue = property;
+    }
+
     public void thenLoadedPropertiesAre(Set<Path> expected) {
         assertThat(loadedProperties).isEqualTo(expected);
     }
 
-    public void thenLoadedPropertiesAre(String ... fileNamesInTestResources) {
+    public void thenLoadedPropertiesAre(String... fileNamesInTestResources) {
         Set<Path> expected = new HashSet<>();
         for (String fileName : fileNamesInTestResources) {
             expected.add(a(testPath(fileName)));
@@ -47,5 +55,13 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
 
     public void thenNoPropertiesAreLoaded() {
         assertThat(loadedProperties).isEmpty();
+    }
+
+    public void thenNoValueIsUpdated() {
+        assertThat(updatedValue).isNull();
+    }
+
+    public Property getUpdatedValue() {
+        return updatedValue;
     }
 }

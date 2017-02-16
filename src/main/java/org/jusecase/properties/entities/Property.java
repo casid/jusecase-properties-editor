@@ -1,4 +1,4 @@
-package org.jusecase.properties.gateways;
+package org.jusecase.properties.entities;
 
 public class Property {
     public String fileName;

@@ -8,10 +8,7 @@ import org.jusecase.properties.gateways.JsonSettingsGateway;
 import org.jusecase.properties.gateways.LucenePropertiesGateway;
 import org.jusecase.properties.gateways.PropertiesGateway;
 import org.jusecase.properties.gateways.SettingsGateway;
-import org.jusecase.properties.usecases.GetProperties;
-import org.jusecase.properties.usecases.Initialize;
-import org.jusecase.properties.usecases.LoadBundle;
-import org.jusecase.properties.usecases.Search;
+import org.jusecase.properties.usecases.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,6 +20,7 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
         addUsecase(Search.class);
         addUsecase(GetProperties.class);
         addUsecase(Initialize.class);
+        addUsecase(EditValue.class);
     }
 
     private static class GatewayModule extends AbstractModule {

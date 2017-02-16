@@ -1,7 +1,7 @@
 package org.jusecase.properties.ui;
 
 import net.miginfocom.swing.MigLayout;
-import org.jusecase.properties.gateways.Property;
+import org.jusecase.properties.entities.Property;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class TranslationsPanel extends JPanel {
         translationPanels.clear();
 
         for (String fileName : fileNames) {
-            TranslationPanel translationPanel = new TranslationPanel(fileName);
+            TranslationPanel translationPanel = new TranslationPanel(application, fileName);
             add(translationPanel, "wrap,pushx,growx");
             translationPanels.add(translationPanel);
         }
