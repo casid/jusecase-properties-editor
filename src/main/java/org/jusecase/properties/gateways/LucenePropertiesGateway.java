@@ -11,7 +11,11 @@ import org.apache.lucene.util.BytesRef;
 import org.jusecase.properties.entities.Property;
 
 import javax.inject.Singleton;
+import java.io.FilterOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -22,9 +26,8 @@ public class LucenePropertiesGateway implements PropertiesGateway {
     private static final String VALUE = "value";
     private static final String FILE_NAME = "fileName";
 
-    private final PropertyParser propertyParser = new PropertyParserNative();
-
     private List<Path> files;
+    private Set<Path> dirtyFiles = new HashSet<>();
     private List<String> keys;
 
     private RAMDirectory ramDirectory;
@@ -32,16 +35,16 @@ public class LucenePropertiesGateway implements PropertiesGateway {
     private DirectoryReader indexReader;
     private IndexSearcher indexSearcher;
 
-    public LucenePropertiesGateway() {
-        ramDirectory = new RAMDirectory();
-    }
-
     @Override
     public void loadProperties(List<Path> files) {
         this.files = files;
+        this.dirtyFiles.clear();
         this.keys = null;
 
         try {
+            close();
+
+            ramDirectory = new RAMDirectory();
             indexWriter = new IndexWriter(ramDirectory, new IndexWriterConfig());
             for (Path file : files) {
                 loadProperties(file);
@@ -55,13 +58,27 @@ public class LucenePropertiesGateway implements PropertiesGateway {
         }
     }
 
+    private void close() throws IOException {
+        if (indexWriter != null) {
+            indexWriter.close();
+        }
+
+        if (indexReader != null) {
+            indexReader.close();
+        }
+
+        if (ramDirectory != null) {
+            ramDirectory.close();
+        }
+    }
+
     private void loadProperties(Path file) throws IOException {
         Property property = new Property();
         property.fileName = file.getFileName().toString();
-        Map<String, String> properties = propertyParser.parse(file);
-        for (Map.Entry<String, String> entry : properties.entrySet()) {
-            property.key = entry.getKey();
-            property.value = entry.getValue();
+        Properties properties = loadJavaProperties(file);
+        for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+            property.key = entry.getKey().toString();
+            property.value = entry.getValue().toString();
             indexWriter.addDocument(createDocument(property));
         }
     }
@@ -149,7 +166,39 @@ public class LucenePropertiesGateway implements PropertiesGateway {
             } else {
                 indexWriter.updateDocument(term, createDocument(property));
             }
+            markAsDirty(property.fileName);
         });
+    }
+
+    @Override
+    public void save() {
+        if (!isInitialized()) {
+            return;
+        }
+
+        for (Path file : files) {
+            if (dirtyFiles.contains(file)) {
+                save(file);
+                dirtyFiles.remove(file);
+            }
+        }
+    }
+
+    private void save(Path file) {
+        Query query = new TermQuery(new Term(FILE_NAME, file.getFileName().toString()));
+        try {
+            TopDocs result = indexSearcher.search(query, getKeys().size());
+            Properties properties = new CleanProperties();
+
+            for (ScoreDoc scoreDoc : result.scoreDocs) {
+                Document document = indexSearcher.getIndexReader().document(scoreDoc.doc);
+                properties.put(document.get(KEY), document.get(VALUE));
+            }
+
+            writeJavaProperties(file, properties);
+        } catch (IOException e) {
+            throw new GatewayException("Failed to save properties to " + file, e);
+        }
     }
 
     private void updateIndex(IndexUpdateTask task) {
@@ -216,7 +265,60 @@ public class LucenePropertiesGateway implements PropertiesGateway {
         return document;
     }
 
+    private void markAsDirty(String fileName) {
+        for (Path file : files) {
+            if (fileName.equals(file.getFileName().toString())) {
+                dirtyFiles.add(file);
+                return;
+            }
+        }
+    }
+
     private interface IndexUpdateTask {
         void update() throws IOException;
+    }
+
+    public Properties loadJavaProperties(Path file) throws IOException {
+        try (InputStream inputStream = Files.newInputStream(file)) {
+            Properties properties = new Properties();
+            properties.load(inputStream);
+            return properties;
+        }
+    }
+
+    private void writeJavaProperties(Path file, Properties properties) throws IOException {
+        try (OutputStream outputStream = Files.newOutputStream(file)) {
+            properties.store(outputStream, null);
+        }
+    }
+
+    private static class CleanProperties extends Properties {
+        private static class StripFirstLineStream extends FilterOutputStream {
+
+            private boolean firstLineSeen = false;
+
+            public StripFirstLineStream(final OutputStream out) {
+                super(out);
+            }
+
+            @Override
+            public void write(final int b) throws IOException {
+                if (firstLineSeen) {
+                    super.write(b);
+                } else if (b == '\n') {
+                    firstLineSeen = true;
+                }
+            }
+        }
+
+        @Override
+        public synchronized Enumeration<Object> keys() {
+            return Collections.enumeration(new TreeSet<>(super.keySet()));
+        }
+
+        @Override
+        public void store(final OutputStream out, final String comments) throws IOException {
+            super.store(new StripFirstLineStream(out), comments);
+        }
     }
 }

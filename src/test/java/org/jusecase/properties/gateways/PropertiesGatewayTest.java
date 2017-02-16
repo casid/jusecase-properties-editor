@@ -37,6 +37,13 @@ public abstract class PropertiesGatewayTest {
     }
 
     @Test
+    public void loadProperties_twice() {
+        givenProperties("resources.properties", "resources_de.properties");
+        givenProperties("resources.properties", "resources_de.properties");
+        assertThat(gateway.getKeys()).hasSize(SAMPLE_KEY_COUNT);
+    }
+
+    @Test
     public void getKeys_uninitialized() {
         assertThat(gateway.getKeys()).isEmpty();
     }
@@ -207,6 +214,30 @@ public abstract class PropertiesGatewayTest {
         gateway.updateValue(german);
 
         assertThat(gateway.getProperties("sample8")).hasSize(1); // Remove null property value from result list
+    }
+
+    @Test
+    public void save_uninitialized() {
+        gateway.save(); // shall not throw
+    }
+
+    @Test
+    public void save() {
+        givenProperties("for-save.properties");
+        Property property = gateway.getProperties("sample").get(0);
+        property.value = "I've been changed!";
+        gateway.updateValue(property);
+
+        gateway.save();
+
+        gateway = new LucenePropertiesGateway();
+        givenProperties("for-save.properties");
+        assertThat(gateway.getProperties("sample").get(0).value).isEqualTo(property.value);
+
+        // Reset to initial value
+        property.value = "change me";
+        gateway.updateValue(property);
+        gateway.save();
     }
 
     private void givenProperties(String ... fileNames) {

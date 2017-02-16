@@ -19,6 +19,7 @@ public class ApplicationMenuBar extends JMenuBar {
     private JMenu createFileMenu() {
         JMenu file = new JMenu("File");
         file.add(createFileOpenMenuItem());
+        file.add(createFileSaveMenuItem());
         return file;
     }
 
@@ -30,6 +31,14 @@ public class ApplicationMenuBar extends JMenuBar {
             if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
                 application.loadProperties(fileChooser.getSelectedFile());
             }
+        });
+        return open;
+    }
+
+    private JMenuItem createFileSaveMenuItem() {
+        JMenuItem open = new JMenuItem("Save");
+        open.addActionListener(event -> {
+            application.saveProperties();
         });
         return open;
     }

@@ -17,6 +17,7 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
     public BusinessLogic() {
         super(Guice.createInjector(new GatewayModule()));
         addUsecase(LoadBundle.class);
+        addUsecase(SaveBundle.class);
         addUsecase(Search.class);
         addUsecase(GetProperties.class);
         addUsecase(Initialize.class);

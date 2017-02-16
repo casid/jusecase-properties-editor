@@ -15,4 +15,6 @@ public interface PropertiesGateway {
     List<String> search(String query);
 
     void updateValue(Property property);
+
+    void save();
 }

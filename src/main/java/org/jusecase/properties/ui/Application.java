@@ -1,10 +1,7 @@
 package org.jusecase.properties.ui;
 
 import net.miginfocom.swing.MigLayout;
-import org.jusecase.properties.usecases.GetProperties;
-import org.jusecase.properties.usecases.Initialize;
-import org.jusecase.properties.usecases.LoadBundle;
-import org.jusecase.properties.usecases.Search;
+import org.jusecase.properties.usecases.*;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -44,6 +41,10 @@ public class Application {
         LoadBundle.Request request = new LoadBundle.Request();
         request.propertiesFile = file.toPath();
         usecaseExecutor.execute(request, this::onLoadPropertiesComplete);
+    }
+
+    public void saveProperties() {
+        usecaseExecutor.execute(new SaveBundle.Request());
     }
 
     public void search(String query) {

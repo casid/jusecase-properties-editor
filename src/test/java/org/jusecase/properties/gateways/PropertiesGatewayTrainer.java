@@ -40,6 +40,11 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
         updatedValue = property;
     }
 
+    @Override
+    public void save() {
+
+    }
+
     public void thenLoadedPropertiesAre(Set<Path> expected) {
         assertThat(loadedProperties).isEqualTo(expected);
     }
