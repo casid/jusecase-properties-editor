@@ -1,0 +1,31 @@
+package org.jusecase.properties.gateways;
+
+import org.jusecase.properties.entities.Settings;
+
+public class SettingsGatewayTrainer implements SettingsGateway {
+    private Settings settings = new Settings();
+    private Settings savedSettings;
+
+    @Override
+    public Settings getSettings() {
+        return settings;
+    }
+
+    @Override
+    public void saveSettings(Settings settings) {
+        savedSettings = settings;
+    }
+
+    @Override
+    public void reloadFromDisk() {
+
+    }
+
+    public void givenSettings(Settings settings) {
+        this.settings = settings;
+    }
+
+    public Settings getSavedSettings() {
+        return savedSettings;
+    }
+}
