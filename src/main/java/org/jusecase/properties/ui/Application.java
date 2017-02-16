@@ -6,6 +6,7 @@ import org.jusecase.properties.usecases.*;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import java.awt.*;
 import java.io.File;
 import java.util.function.Consumer;
 
@@ -137,7 +138,9 @@ public class Application {
 
     private void initFrame() {
         frame = new JFrame("Properties Editor");
-        frame.setSize(800, 600);
+
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        frame.setBounds(0,0,screenSize.width, screenSize.height);
         frame.setVisible(true);
     }
 
