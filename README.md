@@ -8,6 +8,5 @@ Remaining TODOs
 - rename key
 - duplicate key
 - scrollable translation panel
-- generic alert view exception handler
 - listen for external file changes
 - undo / redo

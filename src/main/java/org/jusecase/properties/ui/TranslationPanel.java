@@ -50,7 +50,7 @@ public class TranslationPanel extends JPanel {
             }
         };
         JScrollPane scrollPane = new JScrollPane(textArea);
-        add(scrollPane, "span,growx,pushx,h 44!");
+        add(scrollPane, "span,growx,pushx,h 54!");
     }
 
     private void editValue() {

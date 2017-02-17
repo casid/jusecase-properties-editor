@@ -66,7 +66,7 @@ public class LoadBundle implements Usecase<LoadBundle.Request, LoadBundle.Respon
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to detect properties in directory!");
+            throw new UsecaseException("Failed to detect properties in directory!", e);
         }
         return propertyFiles;
     }

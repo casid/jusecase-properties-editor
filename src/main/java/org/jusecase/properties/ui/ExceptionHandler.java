@@ -1,24 +1,11 @@
 package org.jusecase.properties.ui;
 
-import javafx.scene.control.Alert;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import javax.swing.*;
 
 public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(e.getMessage());
-        alert.setContentText(getStacktrace(e));
-        alert.showAndWait();
-    }
-
-    private String getStacktrace(Throwable throwable) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        throwable.printStackTrace(pw);
-        return sw.toString();
+        JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace(); // Since we have no logger yet ;-)
     }
 }

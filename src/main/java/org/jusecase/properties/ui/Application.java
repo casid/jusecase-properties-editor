@@ -22,8 +22,7 @@ public class Application {
     private TranslationsPanel translationsPanel;
 
     public static void main(String args[]) throws Exception {
-        // TODO adjust for swing
-        Thread.currentThread().setUncaughtExceptionHandler(new ExceptionHandler());
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
 
         macSetup("Properties Editor");
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
