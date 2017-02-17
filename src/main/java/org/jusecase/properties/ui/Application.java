@@ -21,21 +21,25 @@ public class Application {
     private JPanel keyPanel;
     private TranslationsPanel translationsPanel;
 
-    public static void main(String args[]) {
+    public static void main(String args[]) throws Exception {
         // TODO adjust for swing
         Thread.currentThread().setUncaughtExceptionHandler(new ExceptionHandler());
 
-        try {
-            System.setProperty("apple.laf.useScreenMenuBar", "true");
-            System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Test");
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            throw new RuntimeException("Startup failed!", e);
-        }
+        macSetup("Properties Editor");
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
         SwingUtilities.invokeLater(() -> {
             new Application().start();
         });
+    }
+
+    private static void macSetup(String appName) {
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.startsWith("mac")) {
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            System.setProperty("com.apple.mrj.application.apple.menu.about.name",
+                    appName);
+        }
     }
 
     public void loadProperties(File file) {
@@ -140,7 +144,7 @@ public class Application {
         frame = new JFrame("Properties Editor");
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        frame.setBounds(0,0,screenSize.width, screenSize.height);
+        frame.setBounds(0, 0, screenSize.width, screenSize.height);
         frame.setVisible(true);
     }
 
