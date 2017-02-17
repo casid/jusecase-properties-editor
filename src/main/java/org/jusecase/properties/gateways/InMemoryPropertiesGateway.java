@@ -3,7 +3,7 @@ package org.jusecase.properties.gateways;
 import org.jusecase.properties.entities.Property;
 
 import javax.inject.Singleton;
-import java.io.FilterOutputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -230,7 +230,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     @Override
     public void saveAll() {
         if (isInitialized()) {
-            files.forEach(this::save);
+            files.parallelStream().forEach(this::save);
         }
     }
 
@@ -279,36 +279,6 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     private void writeJavaProperties(Path file, Properties properties) throws IOException {
         try (OutputStream outputStream = Files.newOutputStream(file)) {
             properties.store(outputStream, null);
-        }
-    }
-
-    private static class CleanProperties extends Properties {
-        private static class StripFirstLineStream extends FilterOutputStream {
-
-            private boolean firstLineSeen = false;
-
-            public StripFirstLineStream(final OutputStream out) {
-                super(out);
-            }
-
-            @Override
-            public void write(final int b) throws IOException {
-                if (firstLineSeen) {
-                    super.write(b);
-                } else if (b == '\n') {
-                    firstLineSeen = true;
-                }
-            }
-        }
-
-        @Override
-        public synchronized Enumeration<Object> keys() {
-            return Collections.enumeration(new TreeSet<>(super.keySet()));
-        }
-
-        @Override
-        public void store(final OutputStream out, final String comments) throws IOException {
-            super.store(new StripFirstLineStream(out), comments);
         }
     }
 }
