@@ -180,6 +180,10 @@ public class LucenePropertiesGateway implements PropertiesGateway {
 
     @Override
     public void addKey(String key) {
+        if (getKeys().contains(key)) {
+            throw new GatewayException("A key with this name already exists");
+        }
+
         updateIndex(() -> {
             Path file = files.get(0);
 

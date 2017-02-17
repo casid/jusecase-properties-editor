@@ -244,6 +244,12 @@ public abstract class PropertiesGatewayTest {
         assertThat(gateway.getKeys()).contains("key");
     }
 
+    @Test(expected = GatewayException.class)
+    public void addKey_keyAlreadyExists() {
+        givenProperties("resources.properties");
+        gateway.addKey("sample1");
+    }
+
     @Test
     public void save_uninitialized() {
         gateway.save(); // shall not throw
