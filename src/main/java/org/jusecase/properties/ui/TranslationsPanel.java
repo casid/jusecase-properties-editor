@@ -42,4 +42,10 @@ public class TranslationsPanel extends JPanel {
         }
         validate();
     }
+
+    public void setSearchQuery( String searchQuery ) {
+        for ( TranslationPanel translationPanel : translationPanels ) {
+            translationPanel.setSearchQuery(searchQuery);
+        }
+    }
 }

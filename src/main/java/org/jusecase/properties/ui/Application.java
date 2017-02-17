@@ -64,6 +64,7 @@ public class Application {
         request.query = query;
         usecaseExecutor.execute(request, (Consumer<Search.Response>) response -> {
             updateKeyList(response.keys);
+            translationsPanel.setSearchQuery(query);
         });
     }
 
@@ -108,9 +109,10 @@ public class Application {
 
     private void initKeyList() {
         keyList = new JList<>(keyListModel);
-        JScrollPane scrollPane = new JScrollPane(keyList);
         keyList.addListSelectionListener(e -> updateTranslationPanel(keyList.getSelectedValue()));
         keyList.setComponentPopupMenu(new KeyListMenu(this));
+
+        JScrollPane scrollPane = new JScrollPane(keyList);
         keyPanel.add(scrollPane, "wrap,push,grow");
     }
 

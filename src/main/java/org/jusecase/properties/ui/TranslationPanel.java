@@ -7,6 +7,14 @@ import org.jusecase.properties.usecases.EditValue;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
+
+import java.awt.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 public class TranslationPanel extends JPanel {
     private final Application application;
@@ -16,12 +24,19 @@ public class TranslationPanel extends JPanel {
     private JTextArea textArea;
     private DocumentListener textAreaListener;
     private Property property;
+    private String searchQuery = "";
+    Highlighter.HighlightPainter hightlightPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
 
     public TranslationPanel(Application application, String fileName) {
         super(new MigLayout("insets 0"));
         this.application = application;
         this.fileName = fileName;
         init();
+    }
+
+    public void setSearchQuery( String searchQuery ) {
+        this.searchQuery = searchQuery;
+        highlightSearchQuery();
     }
 
     private void init() {
@@ -84,6 +99,8 @@ public class TranslationPanel extends JPanel {
         textArea.setEnabled(true);
         isAvailable.setSelected(true);
         textArea.getDocument().addDocumentListener(textAreaListener);
+
+        highlightSearchQuery();
     }
 
     public void disableEditing() {
@@ -91,5 +108,22 @@ public class TranslationPanel extends JPanel {
         textArea.setText("");
         textArea.setEnabled(false);
         isAvailable.setSelected(false);
+    }
+
+    private void highlightSearchQuery() {
+        Highlighter highlighter = textArea.getHighlighter();
+        highlighter.removeAllHighlights();
+
+        if (this.property != null && this.property.value != null && !searchQuery.isEmpty()) {
+            Matcher m = Pattern.compile(searchQuery.toLowerCase()).matcher(textArea.getText().toLowerCase());
+            while ( m.find() ) {
+                try {
+                    highlighter.addHighlight(m.start(), m.end(), hightlightPainter);
+                }
+                catch ( BadLocationException e ) {
+                    e.printStackTrace(); // Log and ignore silently
+                }
+            }
+        }
     }
 }
