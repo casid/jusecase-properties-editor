@@ -120,6 +120,27 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     }
 
     @Override
+    public void duplicateKey( String key, String newKey ) {
+        if (!isInitialized() || !propertiesByKey.containsKey(key)) {
+            return;
+        }
+
+        if (keys.contains(newKey)) {
+            throw new GatewayException("A key with this name already exists");
+        }
+
+        for ( Property property : propertiesByKey.get(key) ) {
+            Property newProperty = new Property();
+            newProperty.key = newKey;
+            newProperty.fileName = property.fileName;
+            newProperty.value = property.value;
+            addProperty(newProperty);
+
+            markAsDirty(property.fileName);
+        }
+    }
+
+    @Override
     public List<String> search(String queryString) {
         if (!isInitialized() || queryString.isEmpty()) {
             return getKeys();

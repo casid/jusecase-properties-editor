@@ -279,6 +279,40 @@ public abstract class PropertiesGatewayTest {
     }
 
     @Test
+    public void duplicateKey_uninitialized() {
+        gateway.duplicateKey("sample8", "sample9"); // shall not throw
+    }
+
+    @Test(expected = GatewayException.class)
+    public void duplicateKey_alreadyExists() {
+        givenProperties("resources.properties");
+        gateway.duplicateKey("sample7", "sample8");
+    }
+
+    @Test
+    public void duplicateKey_doesNotExist() {
+        givenProperties("resources.properties");
+        gateway.duplicateKey("unknown", "sample9");
+        assertThat(gateway.getProperties("unknown")).isEmpty();
+    }
+
+    @Test
+    public void duplicateKey() {
+        givenProperties("resources.properties", "resources_de.properties");
+
+        gateway.duplicateKey("sample8", "sample9");
+
+        assertThat(gateway.getProperties("sample8")).hasSize(2);
+        assertThat(gateway.getProperties("sample9")).hasSize(2);
+        assertThat(gateway.getProperties("sample9").get(0).key).isEqualTo("sample9");
+        assertThat(gateway.getProperties("sample9").get(0).value).isEqualTo("Sample 8");
+        assertThat(gateway.getProperties("sample9").get(0).fileName).isEqualTo("resources.properties");
+        assertThat(gateway.getProperties("sample9").get(1).key).isEqualTo("sample9");
+        assertThat(gateway.getProperties("sample9").get(1).value).isEqualTo("Beispiel 8");
+        assertThat(gateway.getProperties("sample9").get(1).fileName).isEqualTo("resources_de.properties");
+    }
+
+    @Test
     public void save_uninitialized() {
         gateway.save(); // shall not throw
     }

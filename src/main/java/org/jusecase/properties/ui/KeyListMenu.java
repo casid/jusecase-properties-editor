@@ -1,5 +1,6 @@
 package org.jusecase.properties.ui;
 
+import org.jusecase.properties.usecases.DuplicateKey;
 import org.jusecase.properties.usecases.NewKey;
 import org.jusecase.properties.usecases.RenameKey;
 
@@ -42,8 +43,20 @@ public class KeyListMenu extends JPopupMenu {
     }
 
     private void addDuplicate() {
-        JMenuItem duplicateKey = new JMenuItem("Duplicate");
-        add(duplicateKey);
+        JMenuItem item = new JMenuItem("Duplicate");
+        item.addActionListener(event -> {
+            String key = application.getSelectedKey();
+            String newKey = (String)JOptionPane.showInputDialog(null, "Duplicate key", "Duplicate key", JOptionPane.PLAIN_MESSAGE, null, null, key);
+            if (newKey != null) {
+                DuplicateKey.Request request = new DuplicateKey.Request();
+                request.key = key;
+                request.newKey = newKey;
+                application.getUsecaseExecutor().execute(request);
+                application.onNewKeyAdded(newKey);
+            }
+
+        });
+        add(item);
     }
 
     private void addNew() {

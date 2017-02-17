@@ -14,6 +14,8 @@ public interface PropertiesGateway {
 
     void renameKey( String key, String newKey );
 
+    void duplicateKey( String key, String newKey );
+
     List<String> search(String query);
 
     void updateValue(Property property);
