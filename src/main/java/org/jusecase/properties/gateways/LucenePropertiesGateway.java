@@ -119,14 +119,18 @@ public class LucenePropertiesGateway implements PropertiesGateway {
         Query query = new TermQuery(new Term(KEY, key));
         try {
             TopDocs result = indexSearcher.search(query, files.size());
-            List<Property> properties = new ArrayList<>(result.totalHits);
-
+            Map<String, String> fileNameToValue = new HashMap<>();
             for (ScoreDoc scoreDoc : result.scoreDocs) {
                 Document document = indexSearcher.getIndexReader().document(scoreDoc.doc);
+                fileNameToValue.put(document.get(FILE_NAME), document.get(VALUE));
+            }
+
+            List<Property> properties = new ArrayList<>(files.size());
+            for (Path file : files) {
                 Property property = new Property();
-                property.key = document.get(KEY);
-                property.value = document.get(VALUE);
-                property.fileName = document.get(FILE_NAME);
+                property.key = key;
+                property.fileName = file.getFileName().toString();
+                property.value = fileNameToValue.get(property.fileName);
                 properties.add(property);
             }
 

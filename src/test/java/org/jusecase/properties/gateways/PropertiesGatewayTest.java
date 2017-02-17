@@ -89,8 +89,13 @@ public abstract class PropertiesGatewayTest {
     @Test
     public void getByKey_noMatch() {
         givenProperties("resources.properties");
+
         List<Property> properties = gateway.getProperties("sample");
-        assertThat(properties.size()).isEqualTo(0);
+
+        assertThat(properties.size()).isEqualTo(1);
+        assertThat(properties.get(0).key).isEqualTo("sample");
+        assertThat(properties.get(0).fileName).isEqualTo("resources.properties");
+        assertThat(properties.get(0).value).isNull();
     }
 
     @Test
@@ -213,7 +218,7 @@ public abstract class PropertiesGatewayTest {
         german.value = null;
         gateway.updateValue(german);
 
-        assertThat(gateway.getProperties("sample8")).hasSize(1); // Remove null property value from result list
+        assertThat(gateway.getProperties("sample8").get(1).value).isNull();
     }
 
     @Test

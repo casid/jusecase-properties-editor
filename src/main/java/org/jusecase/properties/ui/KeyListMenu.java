@@ -10,7 +10,14 @@ public class KeyListMenu extends JPopupMenu {
         JMenuItem duplicateKey = new JMenuItem("Duplicate");
         add(duplicateKey);
 
+        addSeparator();
+
         JMenuItem renameKey = new JMenuItem("Rename");
         add(renameKey);
+
+        addSeparator();
+
+        JMenuItem deleteKey = new JMenuItem("Delete");
+        add(deleteKey);
     }
 }

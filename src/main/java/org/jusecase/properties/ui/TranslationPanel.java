@@ -29,7 +29,7 @@ public class TranslationPanel extends JPanel {
         add(label, "align left");
 
         isAvailable = new JCheckBox("Available");
-        isAvailable.addActionListener(event -> editValue(isAvailable.isSelected() ? "" : null));
+        isAvailable.addActionListener(event -> toggleValue());
         add(isAvailable, "align right,wrap");
 
         textArea = new JTextArea();
@@ -64,25 +64,37 @@ public class TranslationPanel extends JPanel {
         application.getUsecaseExecutor().execute(request);
     }
 
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void reset() {
-        textArea.getDocument().removeDocumentListener(textAreaListener);
-
-        this.property = null;
-        textArea.setText("");
-        textArea.setEnabled(false);
-        isAvailable.setSelected(false);
+    private void toggleValue() {
+        if (isAvailable.isSelected()) {
+            editValue("");
+            enableEditing();
+        } else {
+            editValue(null);
+            disableEditing();
+        }
     }
 
     public void setProperty(Property property) {
         this.property = property;
+
+        if (property.value != null) {
+            enableEditing();
+        } else {
+            disableEditing();
+        }
+    }
+
+    private void enableEditing() {
         textArea.setText(property.value);
         textArea.setEnabled(true);
         isAvailable.setSelected(true);
-
         textArea.getDocument().addDocumentListener(textAreaListener);
+    }
+
+    public void disableEditing() {
+        textArea.getDocument().removeDocumentListener(textAreaListener);
+        textArea.setText("");
+        textArea.setEnabled(false);
+        isAvailable.setSelected(false);
     }
 }

@@ -28,20 +28,17 @@ public class TranslationsPanel extends JPanel {
     }
 
     public void setProperties(List<Property> properties) {
+        int index = 0;
         for (TranslationPanel translationPanel : translationPanels) {
-            translationPanel.reset();
-            for (Property property : properties) {
-                if (property.fileName.equals(translationPanel.getFileName())) {
-                    translationPanel.setProperty(property);
-                }
-            }
+            translationPanel.setProperty(properties.get(index));
+            ++index;
         }
         validate();
     }
 
     public void reset() {
         for (TranslationPanel translationPanel : translationPanels) {
-            translationPanel.reset();
+            translationPanel.disableEditing();
         }
         validate();
     }
