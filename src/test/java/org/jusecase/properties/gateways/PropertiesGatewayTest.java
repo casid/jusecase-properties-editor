@@ -264,7 +264,7 @@ public abstract class PropertiesGatewayTest {
 
         gateway.save();
 
-        gateway = new LucenePropertiesGateway();
+        gateway = new InMemoryPropertiesGateway();
         givenProperties("for-save.properties");
         assertThat(gateway.getProperties("sample").get(0).value).isEqualTo(property.value);
 

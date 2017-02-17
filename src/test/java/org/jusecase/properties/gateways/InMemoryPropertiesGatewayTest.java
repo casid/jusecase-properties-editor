@@ -2,9 +2,9 @@ package org.jusecase.properties.gateways;
 
 import org.junit.Before;
 
-public class LucenePropertiesGatewayTest extends PropertiesGatewayTest {
+public class InMemoryPropertiesGatewayTest extends PropertiesGatewayTest {
     @Before
     public void setUp() throws Exception {
-        gateway = new LucenePropertiesGateway();
+        gateway = new InMemoryPropertiesGateway();
     }
 }
