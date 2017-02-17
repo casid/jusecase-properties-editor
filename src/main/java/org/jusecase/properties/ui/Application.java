@@ -6,8 +6,10 @@ import org.jusecase.properties.usecases.*;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
 import java.awt.*;
 import java.io.File;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class Application {
@@ -61,13 +63,18 @@ public class Application {
         Search.Request request = new Search.Request();
         request.query = query;
         usecaseExecutor.execute(request, (Consumer<Search.Response>) response -> {
-            keyListModel.setKeys(response.keys);
+            updateKeyList(response.keys);
         });
+    }
+
+    private void updateKeyList( List<String> keys) {
+        keyListModel.setKeys(keys);
+        keyList.ensureIndexIsVisible(0);
     }
 
     private void onLoadPropertiesComplete(LoadBundle.Response response) {
         if (response.keys != null) {
-            keyListModel.setKeys(response.keys);
+            updateKeyList(response.keys);
             translationsPanel.setFileNames(response.fileNames);
         }
     }
@@ -86,7 +93,7 @@ public class Application {
         initKeyPanel();
         initTranslationsPanel();
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, keyPanel, translationsPanel);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, keyPanel, new JScrollPane(translationsPanel));
         splitPane.setDividerLocation(0.3);
         panel.add(splitPane, "push,grow");
 

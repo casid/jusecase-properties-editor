@@ -46,7 +46,7 @@ public class ApplicationMenuBar extends JMenuBar {
     }
 
     private JMenuItem createFileSaveAllMenuItem() {
-        JMenuItem save = createItem("Save All", KeyEvent.VK_F);
+        JMenuItem save = new JMenuItem("Save All");
         save.addActionListener(event -> application.saveAll());
         return save;
     }
