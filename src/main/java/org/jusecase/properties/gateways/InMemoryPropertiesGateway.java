@@ -103,6 +103,10 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
             return;
         }
 
+        if (keys.contains(newKey)) {
+            throw new GatewayException("A key with this name already exists");
+        }
+
         keys.remove(key);
         keys.add(newKey);
 

@@ -265,6 +265,12 @@ public abstract class PropertiesGatewayTest {
         assertThat(gateway.getProperties("sample9")).hasSize(1);
     }
 
+    @Test(expected = GatewayException.class)
+    public void renameKey_alreadyExists() {
+        givenProperties("resources.properties");
+        gateway.renameKey("sample7", "sample8");
+    }
+
     @Test
     public void renameKey_doesNotExist() {
         givenProperties("resources.properties");

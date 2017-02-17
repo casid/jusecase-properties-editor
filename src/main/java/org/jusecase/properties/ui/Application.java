@@ -115,17 +115,22 @@ public class Application {
     }
 
     public void onNewKeyAdded(String key) {
-        refreshSearch();
-        keyList.setSelectedValue(key, true);
+        refreshSearch(key);
     }
 
     public void onKeyRenamed( String key, String newKey ) {
-        refreshSearch();
-        keyList.setSelectedValue(newKey, true);
+        refreshSearch(newKey);
     }
 
-    private void refreshSearch() {
+    private void refreshSearch(String keyToHighlight) {
         search(searchField.getText());
+
+        Search.Request request = new Search.Request();
+        request.query = searchField.getText();
+        usecaseExecutor.execute(request, (Consumer<Search.Response>) response -> {
+            keyListModel.setKeys(response.keys);
+            keyList.setSelectedValue(keyToHighlight, true);
+        });
     }
 
     private void updateTranslationPanel(String key) {
