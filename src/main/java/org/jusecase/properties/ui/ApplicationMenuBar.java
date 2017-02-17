@@ -1,6 +1,8 @@
 package org.jusecase.properties.ui;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
 
 public class ApplicationMenuBar extends JMenuBar {
     private final Application application;
@@ -24,7 +26,7 @@ public class ApplicationMenuBar extends JMenuBar {
     }
 
     private JMenuItem createFileOpenMenuItem() {
-        JMenuItem open = new JMenuItem("Open");
+        JMenuItem open = createItem("Open", KeyEvent.VK_O);
         open.addActionListener(event -> {
             JFileChooser fileChooser = new NativeJFileChooser();
             fileChooser.setDialogTitle("Open Resource File");
@@ -36,10 +38,16 @@ public class ApplicationMenuBar extends JMenuBar {
     }
 
     private JMenuItem createFileSaveMenuItem() {
-        JMenuItem open = new JMenuItem("Save");
-        open.addActionListener(event -> {
+        JMenuItem save = createItem("Save", KeyEvent.VK_S);
+        save.addActionListener(event -> {
             application.saveProperties();
         });
-        return open;
+        return save;
+    }
+
+    private JMenuItem createItem(String name, int accelerator) {
+        JMenuItem item = new JMenuItem(name);
+        item.setAccelerator(KeyStroke.getKeyStroke(accelerator, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        return item;
     }
 }
