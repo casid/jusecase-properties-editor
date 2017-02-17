@@ -118,7 +118,9 @@ public class Application {
         Search.Request request = new Search.Request();
         request.query = searchField.getText();
         usecaseExecutor.execute(request, (Consumer<Search.Response>) response -> {
-            if (!response.keys.contains(key)) {
+            if (response.keys.contains(key)) {
+                keyListModel.setKeys(response.keys);
+            } else {
                 resetSearch();
             }
             keyList.setSelectedValue(key, true);
@@ -134,11 +136,7 @@ public class Application {
         refreshSearch();
     }
 
-    public void onKeyDeleted( String key ) {
-        refreshSearch();
-    }
-
-    private void refreshSearch() {
+    public void refreshSearch() {
         Search.Request request = new Search.Request();
         request.query = searchField.getText();
         usecaseExecutor.execute(request, (Consumer<Search.Response>) response -> {
@@ -208,5 +206,9 @@ public class Application {
 
     public String getSelectedKey() {
         return keyList.getSelectedValue();
+    }
+
+    public List<String> getSelectedValues() {
+        return keyList.getSelectedValuesList();
     }
 }

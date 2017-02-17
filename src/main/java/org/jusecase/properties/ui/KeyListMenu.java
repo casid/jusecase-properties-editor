@@ -7,6 +7,9 @@ import org.jusecase.properties.usecases.RenameKey;
 
 import javax.swing.*;
 
+import java.util.List;
+
+
 public class KeyListMenu extends JPopupMenu {
     private final Application application;
 
@@ -24,12 +27,14 @@ public class KeyListMenu extends JPopupMenu {
     private void addDelete() {
         JMenuItem item = new JMenuItem("Delete");
         item.addActionListener(event -> {
-            String key = application.getSelectedKey();
-            if (key != null) {
-                DeleteKey.Request request = new DeleteKey.Request();
-                request.key = key;
-                application.getUsecaseExecutor().execute(request);
-                application.onKeyDeleted(key);
+            List<String> keys = application.getSelectedValues();
+            if (!keys.isEmpty()) {
+                for ( String key : keys ) {
+                    DeleteKey.Request request = new DeleteKey.Request();
+                    request.key = key;
+                    application.getUsecaseExecutor().execute(request);
+                }
+                application.refreshSearch();
             }
 
         });
