@@ -101,7 +101,6 @@ public class Application {
 
     private void initKeyList() {
         keyList = new JList<>(keyListModel);
-        keyList.setVisibleRowCount(40);
         JScrollPane scrollPane = new JScrollPane(keyList);
         keyList.addListSelectionListener(e -> updateTranslationPanel(keyList.getSelectedValue()));
         keyList.setComponentPopupMenu(new KeyListMenu(this));

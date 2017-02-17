@@ -29,6 +29,7 @@ public class LucenePropertiesGateway implements PropertiesGateway {
     private List<Path> files;
     private Set<Path> dirtyFiles = new HashSet<>();
     private List<String> keys;
+    private List<Property> properties;
 
     private RAMDirectory ramDirectory;
     private IndexWriter indexWriter;
@@ -40,6 +41,7 @@ public class LucenePropertiesGateway implements PropertiesGateway {
         this.files = files;
         this.dirtyFiles.clear();
         this.keys = null;
+        this.properties = new ArrayList<>();
 
         try {
             close();
@@ -73,13 +75,15 @@ public class LucenePropertiesGateway implements PropertiesGateway {
     }
 
     private void loadProperties(Path file) throws IOException {
-        Property property = new Property();
-        property.fileName = file.getFileName().toString();
         Properties properties = loadJavaProperties(file);
         for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+            Property property = new Property();
+            property.fileName = file.getFileName().toString();
             property.key = entry.getKey().toString();
             property.value = entry.getValue().toString();
             indexWriter.addDocument(createDocument(property));
+
+            this.properties.add(property);
         }
     }
 
@@ -150,8 +154,25 @@ public class LucenePropertiesGateway implements PropertiesGateway {
             return getKeys();
         }
 
-        try {
-            Query query = createSearchQuery(queryString);
+        //try {
+            Set<String> result = new TreeSet<>();
+            for ( String key : getKeys() ) {
+                if (key.contains(queryString)) {
+                    result.add(key);
+                }
+            }
+
+            for (Property property : properties) {
+                if (!result.contains(property.key)) {
+                    if (property.value.contains(queryString)) {
+                        result.add(property.key);
+                    }
+                }
+            }
+
+            return new ArrayList<>(result);
+
+            /*Query query = createSearchQuery(queryString);
             SortedSet<String> keySet = new TreeSet<>();
             TopDocs result = indexSearcher.search(query, indexSearcher.getIndexReader().numDocs());
             for (ScoreDoc scoreDoc : result.scoreDocs) {
@@ -159,10 +180,10 @@ public class LucenePropertiesGateway implements PropertiesGateway {
                 keySet.add(document.get(KEY));
             }
 
-            return new ArrayList<>(keySet);
-        } catch (IOException e) {
+            return new ArrayList<>(keySet);*/
+        /*} catch (IOException e) {
             throw new GatewayException("Failed perform search query", e);
-        }
+        }*/
     }
 
     @Override
@@ -261,7 +282,7 @@ public class LucenePropertiesGateway implements PropertiesGateway {
 
     private Query createSearchQuery(String queryString) {
         BooleanQuery.Builder keyOrValueQueryBuilder = new BooleanQuery.Builder();
-        keyOrValueQueryBuilder.add(new WildcardQuery(new Term(KEY, "*" + queryString + "*")), BooleanClause.Occur.SHOULD);
+        //keyOrValueQueryBuilder.add(new WildcardQuery(new Term(KEY, "*" + queryString + "*")), BooleanClause.Occur.SHOULD);
 
         BooleanQuery.Builder valueQueryBuilder = new BooleanQuery.Builder();
         for (String queryWord : queryString.split("[, -]")) {

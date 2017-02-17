@@ -137,7 +137,7 @@ public abstract class PropertiesGatewayTest {
     public void search_value2() {
         givenProperties("resources.properties");
         List<String> keys = gateway.search("search");
-        assertThat(keys).containsExactly("sample.long1", "sample.long2");
+        assertThat(keys).containsExactly("sample.long1");
     }
 
     @Test
@@ -150,7 +150,7 @@ public abstract class PropertiesGatewayTest {
     @Test
     public void search_queryWithThirdWordMatchingEverything() {
         givenProperties("resources.properties");
-        List<String> keys = gateway.search("Apache Lucene s");
+        List<String> keys = gateway.search("Apache Lucene is");
         assertThat(keys).containsExactly("sample.long1");
     }
 
