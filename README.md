@@ -3,7 +3,6 @@ A lean editor for java properties files
 
 
 Remaining TODOs
-- add key
 - delete key
 - rename key
 - duplicate key
