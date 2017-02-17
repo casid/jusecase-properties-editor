@@ -23,7 +23,7 @@ public class EditValue implements Usecase<EditValue.Request, EditValue.Response>
             request.property.value = request.value;
             propertiesGateway.updateValue(request.property);
         }
-        return null;
+        return new Response();
     }
 
     public static class Request {

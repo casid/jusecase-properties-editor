@@ -174,4 +174,8 @@ public class Application {
     public UsecaseExecutor getUsecaseExecutor() {
         return usecaseExecutor;
     }
+
+    public String getSelectedKey() {
+        return keyList.getSelectedValue();
+    }
 }

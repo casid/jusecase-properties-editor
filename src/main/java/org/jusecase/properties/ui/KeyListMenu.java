@@ -36,7 +36,8 @@ public class KeyListMenu extends JPopupMenu {
     private void addNew() {
         JMenuItem item = new JMenuItem("New");
         item.addActionListener(event -> {
-            String key = JOptionPane.showInputDialog(null, "Enter new key name", "New key", JOptionPane.PLAIN_MESSAGE);
+            String keyNameSuggestion = application.getSelectedKey();
+            String key = (String)JOptionPane.showInputDialog(null, "Enter new key name", "New key", JOptionPane.PLAIN_MESSAGE, null, null, keyNameSuggestion);
             if (key != null) {
                 NewKey.Request request = new NewKey.Request();
                 request.key = key;

@@ -7,7 +7,6 @@ import org.jusecase.properties.usecases.EditValue;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.event.ItemEvent;
 
 public class TranslationPanel extends JPanel {
     private final Application application;
@@ -30,8 +29,8 @@ public class TranslationPanel extends JPanel {
         add(label, "align left");
 
         isAvailable = new JCheckBox("Available");
-        isAvailable.addItemListener(event -> {
-            if (event.getStateChange() == ItemEvent.SELECTED) {
+        isAvailable.addActionListener(event -> {
+            if (isAvailable.isSelected()) {
                 editValue("");
                 enableEditing();
             } else {
@@ -76,10 +75,9 @@ public class TranslationPanel extends JPanel {
     public void setProperty(Property property) {
         this.property = property;
 
+        disableEditing();
         if (property.value != null) {
             enableEditing();
-        } else {
-            disableEditing();
         }
     }
 
