@@ -14,6 +14,7 @@ import static org.jusecase.properties.entities.Builders.testPath;
 public class PropertiesGatewayTrainer implements PropertiesGateway {
     private Set<Path> loadedProperties = new HashSet<>();
     private Property updatedValue;
+    private String addedKey;
 
     @Override
     public void loadProperties(List<Path> files) {
@@ -38,6 +39,11 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
     @Override
     public void updateValue(Property property) {
         updatedValue = property;
+    }
+
+    @Override
+    public void addKey(String key) {
+        addedKey = key;
     }
 
     @Override
@@ -68,10 +74,18 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
     }
 
     public void thenNoValueIsUpdated() {
-        assertThat(updatedValue).isNull();
+
     }
 
     public Property getUpdatedValue() {
         return updatedValue;
+    }
+
+    public void thenNoKeyIsAdded() {
+        assertThat(addedKey).isNull();
+    }
+
+    public String getAddedKey() {
+        return addedKey;
     }
 }

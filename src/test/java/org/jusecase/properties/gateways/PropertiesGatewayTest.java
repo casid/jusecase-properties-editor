@@ -89,13 +89,8 @@ public abstract class PropertiesGatewayTest {
     @Test
     public void getByKey_noMatch() {
         givenProperties("resources.properties");
-
         List<Property> properties = gateway.getProperties("sample");
-
-        assertThat(properties.size()).isEqualTo(1);
-        assertThat(properties.get(0).key).isEqualTo("sample");
-        assertThat(properties.get(0).fileName).isEqualTo("resources.properties");
-        assertThat(properties.get(0).value).isNull();
+        assertThat(properties).isEmpty();
     }
 
     @Test
@@ -219,6 +214,34 @@ public abstract class PropertiesGatewayTest {
         gateway.updateValue(german);
 
         assertThat(gateway.getProperties("sample8").get(1).value).isNull();
+    }
+
+    @Test
+    public void addKey_uninitialized() {
+        gateway.addKey("key"); // shall not throw
+    }
+
+    @Test
+    public void addKey() {
+        givenProperties("resources.properties", "resources_de.properties");
+
+        gateway.addKey("key");
+
+        List<Property> properties = gateway.getProperties("key");
+        assertThat(properties.get(0).key).isEqualTo("key");
+        assertThat(properties.get(0).fileName).isEqualTo("resources.properties");
+        assertThat(properties.get(0).value).isEqualTo("");
+        assertThat(properties.get(1).value).isEqualTo(null); // initial empty value only added to first file!
+    }
+
+    @Test
+    public void addKey_keyCacheIsReset() {
+        givenProperties("resources.properties");
+        gateway.getKeys();
+
+        gateway.addKey("key");
+
+        assertThat(gateway.getKeys()).contains("key");
     }
 
     @Test

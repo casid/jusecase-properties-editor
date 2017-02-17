@@ -103,20 +103,30 @@ public class Application {
         keyList = new JList<>(keyListModel);
         keyList.setVisibleRowCount(40);
         JScrollPane scrollPane = new JScrollPane(keyList);
-        keyList.addListSelectionListener(e -> {
-            String key = keyList.getSelectedValue();
-            if (key != null) {
-                GetProperties.Request request = new GetProperties.Request();
-                request.key = key;
-                usecaseExecutor.execute(request, (Consumer<GetProperties.Response>) response -> {
-                    translationsPanel.setProperties(response.properties);
-                });
-            } else {
-                translationsPanel.reset();
-            }
-        });
-        keyList.setComponentPopupMenu(new KeyListMenu());
+        keyList.addListSelectionListener(e -> updateTranslationPanel(keyList.getSelectedValue()));
+        keyList.setComponentPopupMenu(new KeyListMenu(this));
         keyPanel.add(scrollPane, "wrap,push,grow");
+    }
+
+    public void onNewKeyAdded(String key) {
+        resetSearch();
+        keyList.setSelectedValue(key, true);
+    }
+
+    private void resetSearch() {
+        search("");
+    }
+
+    private void updateTranslationPanel(String key) {
+        if (key != null) {
+            GetProperties.Request request = new GetProperties.Request();
+            request.key = key;
+            usecaseExecutor.execute(request, (Consumer<GetProperties.Response>) response -> {
+                translationsPanel.setProperties(response.properties);
+            });
+        } else {
+            translationsPanel.reset();
+        }
     }
 
     private void initSearchField() {

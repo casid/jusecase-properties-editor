@@ -119,6 +119,10 @@ public class LucenePropertiesGateway implements PropertiesGateway {
         Query query = new TermQuery(new Term(KEY, key));
         try {
             TopDocs result = indexSearcher.search(query, files.size());
+            if (result.totalHits == 0) {
+                return new ArrayList<>();
+            }
+
             Map<String, String> fileNameToValue = new HashMap<>();
             for (ScoreDoc scoreDoc : result.scoreDocs) {
                 Document document = indexSearcher.getIndexReader().document(scoreDoc.doc);
@@ -171,6 +175,23 @@ public class LucenePropertiesGateway implements PropertiesGateway {
                 indexWriter.updateDocument(term, createDocument(property));
             }
             markAsDirty(property.fileName);
+        });
+    }
+
+    @Override
+    public void addKey(String key) {
+        updateIndex(() -> {
+            Path file = files.get(0);
+
+            Property property = new Property();
+            property.key = key;
+            property.value = "";
+
+            property.fileName = file.getFileName().toString();
+            indexWriter.addDocument(createDocument(property));
+            markAsDirty(property.fileName);
+
+            keys = null;
         });
     }
 

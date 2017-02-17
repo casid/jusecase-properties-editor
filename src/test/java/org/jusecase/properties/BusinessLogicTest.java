@@ -12,12 +12,13 @@ public class BusinessLogicTest extends UsecaseExecutorTest {
     }
 
     @Test
-    public void name() {
+    public void usecases() {
         thenUsecaseCanBeExecuted(LoadBundle.class);
         thenUsecaseCanBeExecuted(SaveBundle.class);
         thenUsecaseCanBeExecuted(Search.class);
         thenUsecaseCanBeExecuted(GetProperties.class);
         thenUsecaseCanBeExecuted(Initialize.class);
         thenUsecaseCanBeExecuted(EditValue.class);
+        thenUsecaseCanBeExecuted(NewKey.class);
     }
 }

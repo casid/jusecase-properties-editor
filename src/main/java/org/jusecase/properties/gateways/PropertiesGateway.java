@@ -16,6 +16,8 @@ public interface PropertiesGateway {
 
     void updateValue(Property property);
 
+    void addKey(String key);
+
     void save();
 
     void saveAll();

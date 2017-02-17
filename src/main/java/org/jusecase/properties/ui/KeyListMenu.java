@@ -1,23 +1,50 @@
 package org.jusecase.properties.ui;
 
+import org.jusecase.properties.usecases.NewKey;
+
 import javax.swing.*;
 
 public class KeyListMenu extends JPopupMenu {
-    public KeyListMenu() {
-        JMenuItem newKey = new JMenuItem("New");
-        add(newKey);
+    private final Application application;
 
-        JMenuItem duplicateKey = new JMenuItem("Duplicate");
-        add(duplicateKey);
+    public KeyListMenu(Application application) {
+        this.application = application;
 
+        addNew();
+        addDuplicate();
         addSeparator();
-
-        JMenuItem renameKey = new JMenuItem("Rename");
-        add(renameKey);
-
+        addRename();
         addSeparator();
+        addDelete();
+    }
 
+    private void addDelete() {
         JMenuItem deleteKey = new JMenuItem("Delete");
         add(deleteKey);
+    }
+
+    private void addRename() {
+        JMenuItem renameKey = new JMenuItem("Rename");
+        add(renameKey);
+    }
+
+    private void addDuplicate() {
+        JMenuItem duplicateKey = new JMenuItem("Duplicate");
+        add(duplicateKey);
+    }
+
+    private void addNew() {
+        JMenuItem item = new JMenuItem("New");
+        item.addActionListener(event -> {
+            String key = JOptionPane.showInputDialog(null, "Enter new key name", "New key", JOptionPane.PLAIN_MESSAGE);
+            if (key != null) {
+                NewKey.Request request = new NewKey.Request();
+                request.key = key;
+                application.getUsecaseExecutor().execute(request);
+                application.onNewKeyAdded(key);
+            }
+
+        });
+        add(item);
     }
 }
