@@ -48,8 +48,14 @@ public class Application {
         usecaseExecutor.execute(request, this::onLoadPropertiesComplete);
     }
 
-    public void saveProperties() {
+    public void save() {
         usecaseExecutor.execute(new SaveBundle.Request());
+    }
+
+    public void saveAll() {
+        SaveBundle.Request request = new SaveBundle.Request();
+        request.saveAll = true;
+        usecaseExecutor.execute(request);
     }
 
     public void search(String query) {

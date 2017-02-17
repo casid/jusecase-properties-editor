@@ -17,11 +17,16 @@ public class SaveBundle implements Usecase<SaveBundle.Request, SaveBundle.Respon
 
     @Override
     public Response execute(Request request) {
-        propertiesGateway.save();
+        if (request.saveAll) {
+            propertiesGateway.saveAll();
+        } else {
+            propertiesGateway.save();
+        }
         return new Response();
     }
 
     public static class Request {
+        public boolean saveAll;
     }
 
     public static class Response {

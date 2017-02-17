@@ -22,6 +22,8 @@ public class ApplicationMenuBar extends JMenuBar {
         JMenu file = new JMenu("File");
         file.add(createFileOpenMenuItem());
         file.add(createFileSaveMenuItem());
+        file.addSeparator();
+        file.add(createFileSaveAllMenuItem());
         return file;
     }
 
@@ -39,9 +41,13 @@ public class ApplicationMenuBar extends JMenuBar {
 
     private JMenuItem createFileSaveMenuItem() {
         JMenuItem save = createItem("Save", KeyEvent.VK_S);
-        save.addActionListener(event -> {
-            application.saveProperties();
-        });
+        save.addActionListener(event -> application.save());
+        return save;
+    }
+
+    private JMenuItem createFileSaveAllMenuItem() {
+        JMenuItem save = createItem("Save All", KeyEvent.VK_F);
+        save.addActionListener(event -> application.saveAll());
         return save;
     }
 

@@ -172,15 +172,20 @@ public class LucenePropertiesGateway implements PropertiesGateway {
 
     @Override
     public void save() {
-        if (!isInitialized()) {
-            return;
-        }
-
-        for (Path file : files) {
-            if (dirtyFiles.contains(file)) {
-                save(file);
-                dirtyFiles.remove(file);
+        if (isInitialized()) {
+            for (Path file : files) {
+                if (dirtyFiles.contains(file)) {
+                    save(file);
+                    dirtyFiles.remove(file);
+                }
             }
+        }
+    }
+
+    @Override
+    public void saveAll() {
+        if (isInitialized()) {
+            files.forEach(this::save);
         }
     }
 

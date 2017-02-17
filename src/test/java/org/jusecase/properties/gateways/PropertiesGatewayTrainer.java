@@ -45,6 +45,11 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
 
     }
 
+    @Override
+    public void saveAll() {
+
+    }
+
     public void thenLoadedPropertiesAre(Set<Path> expected) {
         assertThat(loadedProperties).isEqualTo(expected);
     }
