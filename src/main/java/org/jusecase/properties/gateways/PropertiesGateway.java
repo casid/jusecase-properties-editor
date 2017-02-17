@@ -12,6 +12,8 @@ public interface PropertiesGateway {
 
     List<Property> getProperties(String key);
 
+    void renameKey( String key, String newKey );
+
     List<String> search(String query);
 
     void updateValue(Property property);

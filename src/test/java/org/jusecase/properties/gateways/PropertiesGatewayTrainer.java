@@ -32,6 +32,11 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
     }
 
     @Override
+    public void renameKey( String key, String newKey ) {
+
+    }
+
+    @Override
     public List<String> search(String query) {
         return null;
     }

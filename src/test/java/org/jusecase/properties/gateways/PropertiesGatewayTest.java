@@ -251,6 +251,28 @@ public abstract class PropertiesGatewayTest {
     }
 
     @Test
+    public void renameKey_uninitialized() {
+        gateway.renameKey("sample8", "sample9"); // shall not throw
+    }
+
+    @Test
+    public void renameKey() {
+        givenProperties("resources.properties");
+
+        gateway.renameKey("sample8", "sample9");
+
+        assertThat(gateway.getProperties("sample8")).isEmpty();
+        assertThat(gateway.getProperties("sample9")).hasSize(1);
+    }
+
+    @Test
+    public void renameKey_doesNotExist() {
+        givenProperties("resources.properties");
+        gateway.renameKey("unknown", "sample9");
+        assertThat(gateway.getProperties("unknown")).isEmpty();
+    }
+
+    @Test
     public void save_uninitialized() {
         gateway.save(); // shall not throw
     }

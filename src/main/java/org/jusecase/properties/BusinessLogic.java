@@ -23,6 +23,7 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
         addUsecase(Initialize.class);
         addUsecase(EditValue.class);
         addUsecase(NewKey.class);
+        addUsecase(RenameKey.class);
     }
 
     private static class GatewayModule extends AbstractModule {

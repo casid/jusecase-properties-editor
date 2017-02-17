@@ -1,34 +1,31 @@
 package org.jusecase.properties.usecases;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.jusecase.Usecase;
 import org.jusecase.properties.gateways.PropertiesGateway;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.List;
 
 @Singleton
-public class NewKey implements Usecase<NewKey.Request, NewKey.Response> {
+public class RenameKey implements Usecase<RenameKey.Request, RenameKey.Response> {
 
     private final PropertiesGateway propertiesGateway;
 
     @Inject
-    public NewKey(PropertiesGateway propertiesGateway) {
+    public RenameKey(PropertiesGateway propertiesGateway) {
         this.propertiesGateway = propertiesGateway;
     }
 
     @Override
     public Response execute(Request request) {
-        if (request.key == null || request.key.isEmpty()) {
-            throw new UsecaseException("Key name must not be empty");
-        }
-
-        propertiesGateway.addKey(request.key);
+        propertiesGateway.renameKey(request.key, request.newKey);
         return new Response();
     }
 
     public static class Request {
         public String key;
+        public String newKey;
     }
 
     public static class Response {

@@ -98,6 +98,24 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     }
 
     @Override
+    public void renameKey( String key, String newKey ) {
+        if (!isInitialized() || !propertiesByKey.containsKey(key)) {
+            return;
+        }
+
+        keys.remove(key);
+        keys.add(newKey);
+
+        List<Property> properties = propertiesByKey.remove(key);
+        for ( Property property : properties ) {
+            property.key = newKey;
+        }
+        propertiesByKey.put(newKey, properties);
+
+        markAsDirty();
+    }
+
+    @Override
     public List<String> search(String queryString) {
         if (!isInitialized() || queryString.isEmpty()) {
             return getKeys();
@@ -240,6 +258,10 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
                 return;
             }
         }
+    }
+
+    private void markAsDirty() {
+        dirtyFiles.addAll(files);
     }
 
     private Properties loadJavaProperties(Path file) throws IOException {

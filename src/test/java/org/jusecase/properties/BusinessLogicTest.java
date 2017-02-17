@@ -20,5 +20,6 @@ public class BusinessLogicTest extends UsecaseExecutorTest {
         thenUsecaseCanBeExecuted(Initialize.class);
         thenUsecaseCanBeExecuted(EditValue.class);
         thenUsecaseCanBeExecuted(NewKey.class);
+        thenUsecaseCanBeExecuted(RenameKey.class);
     }
 }

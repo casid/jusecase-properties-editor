@@ -25,10 +25,7 @@ public class TranslationPanel extends JPanel {
     }
 
     private void init() {
-        JLabel label = new JLabel(fileName);
-        add(label, "align left");
-
-        isAvailable = new JCheckBox("Available");
+        isAvailable = new JCheckBox(fileName);
         isAvailable.addActionListener(event -> {
             if (isAvailable.isSelected()) {
                 editValue("");
@@ -38,7 +35,7 @@ public class TranslationPanel extends JPanel {
                 disableEditing();
             }
         });
-        add(isAvailable, "align right,wrap");
+        add(isAvailable, "align left,wrap");
 
         textArea = new JTextArea();
         textAreaListener = new DocumentListener() {
@@ -83,6 +80,7 @@ public class TranslationPanel extends JPanel {
 
     private void enableEditing() {
         textArea.setText(property.value);
+        textArea.setCaretPosition(0);
         textArea.setEnabled(true);
         isAvailable.setSelected(true);
         textArea.getDocument().addDocumentListener(textAreaListener);

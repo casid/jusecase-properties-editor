@@ -115,12 +115,17 @@ public class Application {
     }
 
     public void onNewKeyAdded(String key) {
-        resetSearch();
+        refreshSearch();
         keyList.setSelectedValue(key, true);
     }
 
-    private void resetSearch() {
-        search("");
+    public void onKeyRenamed( String key, String newKey ) {
+        refreshSearch();
+        keyList.setSelectedValue(newKey, true);
+    }
+
+    private void refreshSearch() {
+        search(searchField.getText());
     }
 
     private void updateTranslationPanel(String key) {

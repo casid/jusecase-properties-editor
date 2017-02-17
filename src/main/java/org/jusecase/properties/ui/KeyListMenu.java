@@ -1,6 +1,7 @@
 package org.jusecase.properties.ui;
 
 import org.jusecase.properties.usecases.NewKey;
+import org.jusecase.properties.usecases.RenameKey;
 
 import javax.swing.*;
 
@@ -24,8 +25,20 @@ public class KeyListMenu extends JPopupMenu {
     }
 
     private void addRename() {
-        JMenuItem renameKey = new JMenuItem("Rename");
-        add(renameKey);
+        JMenuItem item = new JMenuItem("Rename");
+        item.addActionListener(event -> {
+            String key = application.getSelectedKey();
+            String newKey = (String)JOptionPane.showInputDialog(null, "Rename key", "Rename key", JOptionPane.PLAIN_MESSAGE, null, null, key);
+            if (newKey != null) {
+                RenameKey.Request request = new RenameKey.Request();
+                request.key = key;
+                request.newKey = newKey;
+                application.getUsecaseExecutor().execute(request);
+                application.onKeyRenamed(key, newKey);
+            }
+
+        });
+        add(item);
     }
 
     private void addDuplicate() {
