@@ -313,6 +313,26 @@ public abstract class PropertiesGatewayTest {
     }
 
     @Test
+    public void deleteKey_uninitialized() {
+        gateway.deleteKey("sample8"); // shall not throw
+    }
+
+    @Test
+    public void deleteKey_doesNotExist() {
+        givenProperties("resources.properties");
+        gateway.deleteKey("unknown");
+        assertThat(gateway.getKeys()).hasSize(SAMPLE_KEY_COUNT);
+    }
+
+    @Test
+    public void deleteKey() {
+        givenProperties("resources.properties", "resources_de.properties");
+        gateway.deleteKey("sample8");
+        assertThat(gateway.getProperties("sample8")).hasSize(0);
+        assertThat(gateway.getKeys()).hasSize(SAMPLE_KEY_COUNT - 1);
+    }
+
+    @Test
     public void save_uninitialized() {
         gateway.save(); // shall not throw
     }

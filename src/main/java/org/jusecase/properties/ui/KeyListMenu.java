@@ -1,5 +1,6 @@
 package org.jusecase.properties.ui;
 
+import org.jusecase.properties.usecases.DeleteKey;
 import org.jusecase.properties.usecases.DuplicateKey;
 import org.jusecase.properties.usecases.NewKey;
 import org.jusecase.properties.usecases.RenameKey;
@@ -21,8 +22,18 @@ public class KeyListMenu extends JPopupMenu {
     }
 
     private void addDelete() {
-        JMenuItem deleteKey = new JMenuItem("Delete");
-        add(deleteKey);
+        JMenuItem item = new JMenuItem("Delete");
+        item.addActionListener(event -> {
+            String key = application.getSelectedKey();
+            if (key != null) {
+                DeleteKey.Request request = new DeleteKey.Request();
+                request.key = key;
+                application.getUsecaseExecutor().execute(request);
+                application.onKeyDeleted(key);
+            }
+
+        });
+        add(item);
     }
 
     private void addRename() {

@@ -42,6 +42,11 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
     }
 
     @Override
+    public void deleteKey( String key ) {
+
+    }
+
+    @Override
     public List<String> search(String query) {
         return null;
     }

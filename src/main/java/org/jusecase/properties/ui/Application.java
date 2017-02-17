@@ -115,21 +115,36 @@ public class Application {
     }
 
     public void onNewKeyAdded(String key) {
-        refreshSearch(key);
-    }
-
-    public void onKeyRenamed( String key, String newKey ) {
-        refreshSearch(newKey);
-    }
-
-    private void refreshSearch(String keyToHighlight) {
-        search(searchField.getText());
-
         Search.Request request = new Search.Request();
         request.query = searchField.getText();
         usecaseExecutor.execute(request, (Consumer<Search.Response>) response -> {
+            if (!response.keys.contains(key)) {
+                resetSearch();
+            }
+            keyList.setSelectedValue(key, true);
+        });
+    }
+
+    private void resetSearch() {
+        searchField.setText("");
+        search("");
+    }
+
+    public void onKeyRenamed( String key, String newKey ) {
+        refreshSearch();
+    }
+
+    public void onKeyDeleted( String key ) {
+        refreshSearch();
+    }
+
+    private void refreshSearch() {
+        Search.Request request = new Search.Request();
+        request.query = searchField.getText();
+        usecaseExecutor.execute(request, (Consumer<Search.Response>) response -> {
+            int previousSelectedIndex = keyList.getSelectedIndex();
             keyListModel.setKeys(response.keys);
-            keyList.setSelectedValue(keyToHighlight, true);
+            keyList.setSelectedIndex(Math.max(0, previousSelectedIndex));
         });
     }
 

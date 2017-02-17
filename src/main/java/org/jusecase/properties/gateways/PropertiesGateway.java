@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 public interface PropertiesGateway {
+
     void loadProperties(List<Path> files);
 
     List<String> getKeys();
@@ -15,6 +16,8 @@ public interface PropertiesGateway {
     void renameKey( String key, String newKey );
 
     void duplicateKey( String key, String newKey );
+
+    void deleteKey( String key );
 
     List<String> search(String query);
 

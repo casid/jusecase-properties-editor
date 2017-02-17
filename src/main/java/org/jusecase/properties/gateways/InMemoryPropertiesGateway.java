@@ -141,6 +141,21 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     }
 
     @Override
+    public void deleteKey( String key ) {
+        if (!isInitialized() || !propertiesByKey.containsKey(key)) {
+            return;
+        }
+
+        for ( Property property : propertiesByKey.get(key) ) {
+            removePropertyFromList(properties, property);
+            markAsDirty(property.fileName);
+        }
+
+        propertiesByKey.remove(key);
+        keys.remove(key);
+    }
+
+    @Override
     public List<String> search(String queryString) {
         if (!isInitialized() || queryString.isEmpty()) {
             return getKeys();
