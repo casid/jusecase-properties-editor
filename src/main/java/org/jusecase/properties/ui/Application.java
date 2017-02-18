@@ -69,8 +69,17 @@ public class Application {
     }
 
     private void updateKeyList( List<String> keys) {
+        String selectedValue = keyList.getSelectedValue();
         keyListModel.setKeys(keys);
-        keyList.ensureIndexIsVisible(0);
+
+        int index = keys.indexOf(selectedValue);
+        if (index >= 0) {
+            keyList.setSelectedIndex(index);
+            keyList.ensureIndexIsVisible(index);
+        } else {
+            keyList.clearSelection();
+            keyList.ensureIndexIsVisible(0);
+        }
     }
 
     private void onLoadPropertiesComplete(LoadBundle.Response response) {
