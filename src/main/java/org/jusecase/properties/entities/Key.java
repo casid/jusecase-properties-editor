@@ -3,11 +3,11 @@ package org.jusecase.properties.entities;
 public class Key implements Comparable<Key> {
     private final String key;
 
-    public void setState(KeyState state) {
-        this.state = state;
+    public void setPopulation(KeyPopulation population) {
+        this.population = population;
     }
 
-    private KeyState state;
+    private KeyPopulation population;
 
     public Key(String key) {
         this.key = key;
@@ -17,8 +17,8 @@ public class Key implements Comparable<Key> {
         return key;
     }
 
-    public KeyState getState() {
-        return state;
+    public KeyPopulation getPopulation() {
+        return population;
     }
 
     @Override

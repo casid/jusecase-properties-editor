@@ -1,7 +1,7 @@
 package org.jusecase.properties.gateways;
 
 import org.jusecase.properties.entities.Key;
-import org.jusecase.properties.entities.KeyState;
+import org.jusecase.properties.entities.KeyPopulation;
 import org.jusecase.properties.entities.Property;
 
 import javax.inject.Singleton;
@@ -79,9 +79,9 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         }
 
         if (propertiesWithContent < files.size()) {
-            getKey(key).setState(KeyState.Sparse);
+            getKey(key).setPopulation(KeyPopulation.Sparse);
         } else {
-            getKey(key).setState(KeyState.Complete);
+            getKey(key).setPopulation(KeyPopulation.Complete);
         }
     }
 

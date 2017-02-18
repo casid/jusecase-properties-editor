@@ -3,7 +3,7 @@ package org.jusecase.properties.gateways;
 import org.assertj.core.api.ListAssert;
 import org.junit.Test;
 import org.jusecase.properties.entities.Key;
-import org.jusecase.properties.entities.KeyState;
+import org.jusecase.properties.entities.KeyPopulation;
 import org.jusecase.properties.entities.Property;
 
 import java.nio.file.Path;
@@ -64,15 +64,15 @@ public abstract class PropertiesGatewayTest {
     public void getKeys_state_oneFile() {
         givenProperties("resources.properties");
         for (Key key : gateway.getKeys()) {
-            assertThat(key.getState()).isEqualTo(KeyState.Complete); // if only one file, all existing keys are complete
+            assertThat(key.getPopulation()).isEqualTo(KeyPopulation.Complete); // if only one file, all existing keys are complete
         }
     }
 
     @Test
     public void getKeys_state_twoFiles() {
         givenProperties("resources.properties", "resources_de.properties");
-        assertThat(gateway.getKeys().get(0).getState()).isEqualTo(KeyState.Complete); // sample.camelCase
-        assertThat(gateway.getKeys().get(1).getState()).isEqualTo(KeyState.Sparse); // sample.long1
+        assertThat(gateway.getKeys().get(0).getPopulation()).isEqualTo(KeyPopulation.Complete); // sample.camelCase
+        assertThat(gateway.getKeys().get(1).getPopulation()).isEqualTo(KeyPopulation.Sparse); // sample.long1
     }
 
     @Test
@@ -223,7 +223,7 @@ public abstract class PropertiesGatewayTest {
         gateway.updateValue(german);
 
         assertThat(gateway.getProperties("sample8").get(1).value).isEqualTo("Allmächd!!!");
-        assertThat(gateway.getKey("sample8").getState()).isEqualTo(KeyState.Complete);
+        assertThat(gateway.getKey("sample8").getPopulation()).isEqualTo(KeyPopulation.Complete);
     }
 
     @Test
@@ -235,7 +235,7 @@ public abstract class PropertiesGatewayTest {
         gateway.updateValue(german);
 
         assertThat(gateway.getProperties("sample8").get(1).value).isNull();
-        assertThat(gateway.getKey("sample8").getState()).isEqualTo(KeyState.Sparse);
+        assertThat(gateway.getKey("sample8").getPopulation()).isEqualTo(KeyPopulation.Sparse);
     }
 
     @Test
@@ -247,7 +247,7 @@ public abstract class PropertiesGatewayTest {
         gateway.updateValue(german);
 
         assertThat(gateway.getProperties("sample.long1").get(1).value).isEqualTo("endlich ein wert");
-        assertThat(gateway.getKey("sample.long1").getState()).isEqualTo(KeyState.Complete);
+        assertThat(gateway.getKey("sample.long1").getPopulation()).isEqualTo(KeyPopulation.Complete);
     }
 
     @Test
