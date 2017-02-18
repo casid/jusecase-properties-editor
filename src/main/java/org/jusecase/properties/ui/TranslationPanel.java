@@ -75,6 +75,13 @@ public class TranslationPanel extends JPanel {
 
     private void editValue() {
         editValue(textArea.getText());
+
+        int currentRows = textArea.getRows();
+        int requiredRows = calculateRowCount();
+        if (currentRows != requiredRows) {
+            textArea.setRows(requiredRows);
+            revalidate();
+        }
     }
 
     private void editValue(String value) {
