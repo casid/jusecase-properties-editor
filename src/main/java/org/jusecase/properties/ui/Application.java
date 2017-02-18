@@ -8,7 +8,6 @@ import org.jusecase.properties.usecases.*;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
 import java.awt.*;
 import java.io.File;
 import java.util.List;
@@ -153,7 +152,7 @@ public class Application {
         keyList.setCellRenderer(new KeyListCellRenderer());
 
         JScrollPane scrollPane = new JScrollPane(keyList);
-        keyPanel.add(scrollPane, "wrap,push,grow");
+        keyPanel.add(scrollPane, "wrap,push,grow,w 250::");
     }
 
     public void onNewKeyAdded(String key) {
@@ -229,8 +228,8 @@ public class Application {
     private void initFrame() {
         frame = new JFrame("Properties Editor");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setVisible(true);
         frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+        frame.setVisible(true);
     }
 
     private void initTranslationsPanel() {
