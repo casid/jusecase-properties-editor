@@ -4,6 +4,7 @@ import org.jusecase.Usecase;
 import org.jusecase.properties.entities.Settings;
 import org.jusecase.properties.gateways.PropertiesGateway;
 import org.jusecase.properties.gateways.SettingsGateway;
+import org.jusecase.properties.gateways.UndoableRequestGateway;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -20,11 +21,13 @@ public class LoadBundle implements Usecase<LoadBundle.Request, LoadBundle.Respon
 
     private final PropertiesGateway propertiesGateway;
     private final SettingsGateway settingsGateway;
+    private final UndoableRequestGateway undoableRequestGateway;
 
     @Inject
-    public LoadBundle(PropertiesGateway propertiesGateway, SettingsGateway settingsGateway) {
+    public LoadBundle(PropertiesGateway propertiesGateway, SettingsGateway settingsGateway, UndoableRequestGateway undoableRequestGateway) {
         this.propertiesGateway = propertiesGateway;
         this.settingsGateway = settingsGateway;
+        this.undoableRequestGateway = undoableRequestGateway;
     }
 
     public Response execute(Request request) {
@@ -39,6 +42,7 @@ public class LoadBundle implements Usecase<LoadBundle.Request, LoadBundle.Respon
         List<Path> propertyFiles = findPropertyFiles(request.propertiesFile);
         propertiesGateway.loadProperties(propertyFiles);
         updateSettings(request);
+        undoableRequestGateway.clear();
 
         Response response = new Response();
         response.keys = propertiesGateway.getKeys();

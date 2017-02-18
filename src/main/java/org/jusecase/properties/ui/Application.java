@@ -225,4 +225,25 @@ public class Application {
     public List<String> getSelectedValues() {
         return keyList.getSelectedValuesList();
     }
+
+    public void undo() {
+        usecaseExecutor.execute(new Undo.Request(), (Undo.Response response) -> {
+            handleUndoOrRedoResponse(response.undoRequest, response.undoResponse);
+        });
+    }
+
+    public void redo() {
+        usecaseExecutor.execute(new Redo.Request(), (Redo.Response response) -> {
+            handleUndoOrRedoResponse(response.redoRequest, response.redoResponse);
+        });
+    }
+
+    private void handleUndoOrRedoResponse(Object request, Object response) {
+        if (request instanceof EditValue.Request) {
+            EditValue.Request editValue = (EditValue.Request)request;
+            if (editValue.property.key.equals(getSelectedKey())) {
+                updateTranslationPanel(editValue.property.key);
+            }
+        }
+    }
 }

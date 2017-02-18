@@ -39,4 +39,23 @@ public class EditValueTest extends UsecaseTest<Request, Response> {
         assertThat(updated).isSameAs(request.property);
         assertThat(updated.value).isEqualTo(request.value);
     }
+
+    @Test
+    public void success_oldValueIsStored() {
+        request.property.value = "old value";
+        whenRequestIsExecuted();
+        assertThat(request.oldValue).isEqualTo("old value");
+    }
+
+    @Test
+    public void undo() {
+        request.undo = true;
+        request.oldValue = "old value";
+
+        whenRequestIsExecuted();
+
+        Property updated = propertiesGatewayTrainer.getUpdatedValue();
+        assertThat(updated).isSameAs(request.property);
+        assertThat(updated.value).isEqualTo(request.oldValue);
+    }
 }

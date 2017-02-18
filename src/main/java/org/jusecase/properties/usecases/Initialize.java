@@ -4,6 +4,7 @@ import org.jusecase.Usecase;
 import org.jusecase.properties.entities.Settings;
 import org.jusecase.properties.gateways.PropertiesGateway;
 import org.jusecase.properties.gateways.SettingsGateway;
+import org.jusecase.properties.gateways.UndoableRequestGateway;
 
 import javax.inject.Inject;
 import java.nio.file.Path;
@@ -15,9 +16,9 @@ public class Initialize implements Usecase<Initialize.Request, Initialize.Respon
     private final LoadBundle loadBundle;
 
     @Inject
-    public Initialize(PropertiesGateway propertiesGateway, SettingsGateway settingsGateway) {
+    public Initialize(PropertiesGateway propertiesGateway, SettingsGateway settingsGateway, UndoableRequestGateway undoableRequestGateway) {
         this.settingsGateway = settingsGateway;
-        this.loadBundle = new LoadBundle(propertiesGateway, null);
+        this.loadBundle = new LoadBundle(propertiesGateway, null, undoableRequestGateway);
     }
 
     @Override

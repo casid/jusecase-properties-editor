@@ -20,18 +20,24 @@ public class EditValue implements Usecase<EditValue.Request, EditValue.Response>
     @Override
     public Response execute(Request request) {
         if (request.property != null) {
-            request.property.value = request.value;
+            if (request.undo) {
+                request.property.value = request.oldValue;
+            } else {
+                request.oldValue = request.property.value;
+                request.property.value = request.value;
+            }
             propertiesGateway.updateValue(request.property);
         }
         return new Response();
     }
 
-    public static class Request {
+    public static class Request extends UndoableRequest {
         public Property property;
         public String value;
+
+        String oldValue;
     }
 
     public static class Response {
-
     }
 }

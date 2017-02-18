@@ -192,6 +192,8 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
             Property propertyInList = findPropertyInList(storedProperties, property);
             if (propertyInList != null) {
                 propertyInList.value = property.value;
+            } else {
+                addProperty(property);
             }
         }
         markAsDirty(property.fileName);

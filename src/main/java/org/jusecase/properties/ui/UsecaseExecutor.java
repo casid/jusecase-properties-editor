@@ -13,7 +13,7 @@ public class UsecaseExecutor {
 
     public <Request, Response> void execute(Request request, Consumer<Response> responseConsumer) {
         Response response = businessLogic.execute(request);
-        if (responseConsumer != null) {
+        if (responseConsumer != null && response != null) {
             responseConsumer.accept(response);
         }
     }

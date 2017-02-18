@@ -16,6 +16,7 @@ public class ApplicationMenuBar extends JMenuBar {
 
     private void init() {
         add(createFileMenu());
+        add(createEditMenu());
     }
 
     private JMenu createFileMenu() {
@@ -25,6 +26,13 @@ public class ApplicationMenuBar extends JMenuBar {
         file.addSeparator();
         file.add(createFileSaveAllMenuItem());
         return file;
+    }
+
+    private JMenu createEditMenu() {
+        JMenu edit = new JMenu("Edit");
+        edit.add(createUndoMenuItem());
+        edit.add(createRedoMenuItem());
+        return edit;
     }
 
     private JMenuItem createFileOpenMenuItem() {
@@ -49,6 +57,24 @@ public class ApplicationMenuBar extends JMenuBar {
         JMenuItem save = new JMenuItem("Save All");
         save.addActionListener(event -> application.saveAll());
         return save;
+    }
+
+    private JMenuItem createUndoMenuItem() {
+        JMenuItem undo = createItem("Undo", KeyEvent.VK_Z);
+        undo.setName("Undo");
+        undo.addActionListener(event -> {
+            application.undo();
+        });
+        return undo;
+    }
+
+    private JMenuItem createRedoMenuItem() {
+        JMenuItem redo = createItem("Redo", KeyEvent.VK_Y);
+        redo.setName("Redo");
+        redo.addActionListener(event -> {
+            application.redo();
+        });
+        return redo;
     }
 
     private JMenuItem createItem(String name, int accelerator) {

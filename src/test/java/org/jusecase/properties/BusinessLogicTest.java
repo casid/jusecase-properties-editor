@@ -6,9 +6,11 @@ import org.jusecase.UsecaseExecutorTest;
 import org.jusecase.properties.usecases.*;
 
 public class BusinessLogicTest extends UsecaseExecutorTest {
+    BusinessLogic businessLogic;
+
     @Before
     public void setUp() {
-        givenExecutor(new BusinessLogic());
+        givenExecutor(businessLogic = new BusinessLogic());
     }
 
     @Test
@@ -23,5 +25,7 @@ public class BusinessLogicTest extends UsecaseExecutorTest {
         thenUsecaseCanBeExecuted(RenameKey.class);
         thenUsecaseCanBeExecuted(DuplicateKey.class);
         thenUsecaseCanBeExecuted(DeleteKey.class);
+        thenUsecaseCanBeExecuted(Undo.class);
+        thenUsecaseCanBeExecuted(Redo.class);
     }
 }

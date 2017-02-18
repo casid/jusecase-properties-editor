@@ -3,19 +3,24 @@ package org.jusecase.properties;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.name.Names;
+import org.jusecase.UsecaseExecutor;
 import org.jusecase.executors.guice.GuiceUsecaseExecutor;
-import org.jusecase.properties.gateways.JsonSettingsGateway;
-import org.jusecase.properties.gateways.InMemoryPropertiesGateway;
-import org.jusecase.properties.gateways.PropertiesGateway;
-import org.jusecase.properties.gateways.SettingsGateway;
+import org.jusecase.properties.gateways.*;
 import org.jusecase.properties.usecases.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class BusinessLogic extends GuiceUsecaseExecutor {
+
+    private UndoableRequestGateway undoableRequestGateway = new UndoableRequestGateway();
+
     public BusinessLogic() {
-        super(Guice.createInjector(new GatewayModule()));
+        setInjector(Guice.createInjector(
+                new GatewayModule(),
+                new BusinessLogicModule()
+        ));
+
         addUsecase(LoadBundle.class);
         addUsecase(SaveBundle.class);
         addUsecase(Search.class);
@@ -26,9 +31,11 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
         addUsecase(RenameKey.class);
         addUsecase(DuplicateKey.class);
         addUsecase(DeleteKey.class);
+        addUsecase(Undo.class);
+        addUsecase(Redo.class);
     }
 
-    private static class GatewayModule extends AbstractModule {
+    private class GatewayModule extends AbstractModule {
         private Path settingsDirectory = Paths.get(System.getProperty("user.home")).toAbsolutePath();
         private Path settingsFile = settingsDirectory.resolve(".jusecase-properties-editor").resolve("settings.json");
 
@@ -38,6 +45,29 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
 
             bind(PropertiesGateway.class).to(InMemoryPropertiesGateway.class);
             bind(SettingsGateway.class).to(JsonSettingsGateway.class);
+            bind(UndoableRequestGateway.class).toInstance(undoableRequestGateway);
         }
+    }
+
+    private class BusinessLogicModule extends AbstractModule {
+        @Override
+        protected void configure() {
+            bind(UsecaseExecutor.class).toInstance(BusinessLogic.this);
+        }
+    }
+
+    @Override
+    public <Request, Response> Response execute(Request request) {
+        Response response = super.execute(request);
+        if (request instanceof UndoableRequest) {
+            UndoableRequest undoableRequest = (UndoableRequest) request;
+            if (!undoableRequestGateway.contains(undoableRequest)) {
+                if (undoableRequest.name == null) {
+                    undoableRequest.name = undoableRequest.getClass().getEnclosingClass().getSimpleName();
+                }
+                undoableRequestGateway.add(undoableRequest);
+            }
+        }
+        return response;
     }
 }

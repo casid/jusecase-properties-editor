@@ -217,6 +217,17 @@ public abstract class PropertiesGatewayTest {
     }
 
     @Test
+    public void updateValue_previousValueIsNull() {
+        givenProperties("resources.properties", "resources_de.properties");
+        Property german = gateway.getProperties("sample.long1").get(1);
+
+        german.value = "endlich ein wert";
+        gateway.updateValue(german);
+
+        assertThat(gateway.getProperties("sample.long1").get(1).value).isEqualTo("endlich ein wert");
+    }
+
+    @Test
     public void addKey_uninitialized() {
         gateway.addKey("key"); // shall not throw
     }
