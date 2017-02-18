@@ -30,6 +30,7 @@ public class TranslationsPanel extends JPanel {
     public void setProperties(List<Property> properties) {
         int index = 0;
         for (TranslationPanel translationPanel : translationPanels) {
+            translationPanel.setVisible(true);
             translationPanel.setProperty(properties.get(index));
             ++index;
         }
@@ -38,7 +39,7 @@ public class TranslationsPanel extends JPanel {
 
     public void reset() {
         for (TranslationPanel translationPanel : translationPanels) {
-            translationPanel.disableEditing();
+            translationPanel.setVisible(false);
         }
         revalidate();
     }

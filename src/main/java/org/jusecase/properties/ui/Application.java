@@ -78,7 +78,15 @@ public class Application {
         request.query = query;
         execute(request, (Consumer<Search.Response>) response -> {
             updateKeyList(response.keys);
-            translationsPanel.setSearchQuery(query);
+
+            if (response.keys.isEmpty()) {
+                translationsPanel.reset();
+            } else {
+                if (getSelectedKey() == null) {
+                    keyList.setSelectedIndex(0);
+                }
+                translationsPanel.setSearchQuery(query);
+            }
         });
     }
 

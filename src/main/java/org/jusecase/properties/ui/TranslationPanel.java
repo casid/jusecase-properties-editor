@@ -28,6 +28,7 @@ public class TranslationPanel extends JPanel {
     private Color transparentBackgroundColor;
     private Highlighter.HighlightPainter hightlightPainter = new DefaultHighlighter.DefaultHighlightPainter(searchHighlightColor);
     private TranslationTextScrollPane scrollPane;
+    private boolean documentListenerAdded;
 
     public TranslationPanel(Application application, String fileName) {
         super(new MigLayout("insets 0", "", "[][grow]"));
@@ -47,10 +48,10 @@ public class TranslationPanel extends JPanel {
         isAvailable.addActionListener(event -> {
             if (isAvailable.isSelected()) {
                 editValue("");
-                enableEditing();
+                enableTextEditing();
             } else {
+                disableTextEditing();
                 editValue(null);
-                disableEditing();
             }
         });
         add(isAvailable, "align left,wrap");
@@ -97,21 +98,31 @@ public class TranslationPanel extends JPanel {
     public void setProperty(Property property) {
         this.property = property;
 
-        disableEditing();
         if (property.value != null) {
-            enableEditing();
+            enableTextEditing();
+        } else {
+            disableTextEditing();
         }
     }
 
-    private void enableEditing() {
+    private void enableTextEditing() {
+        stopListeningForDocumentChanges();
+
         textArea.setText(property.value);
         textArea.setCaretPosition(0);
         textArea.setEnabled(true);
         textArea.setRows(calculateRowCount());
         isAvailable.setSelected(true);
-        textArea.getDocument().addDocumentListener(textAreaListener);
 
+        startListeningForDocumentChanges();
         highlightSearchQuery();
+    }
+
+    private void startListeningForDocumentChanges() {
+        if (!documentListenerAdded) {
+            textArea.getDocument().addDocumentListener(textAreaListener);
+            documentListenerAdded = true;
+        }
     }
 
     private int calculateRowCount() {
@@ -122,13 +133,21 @@ public class TranslationPanel extends JPanel {
         return rowCount;
     }
 
-    public void disableEditing() {
-        textArea.getDocument().removeDocumentListener(textAreaListener);
+    public void disableTextEditing() {
+        stopListeningForDocumentChanges();
+
         textArea.setText("");
         textArea.setEnabled(false);
         textArea.setRows(1);
         isAvailable.setSelected(false);
         isAvailable.setBackground(transparentBackgroundColor);
+    }
+
+    private void stopListeningForDocumentChanges() {
+        if (documentListenerAdded) {
+            textArea.getDocument().removeDocumentListener(textAreaListener);
+            documentListenerAdded = false;
+        }
     }
 
     private void highlightSearchQuery() {
