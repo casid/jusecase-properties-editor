@@ -94,7 +94,10 @@ public class Application {
         initKeyPanel();
         initTranslationsPanel();
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, keyPanel, new JScrollPane(translationsPanel));
+        JScrollPane translationsPanelScrollPane = new JScrollPane(translationsPanel);
+        translationsPanelScrollPane.setBorder(null);
+        translationsPanelScrollPane.getVerticalScrollBar().setUnitIncrement(8);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, keyPanel, translationsPanelScrollPane);
         splitPane.setDividerLocation(0.3);
         panel.add(splitPane, "push,grow");
 
@@ -195,7 +198,7 @@ public class Application {
     }
 
     private void initTranslationsPanel() {
-        translationsPanel = new TranslationsPanel(new MigLayout("insets 2"), this);
+        translationsPanel = new TranslationsPanel(this);
     }
 
     public JFrame getFrame() {

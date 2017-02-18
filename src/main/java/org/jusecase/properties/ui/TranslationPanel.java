@@ -10,7 +10,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
-
 import java.awt.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,17 +17,18 @@ import java.util.regex.Pattern;
 
 public class TranslationPanel extends JPanel {
     private final Application application;
-
     private final String fileName;
+
     private JCheckBox isAvailable;
     private JTextArea textArea;
     private DocumentListener textAreaListener;
     private Property property;
     private String searchQuery = "";
     Highlighter.HighlightPainter hightlightPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
+    private TranslationTextScrollPane scrollPane;
 
     public TranslationPanel(Application application, String fileName) {
-        super(new MigLayout("insets 0"));
+        super(new MigLayout("insets 0", "", "[][grow]"));
         this.application = application;
         this.fileName = fileName;
         init();
@@ -69,8 +69,8 @@ public class TranslationPanel extends JPanel {
                 editValue();
             }
         };
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        add(scrollPane, "span,growx,pushx,h 54!");
+        scrollPane = new TranslationTextScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        add(scrollPane, "pushx,growx,wmax 100%");
     }
 
     private void editValue() {
@@ -97,16 +97,26 @@ public class TranslationPanel extends JPanel {
         textArea.setText(property.value);
         textArea.setCaretPosition(0);
         textArea.setEnabled(true);
+        textArea.setRows(calculateRowCount());
         isAvailable.setSelected(true);
         textArea.getDocument().addDocumentListener(textAreaListener);
 
         highlightSearchQuery();
     }
 
+    private int calculateRowCount() {
+        int rowCount = textArea.getLineCount();
+        if (textArea.getPreferredSize().width > scrollPane.getWidth()) {
+            rowCount += 1;
+        }
+        return rowCount;
+    }
+
     public void disableEditing() {
         textArea.getDocument().removeDocumentListener(textAreaListener);
         textArea.setText("");
         textArea.setEnabled(false);
+        textArea.setRows(1);
         isAvailable.setSelected(false);
     }
 

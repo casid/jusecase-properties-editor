@@ -11,8 +11,8 @@ public class TranslationsPanel extends JPanel {
     private final Application application;
     private List<TranslationPanel> translationPanels = new ArrayList<>();
 
-    public TranslationsPanel(MigLayout layout, Application application) {
-        super(layout);
+    public TranslationsPanel(Application application) {
+        super(new MigLayout("insets 3 0 2 0", "[fill]"));
         this.application = application;
     }
 
@@ -33,14 +33,14 @@ public class TranslationsPanel extends JPanel {
             translationPanel.setProperty(properties.get(index));
             ++index;
         }
-        validate();
+        revalidate();
     }
 
     public void reset() {
         for (TranslationPanel translationPanel : translationPanels) {
             translationPanel.disableEditing();
         }
-        validate();
+        revalidate();
     }
 
     public void setSearchQuery( String searchQuery ) {
