@@ -3,6 +3,7 @@ package org.jusecase.properties.ui;
 import net.miginfocom.swing.MigLayout;
 import org.jusecase.properties.BusinessLogic;
 import org.jusecase.properties.entities.Key;
+import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.usecases.*;
 
 import javax.swing.*;
@@ -24,6 +25,7 @@ public class Application {
     private JTextField searchField;
     private JPanel keyPanel;
     private TranslationsPanel translationsPanel;
+    private ApplicationMenuBar menuBar;
 
     public static void main(String args[]) throws Exception {
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
@@ -53,6 +55,10 @@ public class Application {
         Response response = businessLogic.execute(request);
         if (responseConsumer != null && response != null) {
             responseConsumer.accept(response);
+        }
+
+        if (request instanceof UndoableRequest) {
+            menuBar.updateUndoAndRedoItems();
         }
     }
 
@@ -90,10 +96,11 @@ public class Application {
     }
 
     private void updateKeyList( List<Key> keys) {
-        Key selectedValue = keyList.getSelectedValue();
+        Key selectedKey = getSelectedKeyEntity();
+
         keyListModel.setKeys(keys);
 
-        int index = keys.indexOf(selectedValue);
+        int index = keys.indexOf(selectedKey);
         if (index >= 0) {
             keyList.setSelectedIndex(index);
             keyList.ensureIndexIsVisible(index);
@@ -221,7 +228,7 @@ public class Application {
     }
 
     private void initMenuBar() {
-        ApplicationMenuBar menuBar = new ApplicationMenuBar(this);
+        menuBar = new ApplicationMenuBar(this);
         frame.setJMenuBar(menuBar);
     }
 
@@ -241,8 +248,15 @@ public class Application {
     }
 
     public String getSelectedKey() {
-        Key selectedValue = keyList.getSelectedValue();
+        Key selectedValue = getSelectedKeyEntity();
         return selectedValue == null ? null : selectedValue.getKey();
+    }
+
+    public Key getSelectedKeyEntity() {
+        if (keyList.getSelectedIndex() < keyListModel.getSize()) {
+            return keyList.getSelectedValue();
+        }
+        return null;
     }
 
     public List<String> getSelectedValues() {
