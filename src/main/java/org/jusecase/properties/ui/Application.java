@@ -2,6 +2,7 @@ package org.jusecase.properties.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.jusecase.properties.BusinessLogic;
+import org.jusecase.properties.entities.Key;
 import org.jusecase.properties.usecases.*;
 
 import javax.swing.*;
@@ -12,15 +13,14 @@ import java.awt.*;
 import java.io.File;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class Application {
 
     private final BusinessLogic businessLogic = new BusinessLogic();
 
     private JFrame frame;
-    private JPanel panel;
-    private ApplicationMenuBar menuBar;
-    private JList<String> keyList;
+    private JList<Key> keyList;
     KeyListModel keyListModel = new KeyListModel();
     private JTextField searchField;
     private JPanel keyPanel;
@@ -82,8 +82,8 @@ public class Application {
         });
     }
 
-    private void updateKeyList( List<String> keys) {
-        String selectedValue = keyList.getSelectedValue();
+    private void updateKeyList( List<Key> keys) {
+        Key selectedValue = keyList.getSelectedValue();
         keyListModel.setKeys(keys);
 
         int index = keys.indexOf(selectedValue);
@@ -103,9 +103,8 @@ public class Application {
             updateKeyList(response.keys);
             if (!response.keys.isEmpty()) {
                 keyList.setSelectedIndex(0);
+                updateTranslationPanel(response.keys.get(0).getKey());
             }
-
-            updateTranslationPanel(response.keys.get(0));
         }
     }
 
@@ -118,7 +117,7 @@ public class Application {
     }
 
     private void initPanel() {
-        panel = new JPanel(new MigLayout("insets 0"));
+        JPanel panel = new JPanel(new MigLayout("insets 0"));
 
         initKeyPanel();
         initTranslationsPanel();
@@ -141,7 +140,7 @@ public class Application {
 
     private void initKeyList() {
         keyList = new JList<>(keyListModel);
-        keyList.addListSelectionListener(e -> updateTranslationPanel(keyList.getSelectedValue()));
+        keyList.addListSelectionListener(e -> updateTranslationPanel(getSelectedKey()));
         keyList.setComponentPopupMenu(new KeyListMenu(this));
 
         JScrollPane scrollPane = new JScrollPane(keyList);
@@ -152,7 +151,7 @@ public class Application {
         Search.Request request = new Search.Request();
         request.query = searchField.getText();
         execute(request, (Consumer<Search.Response>) response -> {
-            if (response.keys.contains(key)) {
+            if (response.keys.contains(new Key(key))) {
                 keyListModel.setKeys(response.keys);
             } else {
                 resetSearch();
@@ -214,7 +213,7 @@ public class Application {
     }
 
     private void initMenuBar() {
-        menuBar = new ApplicationMenuBar(this);
+        ApplicationMenuBar menuBar = new ApplicationMenuBar(this);
         frame.setJMenuBar(menuBar);
     }
 
@@ -234,11 +233,12 @@ public class Application {
     }
 
     public String getSelectedKey() {
-        return keyList.getSelectedValue();
+        Key selectedValue = keyList.getSelectedValue();
+        return selectedValue == null ? null : selectedValue.getKey();
     }
 
     public List<String> getSelectedValues() {
-        return keyList.getSelectedValuesList();
+        return keyList.getSelectedValuesList().stream().map(Key::getKey).collect(Collectors.toList());
     }
 
     public void undo() {

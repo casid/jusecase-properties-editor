@@ -1,5 +1,6 @@
 package org.jusecase.properties.gateways;
 
+import org.jusecase.properties.entities.Key;
 import org.jusecase.properties.entities.Property;
 
 import java.nio.file.Path;
@@ -25,7 +26,7 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
     }
 
     @Override
-    public List<String> getKeys() {
+    public List<Key> getKeys() {
         return null;
     }
 
@@ -50,7 +51,7 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
     }
 
     @Override
-    public List<String> search(String query) {
+    public List<Key> search(String query) {
         return null;
     }
 

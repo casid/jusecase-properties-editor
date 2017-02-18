@@ -1,14 +1,16 @@
 package org.jusecase.properties.ui;
 
+import org.jusecase.properties.entities.Key;
+
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KeyListModel extends AbstractListModel<String> {
+public class KeyListModel extends AbstractListModel<Key> {
 
-    private List<String> keys = new ArrayList<>();
+    private List<Key> keys = new ArrayList<>();
 
-    public void setKeys(List<String> keys) {
+    public void setKeys(List<Key> keys) {
         this.keys = keys;
         fireContentsChanged(this, 0, keys.size());
     }
@@ -19,7 +21,7 @@ public class KeyListModel extends AbstractListModel<String> {
     }
 
     @Override
-    public String getElementAt(int index) {
+    public Key getElementAt(int index) {
         return keys.get(index);
     }
 }

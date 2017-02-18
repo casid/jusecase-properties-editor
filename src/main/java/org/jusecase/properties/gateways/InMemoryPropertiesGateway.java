@@ -1,5 +1,6 @@
 package org.jusecase.properties.gateways;
 
+import org.jusecase.properties.entities.Key;
 import org.jusecase.properties.entities.Property;
 
 import javax.inject.Singleton;
@@ -18,6 +19,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     private Set<String> fileNames;
     private Set<Path> dirtyFiles;
     private Set<String> keys;
+    private Map<String, Key> keyPool;
     private List<Property> properties;
     private Map<String, List<Property>> propertiesByKey;
     private boolean initialized;
@@ -30,6 +32,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         this.fileNames = files.stream().map(f -> f.getFileName().toString()).collect(Collectors.toSet());
         this.dirtyFiles = new HashSet<>();
         this.keys = new TreeSet<>();
+        this.keyPool = new HashMap<>();
         this.properties = new ArrayList<>();
         this.propertiesByKey = new HashMap<>();
 
@@ -64,12 +67,17 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     }
 
     @Override
-    public List<String> getKeys() {
+    public List<Key> getKeys() {
         if (!isInitialized()) {
             return new ArrayList<>();
         }
 
-        return new ArrayList<>(keys);
+        List<Key> result = new ArrayList<>(keys.size());
+        for (String key : keys) {
+            result.add(getKey(key));
+        }
+
+        return result;
     }
 
     @Override
@@ -159,22 +167,22 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     }
 
     @Override
-    public List<String> search(String queryString) {
+    public List<Key> search(String queryString) {
         if (!isInitialized() || queryString.isEmpty()) {
             return getKeys();
         }
 
-        Set<String> result = new TreeSet<>();
-        for ( String key : getKeys() ) {
+        Set<Key> result = new TreeSet<>();
+        for ( String key : keys ) {
             if (key.contains(queryString)) {
-                result.add(key);
+                result.add(getKey(key));
             }
         }
 
         for (Property property : properties) {
-            if (!result.contains(property.key)) {
+            if (!result.contains(getKey(property.key))) {
                 if (property.value.contains(queryString)) {
-                    result.add(property.key);
+                    result.add(getKey(property.key));
                 }
             }
         }
@@ -241,7 +249,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
             return;
         }
 
-        if (getKeys().contains(key)) {
+        if (keys.contains(key)) {
             throw new GatewayException("A key with this name already exists");
         }
 
@@ -310,6 +318,10 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
 
     private boolean isInitialized() {
         return initialized;
+    }
+
+    private Key getKey(String key) {
+        return keyPool.computeIfAbsent(key, s -> new Key(key));
     }
 
     private void markAsDirty(String fileName) {

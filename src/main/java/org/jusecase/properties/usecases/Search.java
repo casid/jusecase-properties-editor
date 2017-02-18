@@ -1,6 +1,7 @@
 package org.jusecase.properties.usecases;
 
 import org.jusecase.Usecase;
+import org.jusecase.properties.entities.Key;
 import org.jusecase.properties.gateways.PropertiesGateway;
 
 import javax.inject.Inject;
@@ -28,6 +29,6 @@ public class Search implements Usecase<Search.Request, Search.Response> {
     }
 
     public static class Response {
-        public List<String> keys;
+        public List<Key> keys;
     }
 }

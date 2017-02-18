@@ -1,5 +1,6 @@
 package org.jusecase.properties.gateways;
 
+import org.jusecase.properties.entities.Key;
 import org.jusecase.properties.entities.Property;
 
 import java.nio.file.Path;
@@ -9,7 +10,9 @@ public interface PropertiesGateway {
 
     void loadProperties(List<Path> files);
 
-    List<String> getKeys();
+    List<Key> getKeys();
+
+    List<Key> search(String query);
 
     List<Property> getProperties(String key);
 
@@ -18,8 +21,6 @@ public interface PropertiesGateway {
     void duplicateKey( String key, String newKey );
 
     void deleteKey( String key );
-
-    List<String> search(String query);
 
     void updateValue(Property property);
 

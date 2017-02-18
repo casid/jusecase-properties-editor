@@ -1,6 +1,7 @@
 package org.jusecase.properties.usecases;
 
 import org.jusecase.Usecase;
+import org.jusecase.properties.entities.Key;
 import org.jusecase.properties.entities.Settings;
 import org.jusecase.properties.gateways.PropertiesGateway;
 import org.jusecase.properties.gateways.SettingsGateway;
@@ -90,7 +91,7 @@ public class LoadBundle implements Usecase<LoadBundle.Request, LoadBundle.Respon
     }
 
     public static class Response {
-        public List<String> keys;
+        public List<Key> keys;
         public List<String> fileNames;
     }
 }
