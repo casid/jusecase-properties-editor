@@ -24,13 +24,16 @@ public class TranslationPanel extends JPanel {
     private DocumentListener textAreaListener;
     private Property property;
     private String searchQuery = "";
-    Highlighter.HighlightPainter hightlightPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
+    private Color searchHighlightColor = new Color(230, 230, 255);
+    private Color transparentBackgroundColor;
+    private Highlighter.HighlightPainter hightlightPainter = new DefaultHighlighter.DefaultHighlightPainter(searchHighlightColor);
     private TranslationTextScrollPane scrollPane;
 
     public TranslationPanel(Application application, String fileName) {
         super(new MigLayout("insets 0", "", "[][grow]"));
         this.application = application;
         this.fileName = fileName;
+        this.transparentBackgroundColor = getBackground();
         init();
     }
 
@@ -125,6 +128,7 @@ public class TranslationPanel extends JPanel {
         textArea.setEnabled(false);
         textArea.setRows(1);
         isAvailable.setSelected(false);
+        isAvailable.setBackground(transparentBackgroundColor);
     }
 
     private void highlightSearchQuery() {
@@ -133,14 +137,18 @@ public class TranslationPanel extends JPanel {
 
         if (this.property != null && this.property.value != null && !searchQuery.isEmpty()) {
             Matcher m = Pattern.compile(searchQuery.toLowerCase()).matcher(textArea.getText().toLowerCase());
+            boolean didHighlight = false;
             while ( m.find() ) {
                 try {
+                    didHighlight = true;
                     highlighter.addHighlight(m.start(), m.end(), hightlightPainter);
                 }
                 catch ( BadLocationException e ) {
                     e.printStackTrace(); // Log and ignore silently
                 }
             }
+
+            isAvailable.setBackground(didHighlight ? searchHighlightColor : transparentBackgroundColor);
         }
     }
 }
