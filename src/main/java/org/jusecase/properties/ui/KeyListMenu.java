@@ -32,7 +32,7 @@ public class KeyListMenu extends JPopupMenu {
                 for ( String key : keys ) {
                     DeleteKey.Request request = new DeleteKey.Request();
                     request.key = key;
-                    application.getUsecaseExecutor().execute(request);
+                    application.execute(request);
                 }
                 application.onKeyDeleted();
             }
@@ -50,7 +50,7 @@ public class KeyListMenu extends JPopupMenu {
                 RenameKey.Request request = new RenameKey.Request();
                 request.key = key;
                 request.newKey = newKey;
-                application.getUsecaseExecutor().execute(request);
+                application.execute(request);
                 application.onKeyRenamed();
             }
 
@@ -67,7 +67,7 @@ public class KeyListMenu extends JPopupMenu {
                 DuplicateKey.Request request = new DuplicateKey.Request();
                 request.key = key;
                 request.newKey = newKey;
-                application.getUsecaseExecutor().execute(request);
+                application.execute(request);
                 application.onNewKeyAdded(newKey);
             }
 
@@ -83,7 +83,7 @@ public class KeyListMenu extends JPopupMenu {
             if (key != null) {
                 NewKey.Request request = new NewKey.Request();
                 request.key = key;
-                application.getUsecaseExecutor().execute(request);
+                application.execute(request);
                 application.onNewKeyAdded(key);
             }
 

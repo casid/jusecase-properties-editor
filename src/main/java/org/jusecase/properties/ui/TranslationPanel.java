@@ -81,7 +81,7 @@ public class TranslationPanel extends JPanel {
         EditValue.Request request = new EditValue.Request();
         request.property = property;
         request.value = value;
-        application.getUsecaseExecutor().execute(request);
+        application.execute(request);
     }
 
     public void setProperty(Property property) {

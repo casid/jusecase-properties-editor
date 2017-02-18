@@ -1,6 +1,7 @@
 package org.jusecase.properties.ui;
 
 import net.miginfocom.swing.MigLayout;
+import org.jusecase.properties.BusinessLogic;
 import org.jusecase.properties.usecases.*;
 
 import javax.swing.*;
@@ -13,7 +14,9 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class Application {
-    private UsecaseExecutor usecaseExecutor = new UsecaseExecutor();
+
+    private final BusinessLogic businessLogic = new BusinessLogic();
+
     private JFrame frame;
     private JPanel panel;
     private ApplicationMenuBar menuBar;
@@ -43,26 +46,37 @@ public class Application {
         }
     }
 
+    public <Request> void execute(Request request) {
+        execute(request, null);
+    }
+
+    public <Request, Response> void execute(Request request, Consumer<Response> responseConsumer) {
+        Response response = businessLogic.execute(request);
+        if (responseConsumer != null && response != null) {
+            responseConsumer.accept(response);
+        }
+    }
+
     public void loadProperties(File file) {
         LoadBundle.Request request = new LoadBundle.Request();
         request.propertiesFile = file.toPath();
-        usecaseExecutor.execute(request, this::onLoadPropertiesComplete);
+        execute(request, this::onLoadPropertiesComplete);
     }
 
     public void save() {
-        usecaseExecutor.execute(new SaveBundle.Request());
+        execute(new SaveBundle.Request());
     }
 
     public void saveAll() {
         SaveBundle.Request request = new SaveBundle.Request();
         request.saveAll = true;
-        usecaseExecutor.execute(request);
+        execute(request);
     }
 
     public void search(String query) {
         Search.Request request = new Search.Request();
         request.query = query;
-        usecaseExecutor.execute(request, (Consumer<Search.Response>) response -> {
+        execute(request, (Consumer<Search.Response>) response -> {
             updateKeyList(response.keys);
             translationsPanel.setSearchQuery(query);
         });
@@ -94,7 +108,7 @@ public class Application {
         initMenuBar();
         initPanel();
 
-        usecaseExecutor.execute(new Initialize.Request(), this::onLoadPropertiesComplete);
+        execute(new Initialize.Request(), this::onLoadPropertiesComplete);
     }
 
     private void initPanel() {
@@ -131,7 +145,7 @@ public class Application {
     public void onNewKeyAdded(String key) {
         Search.Request request = new Search.Request();
         request.query = searchField.getText();
-        usecaseExecutor.execute(request, (Consumer<Search.Response>) response -> {
+        execute(request, (Consumer<Search.Response>) response -> {
             if (response.keys.contains(key)) {
                 keyListModel.setKeys(response.keys);
             } else {
@@ -153,7 +167,7 @@ public class Application {
     public void refreshSearch() {
         Search.Request request = new Search.Request();
         request.query = searchField.getText();
-        usecaseExecutor.execute(request, (Consumer<Search.Response>) response -> {
+        execute(request, (Consumer<Search.Response>) response -> {
             int previousSelectedIndex = keyList.getSelectedIndex();
             keyListModel.setKeys(response.keys);
             keyList.setSelectedIndex(Math.max(0, previousSelectedIndex));
@@ -164,7 +178,7 @@ public class Application {
         if (key != null) {
             GetProperties.Request request = new GetProperties.Request();
             request.key = key;
-            usecaseExecutor.execute(request, (Consumer<GetProperties.Response>) response -> {
+            execute(request, (Consumer<GetProperties.Response>) response -> {
                 translationsPanel.setProperties(response.properties);
             });
         } else {
@@ -214,10 +228,6 @@ public class Application {
         return frame;
     }
 
-    public UsecaseExecutor getUsecaseExecutor() {
-        return usecaseExecutor;
-    }
-
     public String getSelectedKey() {
         return keyList.getSelectedValue();
     }
@@ -227,13 +237,13 @@ public class Application {
     }
 
     public void undo() {
-        usecaseExecutor.execute(new Undo.Request(), (Undo.Response response) -> {
+        execute(new Undo.Request(), (Undo.Response response) -> {
             handleUndoOrRedoResponse(response.undoRequest, response.undoResponse);
         });
     }
 
     public void redo() {
-        usecaseExecutor.execute(new Redo.Request(), (Redo.Response response) -> {
+        execute(new Redo.Request(), (Redo.Response response) -> {
             handleUndoOrRedoResponse(response.redoRequest, response.redoResponse);
         });
     }

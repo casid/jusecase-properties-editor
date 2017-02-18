@@ -57,7 +57,7 @@ public class ApplicationMenuBar extends JMenuBar {
     }
 
     private void updateUndoAndRedoItems() {
-        application.getUsecaseExecutor().execute(new GetUndoStatus.Request(), (GetUndoStatus.Response response) -> {
+        application.execute(new GetUndoStatus.Request(), (GetUndoStatus.Response response) -> {
             updateUndoOrRedoItem(undoMenuItem, response.undoAction, "Undo");
             updateUndoOrRedoItem(redoMenuItem, response.redoAction, "Redo");
         });
