@@ -245,5 +245,18 @@ public class Application {
                 updateTranslationPanel(editValue.property.key);
             }
         }
+
+        if (request instanceof NewKey.Request) {
+            NewKey.Request newKey = (NewKey.Request) request;
+            if (newKey.undo) {
+                onKeyDeleted();
+            } else {
+                onNewKeyAdded(newKey.key);
+            }
+        }
+    }
+
+    public void onKeyDeleted() {
+        refreshSearch();
     }
 }

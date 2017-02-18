@@ -47,4 +47,15 @@ public class NewKeyTest extends UsecaseTest<Request, Response> {
 
         assertThat(propertiesGatewayTrainer.getAddedKey()).isEqualTo("my.new.key");
     }
+
+    @Test
+    public void undo() {
+        request.undo = true;
+        request.key = "my.new.key";
+
+        whenRequestIsExecuted();
+
+
+        assertThat(propertiesGatewayTrainer.getDeletedKey()).isEqualTo("my.new.key");
+    }
 }

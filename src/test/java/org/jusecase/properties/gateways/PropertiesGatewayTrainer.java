@@ -15,6 +15,7 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
     private Set<Path> loadedProperties = new HashSet<>();
     private Property updatedValue;
     private String addedKey;
+    private String deletedKey;
 
     @Override
     public void loadProperties(List<Path> files) {
@@ -43,7 +44,7 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
 
     @Override
     public void deleteKey( String key ) {
-
+        deletedKey = key;
     }
 
     @Override
@@ -102,5 +103,9 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
 
     public String getAddedKey() {
         return addedKey;
+    }
+
+    public String getDeletedKey() {
+        return deletedKey;
     }
 }

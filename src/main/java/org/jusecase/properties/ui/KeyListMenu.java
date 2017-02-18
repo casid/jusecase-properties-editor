@@ -34,7 +34,7 @@ public class KeyListMenu extends JPopupMenu {
                     request.key = key;
                     application.getUsecaseExecutor().execute(request);
                 }
-                application.refreshSearch();
+                application.onKeyDeleted();
             }
 
         });
