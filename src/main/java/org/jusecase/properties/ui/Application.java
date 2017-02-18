@@ -214,10 +214,8 @@ public class Application {
 
     private void initFrame() {
         frame = new JFrame("Properties Editor");
-
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        frame.setBounds(0, 0, screenSize.width, screenSize.height);
         frame.setVisible(true);
+        frame.setExtendedState(Frame.MAXIMIZED_BOTH);
     }
 
     private void initTranslationsPanel() {
