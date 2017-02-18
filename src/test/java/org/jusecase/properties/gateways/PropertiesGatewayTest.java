@@ -317,6 +317,17 @@ public abstract class PropertiesGatewayTest {
     }
 
     @Test
+    public void addProperties_areCloned() {
+        givenProperties("resources.properties");
+        Property property = a(property().withValue("sneaky"));
+
+        gateway.addProperties(a(list(property)));
+
+        property.value = null;
+        gateway.search("sneaky"); // We do not want a null pointer exception here (a clone of the property must be added to the gateway!)
+    }
+
+    @Test
     public void renameKey_uninitialized() {
         gateway.renameKey("sample8", "sample9"); // shall not throw
     }

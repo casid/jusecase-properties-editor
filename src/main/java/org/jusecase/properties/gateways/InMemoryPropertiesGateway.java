@@ -321,7 +321,13 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
             }
         }
 
-        properties.forEach(this::addProperty);
+        properties.forEach(property -> {
+            Property propertyClone = new Property();
+            propertyClone.key = property.key;
+            propertyClone.value = property.value;
+            propertyClone.fileName = property.fileName;
+            addProperty(propertyClone);
+        });
     }
 
     private void save(Path file) {
