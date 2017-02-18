@@ -214,6 +214,7 @@ public class Application {
 
     private void initFrame() {
         frame = new JFrame("Properties Editor");
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);
         frame.setExtendedState(Frame.MAXIMIZED_BOTH);
     }
