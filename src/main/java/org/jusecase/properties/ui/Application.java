@@ -142,6 +142,7 @@ public class Application {
         keyList = new JList<>(keyListModel);
         keyList.addListSelectionListener(e -> updateTranslationPanel(getSelectedKey()));
         keyList.setComponentPopupMenu(new KeyListMenu(this));
+        keyList.setCellRenderer(new KeyListCellRenderer());
 
         JScrollPane scrollPane = new JScrollPane(keyList);
         keyPanel.add(scrollPane, "wrap,push,grow");
