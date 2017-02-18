@@ -28,4 +28,6 @@ public interface PropertiesGateway {
     void save();
 
     void saveAll();
+
+    void addProperties(List<Property> properties);
 }

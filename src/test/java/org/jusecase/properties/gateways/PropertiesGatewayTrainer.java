@@ -3,9 +3,7 @@ package org.jusecase.properties.gateways;
 import org.jusecase.properties.entities.Property;
 
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jusecase.Builders.a;
@@ -16,6 +14,8 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
     private Property updatedValue;
     private String addedKey;
     private String deletedKey;
+    private Map<String, List<Property>> propertiesForKey = new HashMap<>();
+    private List<Property> addedProperties;
 
     @Override
     public void loadProperties(List<Path> files) {
@@ -29,7 +29,7 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
 
     @Override
     public List<Property> getProperties(String key) {
-        return null;
+        return propertiesForKey.get(key);
     }
 
     @Override
@@ -72,6 +72,11 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
 
     }
 
+    @Override
+    public void addProperties(List<Property> properties) {
+        addedProperties = properties;
+    }
+
     public void thenLoadedPropertiesAre(Set<Path> expected) {
         assertThat(loadedProperties).isEqualTo(expected);
     }
@@ -107,5 +112,13 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
 
     public String getDeletedKey() {
         return deletedKey;
+    }
+
+    public void givenProperties(String key, List<Property> properties) {
+        propertiesForKey.put(key, properties);
+    }
+
+    public List<Property> getAddedProperties() {
+        return addedProperties;
     }
 }

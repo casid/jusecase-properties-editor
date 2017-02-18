@@ -10,11 +10,13 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Singleton
 public class InMemoryPropertiesGateway implements PropertiesGateway {
     private List<Path> files;
-    private Set<Path> dirtyFiles = new HashSet<>();
+    private Set<String> fileNames;
+    private Set<Path> dirtyFiles;
     private Set<String> keys;
     private List<Property> properties;
     private Map<String, List<Property>> propertiesByKey;
@@ -25,7 +27,8 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         initialized = false;
 
         this.files = files;
-        this.dirtyFiles.clear();
+        this.fileNames = files.stream().map(f -> f.getFileName().toString()).collect(Collectors.toSet());
+        this.dirtyFiles = new HashSet<>();
         this.keys = new TreeSet<>();
         this.properties = new ArrayList<>();
         this.propertiesByKey = new HashMap<>();
@@ -256,20 +259,36 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     @Override
     public void save() {
         if (isInitialized()) {
-            for (Path file : files) {
-                if (dirtyFiles.contains(file)) {
-                    save(file);
-                    dirtyFiles.remove(file);
-                }
-            }
+            List<Path> filesToSave = files.stream().filter(file -> dirtyFiles.contains(file)).collect(Collectors.toList());
+            saveFiles(filesToSave);
+            dirtyFiles.clear();
         }
     }
 
     @Override
     public void saveAll() {
         if (isInitialized()) {
-            files.parallelStream().forEach(this::save);
+            saveFiles(files);
         }
+    }
+
+    private void saveFiles(List<Path> files) {
+        files.parallelStream().forEach(this::save);
+    }
+
+    @Override
+    public void addProperties(List<Property> properties) {
+        if (!isInitialized()) {
+            return;
+        }
+
+        for (Property property : properties) {
+            if (!fileNames.contains(property.fileName)) {
+                throw new GatewayException("Unknown file name " + property.fileName + " for property");
+            }
+        }
+
+        properties.forEach(this::addProperty);
     }
 
     private void save(Path file) {

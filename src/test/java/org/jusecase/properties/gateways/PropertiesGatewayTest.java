@@ -10,6 +10,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jusecase.Builders.a;
+import static org.jusecase.Builders.list;
 import static org.jusecase.properties.entities.Builders.property;
 
 public abstract class PropertiesGatewayTest {
@@ -259,6 +260,38 @@ public abstract class PropertiesGatewayTest {
     public void addKey_keyAlreadyExists() {
         givenProperties("resources.properties");
         gateway.addKey("sample1");
+    }
+
+    @Test
+    public void addProperties_uninitialized() {
+        gateway.addProperties(new ArrayList<>()); // shall not throw
+    }
+
+    @Test(expected = GatewayException.class)
+    public void addProperties_unknownFileName() {
+        givenProperties("resources.properties");
+        gateway.addProperties(a(list(
+                a(property().withFileName("unknown.properties"))
+        )));
+    }
+
+    @Test
+    public void addProperties() {
+        givenProperties("resources.properties", "resources_de.properties");
+
+        gateway.addProperties(a(list(
+                a(property().withFileName("resources.properties").withKey("one").withValue("One")),
+                a(property().withFileName("resources_de.properties").withKey("one").withValue("Eins"))
+        )));
+
+        List<Property> properties = gateway.getProperties("one");
+        assertThat(properties).hasSize(2);
+        assertThat(properties.get(0).fileName).isEqualTo("resources.properties");
+        assertThat(properties.get(0).key).isEqualTo("one");
+        assertThat(properties.get(0).value).isEqualTo("One");
+        assertThat(properties.get(1).fileName).isEqualTo("resources_de.properties");
+        assertThat(properties.get(1).key).isEqualTo("one");
+        assertThat(properties.get(1).value).isEqualTo("Eins");
     }
 
     @Test

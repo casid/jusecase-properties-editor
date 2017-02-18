@@ -254,6 +254,15 @@ public class Application {
                 onNewKeyAdded(newKey.key);
             }
         }
+
+        if (request instanceof DeleteKey.Request) {
+            DeleteKey.Request deleteKey = (DeleteKey.Request) request;
+            if (deleteKey.undo) {
+                onNewKeyAdded(deleteKey.key);
+            } else {
+                onKeyDeleted();
+            }
+        }
     }
 
     public void onKeyDeleted() {
