@@ -14,6 +14,7 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
     private Property updatedValue;
     private String addedKey;
     private String deletedKey;
+    private String duplicatedKey;
     private Map<String, List<Property>> propertiesForKey = new HashMap<>();
     private List<Property> addedProperties;
 
@@ -39,7 +40,7 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
 
     @Override
     public void duplicateKey( String key, String newKey ) {
-
+        duplicatedKey = key + "->" + newKey;
     }
 
     @Override
@@ -120,5 +121,9 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
 
     public List<Property> getAddedProperties() {
         return addedProperties;
+    }
+
+    public String getDuplicatedKey() {
+        return duplicatedKey;
     }
 }

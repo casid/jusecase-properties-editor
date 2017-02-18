@@ -263,6 +263,15 @@ public class Application {
                 onKeyDeleted();
             }
         }
+
+        if (request instanceof DuplicateKey.Request) {
+            DuplicateKey.Request duplicateKey = (DuplicateKey.Request) request;
+            if (duplicateKey.undo) {
+                onKeyDeleted();
+            } else {
+                onNewKeyAdded(duplicateKey.newKey);
+            }
+        }
     }
 
     public void onKeyDeleted() {
