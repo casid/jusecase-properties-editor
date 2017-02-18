@@ -98,8 +98,14 @@ public class Application {
 
     private void onLoadPropertiesComplete(LoadBundle.Response response) {
         if (response.keys != null) {
-            updateKeyList(response.keys);
             translationsPanel.setFileNames(response.fileNames);
+
+            updateKeyList(response.keys);
+            if (!response.keys.isEmpty()) {
+                keyList.setSelectedIndex(0);
+            }
+
+            updateTranslationPanel(response.keys.get(0));
         }
     }
 
