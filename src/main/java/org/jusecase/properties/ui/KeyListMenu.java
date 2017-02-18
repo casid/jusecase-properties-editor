@@ -51,7 +51,7 @@ public class KeyListMenu extends JPopupMenu {
                 request.key = key;
                 request.newKey = newKey;
                 application.getUsecaseExecutor().execute(request);
-                application.onKeyRenamed(key, newKey);
+                application.onKeyRenamed();
             }
 
         });

@@ -17,6 +17,7 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
     private String duplicatedKey;
     private Map<String, List<Property>> propertiesForKey = new HashMap<>();
     private List<Property> addedProperties;
+    private String renamedKey;
 
     @Override
     public void loadProperties(List<Path> files) {
@@ -35,7 +36,7 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
 
     @Override
     public void renameKey( String key, String newKey ) {
-
+        renamedKey = key + "->" + newKey;
     }
 
     @Override
@@ -125,5 +126,9 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
 
     public String getDuplicatedKey() {
         return duplicatedKey;
+    }
+
+    public String getRenamedKey() {
+        return renamedKey;
     }
 }

@@ -146,7 +146,7 @@ public class Application {
         search("");
     }
 
-    public void onKeyRenamed( String key, String newKey ) {
+    public void onKeyRenamed() {
         refreshSearch();
     }
 
@@ -271,6 +271,10 @@ public class Application {
             } else {
                 onNewKeyAdded(duplicateKey.newKey);
             }
+        }
+
+        if (request instanceof RenameKey.Request) {
+            onKeyRenamed();
         }
     }
 
