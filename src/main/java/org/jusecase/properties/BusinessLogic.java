@@ -5,6 +5,7 @@ import com.google.inject.Guice;
 import com.google.inject.name.Names;
 import org.jusecase.UsecaseExecutor;
 import org.jusecase.executors.guice.GuiceUsecaseExecutor;
+import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.*;
 import org.jusecase.properties.usecases.*;
 
@@ -33,6 +34,7 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
         addUsecase(DeleteKey.class);
         addUsecase(Undo.class);
         addUsecase(Redo.class);
+        addUsecase(GetUndoStatus.class);
     }
 
     private class GatewayModule extends AbstractModule {

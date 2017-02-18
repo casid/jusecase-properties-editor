@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.jusecase.Usecase;
 import org.jusecase.UsecaseTest;
 import org.jusecase.executors.manual.ManualUsecaseExecutor;
+import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.UndoableRequestGateway;
 
 import java.util.ArrayList;

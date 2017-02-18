@@ -12,4 +12,8 @@ public class Builders {
     public static TestPathBuilder testPath(String fileName) {
         return new TestPathBuilder(fileName);
     }
+
+    public static UndoableRequestBuilder undoableRequest() {
+        return new UndoableRequestBuilder();
+    }
 }

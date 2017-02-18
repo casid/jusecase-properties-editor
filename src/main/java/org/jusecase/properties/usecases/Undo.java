@@ -2,6 +2,7 @@ package org.jusecase.properties.usecases;
 
 import org.jusecase.Usecase;
 import org.jusecase.UsecaseExecutor;
+import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.UndoableRequestGateway;
 
 import javax.inject.Inject;

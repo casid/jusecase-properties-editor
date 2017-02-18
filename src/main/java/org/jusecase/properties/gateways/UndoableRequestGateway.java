@@ -1,6 +1,6 @@
 package org.jusecase.properties.gateways;
 
-import org.jusecase.properties.usecases.UndoableRequest;
+import org.jusecase.properties.entities.UndoableRequest;
 
 import java.util.ArrayList;
 import java.util.List;

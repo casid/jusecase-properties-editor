@@ -1,4 +1,4 @@
-package org.jusecase.properties.usecases;
+package org.jusecase.properties.entities;
 
 public class UndoableRequest {
     public boolean undo;

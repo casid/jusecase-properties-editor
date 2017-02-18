@@ -3,6 +3,7 @@ package org.jusecase.properties.usecases;
 import org.junit.Before;
 import org.junit.Test;
 import org.jusecase.UsecaseTest;
+import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.PropertiesGatewayTrainer;
 import org.jusecase.properties.gateways.SettingsGatewayTrainer;
 import org.jusecase.properties.gateways.UndoableRequestGateway;

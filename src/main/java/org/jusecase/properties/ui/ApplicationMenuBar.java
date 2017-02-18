@@ -1,12 +1,18 @@
 package org.jusecase.properties.ui;
 
+import org.jusecase.properties.usecases.GetUndoStatus;
+
 import javax.swing.*;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
 public class ApplicationMenuBar extends JMenuBar {
     private final Application application;
     private final JFrame frame;
+    private JMenuItem undoMenuItem;
+    private JMenuItem redoMenuItem;
 
     public ApplicationMenuBar(Application application) {
         this.application = application;
@@ -30,9 +36,41 @@ public class ApplicationMenuBar extends JMenuBar {
 
     private JMenu createEditMenu() {
         JMenu edit = new JMenu("Edit");
-        edit.add(createUndoMenuItem());
-        edit.add(createRedoMenuItem());
+        edit.add(undoMenuItem = createUndoMenuItem());
+        edit.add(redoMenuItem = createRedoMenuItem());
+
+        edit.addMenuListener(new MenuListener() {
+            @Override
+            public void menuSelected(MenuEvent e) {
+                updateUndoAndRedoItems();
+            }
+
+            @Override
+            public void menuDeselected(MenuEvent e) {
+            }
+
+            @Override
+            public void menuCanceled(MenuEvent e) {
+            }
+        });
         return edit;
+    }
+
+    private void updateUndoAndRedoItems() {
+        application.getUsecaseExecutor().execute(new GetUndoStatus.Request(), (GetUndoStatus.Response response) -> {
+            updateUndoOrRedoItem(undoMenuItem, response.undoAction, "Undo");
+            updateUndoOrRedoItem(redoMenuItem, response.redoAction, "Redo");
+        });
+    }
+
+    private void updateUndoOrRedoItem(JMenuItem item, String action, String actionFallback) {
+        if (action == null) {
+            item.setEnabled(false);
+            item.setText(actionFallback);
+        } else {
+            item.setEnabled(true);
+            item.setText(action);
+        }
     }
 
     private JMenuItem createFileOpenMenuItem() {
@@ -64,6 +102,7 @@ public class ApplicationMenuBar extends JMenuBar {
         undo.setName("Undo");
         undo.addActionListener(event -> {
             application.undo();
+            updateUndoAndRedoItems();
         });
         return undo;
     }
@@ -73,6 +112,7 @@ public class ApplicationMenuBar extends JMenuBar {
         redo.setName("Redo");
         redo.addActionListener(event -> {
             application.redo();
+            updateUndoAndRedoItems();
         });
         return redo;
     }

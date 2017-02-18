@@ -2,6 +2,7 @@ package org.jusecase.properties.usecases;
 
 import org.jusecase.Usecase;
 import org.jusecase.properties.entities.Property;
+import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.PropertiesGateway;
 
 import javax.inject.Inject;
@@ -32,6 +33,10 @@ public class EditValue implements Usecase<EditValue.Request, EditValue.Response>
     }
 
     public static class Request extends UndoableRequest {
+        public Request() {
+            this.name = "edit value";
+        }
+
         public Property property;
         public String value;
 
