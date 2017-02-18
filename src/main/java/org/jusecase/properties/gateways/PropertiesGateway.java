@@ -10,6 +10,8 @@ public interface PropertiesGateway {
 
     void loadProperties(List<Path> files);
 
+    Key getKey(String key);
+
     List<Key> getKeys();
 
     List<Key> search(String query);

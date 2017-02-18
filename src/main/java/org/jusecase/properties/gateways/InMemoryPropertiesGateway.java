@@ -1,6 +1,7 @@
 package org.jusecase.properties.gateways;
 
 import org.jusecase.properties.entities.Key;
+import org.jusecase.properties.entities.KeyState;
 import org.jusecase.properties.entities.Property;
 
 import javax.inject.Singleton;
@@ -64,6 +65,29 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         this.properties.add(property);
         List<Property> propertiesByKey = this.propertiesByKey.computeIfAbsent(property.key, s -> new ArrayList<>());
         propertiesByKey.add(property);
+        updateKeyState(property.key, propertiesByKey);
+    }
+
+    private void updateKeyState(String key, List<Property> propertiesByKey) {
+        int propertiesWithContent = 0;
+        if (propertiesByKey != null) {
+            for (Property property : propertiesByKey) {
+                if (property.key != null) {
+                    ++propertiesWithContent;
+                }
+            }
+        }
+
+        if (propertiesWithContent < files.size()) {
+            getKey(key).setState(KeyState.Sparse);
+        } else {
+            getKey(key).setState(KeyState.Complete);
+        }
+    }
+
+    @Override
+    public Key getKey(String key) {
+        return keyPool.computeIfAbsent(key, s -> new Key(key));
     }
 
     @Override
@@ -216,6 +240,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         if (propertiesByKey != null) {
             removePropertyFromList(propertiesByKey, property);
         }
+        updateKeyState(property.key, propertiesByKey);
     }
 
     private void removePropertyFromList(List<Property> properties, Property property) {
@@ -318,10 +343,6 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
 
     private boolean isInitialized() {
         return initialized;
-    }
-
-    private Key getKey(String key) {
-        return keyPool.computeIfAbsent(key, s -> new Key(key));
     }
 
     private void markAsDirty(String fileName) {

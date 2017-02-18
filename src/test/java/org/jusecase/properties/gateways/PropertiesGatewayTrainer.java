@@ -26,6 +26,11 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
     }
 
     @Override
+    public Key getKey(String key) {
+        return null;
+    }
+
+    @Override
     public List<Key> getKeys() {
         return null;
     }
