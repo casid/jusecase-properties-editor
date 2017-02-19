@@ -5,7 +5,6 @@ import org.jusecase.properties.entities.KeyPopulation;
 import org.jusecase.properties.entities.Property;
 
 import javax.inject.Singleton;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,6 +18,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     private List<Path> files;
     private Set<String> fileNames;
     private Set<Path> dirtyFiles;
+    private Map<String, FileSnapshot> fileSnapshots;
     private Set<String> keys;
     private Map<String, Key> keyPool;
     private List<Property> properties;
@@ -32,6 +32,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         this.files = files;
         this.fileNames = files.stream().map(f -> f.getFileName().toString()).collect(Collectors.toSet());
         this.dirtyFiles = new HashSet<>();
+        this.fileSnapshots = new HashMap<>();
         this.keys = new TreeSet<>();
         this.keyPool = new HashMap<>();
         this.properties = new ArrayList<>();
@@ -50,6 +51,8 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
 
     private void loadProperties(Path file) throws IOException {
         Properties properties = loadJavaProperties(file);
+        updateFileSnapshot(file);
+
         for (Map.Entry<Object, Object> entry : properties.entrySet()) {
             Property property = new Property();
             property.fileName = file.getFileName().toString();
@@ -58,6 +61,17 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
 
             addProperty(property);
         }
+    }
+
+    private void updateFileSnapshot(Path file) throws IOException {
+        String fileName = file.getFileName().toString();
+        fileSnapshots.put(fileName, computeFileSnapshot(file));
+    }
+
+    private FileSnapshot computeFileSnapshot(Path file) throws IOException {
+        FileSnapshot fileSnapshot = new FileSnapshot();
+        fileSnapshot.bytes = Files.size(file);
+        return fileSnapshot;
     }
 
     private void addProperty( Property property ) {
@@ -334,7 +348,28 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
 
     @Override
     public boolean hasUnsavedChanges() {
-        return !dirtyFiles.isEmpty();
+        return isInitialized() && !dirtyFiles.isEmpty();
+    }
+
+    @Override
+    public boolean hasExternalChanges() {
+        if (!isInitialized()) {
+            return false;
+        }
+
+        for (Path file : files) {
+            try {
+                FileSnapshot lastSnapshot = fileSnapshots.get(file.getFileName().toString());
+                FileSnapshot currentSnapshot = computeFileSnapshot(file);
+                if (lastSnapshot.bytes != currentSnapshot.bytes) {
+                    return true;
+                }
+            } catch (IOException e) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void save(Path file) {
@@ -349,6 +384,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
             }
 
             writeJavaProperties(file, properties);
+            updateFileSnapshot(file);
         } catch (IOException e) {
             throw new GatewayException("Failed to save properties to " + file, e);
         }
@@ -383,5 +419,9 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         try (OutputStream outputStream = Files.newOutputStream(file)) {
             properties.store(outputStream, null);
         }
+    }
+
+    private static class FileSnapshot {
+        long bytes;
     }
 }

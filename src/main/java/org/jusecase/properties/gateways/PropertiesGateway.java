@@ -35,4 +35,6 @@ public interface PropertiesGateway {
     void addProperties(List<Property> properties);
 
     boolean hasUnsavedChanges();
+
+    boolean hasExternalChanges();
 }

@@ -1,13 +1,16 @@
 package org.jusecase.properties.gateways;
 
 import org.assertj.core.api.ListAssert;
+import org.junit.Before;
 import org.junit.Test;
 import org.jusecase.properties.entities.Key;
 import org.jusecase.properties.entities.KeyPopulation;
 import org.jusecase.properties.entities.Property;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,12 +19,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.jusecase.Builders.a;
 import static org.jusecase.Builders.list;
 import static org.jusecase.properties.entities.Builders.property;
+import static org.jusecase.properties.entities.Builders.testPath;
 
 public abstract class PropertiesGatewayTest {
     private static final int SAMPLE_KEY_COUNT = 11;
 
     protected PropertiesGateway gateway;
 
+    @Before
+    public void setUp() {
+        gateway = createGateway();
+    }
 
     @Test
     public void loadProperties_none() {
@@ -497,8 +505,9 @@ public abstract class PropertiesGatewayTest {
         assertThat(gateway.hasUnsavedChanges()).isTrue();
         gateway.save();
         assertThat(gateway.hasUnsavedChanges()).isFalse();
+        assertThat(gateway.hasExternalChanges()).isFalse();
 
-        gateway = new InMemoryPropertiesGateway();
+        gateway = createGateway();
         givenProperties("for-save.properties");
         assertThat(gateway.getProperties("sample").get(0).value).isEqualTo(property.value);
 
@@ -507,6 +516,52 @@ public abstract class PropertiesGatewayTest {
         gateway.updateValue(property);
         gateway.save();
     }
+
+    @Test
+    public void unsavedChanges_uninitialized() {
+        assertThat(gateway.hasUnsavedChanges()).isFalse();
+    }
+
+    @Test
+    public void externalChanges_uninitialized() {
+        assertThat(gateway.hasExternalChanges()).isFalse();
+    }
+
+    @Test
+    public void externalChanges_none() {
+        givenProperties("external-changes.properties");
+        assertThat(gateway.hasExternalChanges()).isFalse();
+    }
+
+    @Test
+    public void externalChanges_differentSize() throws IOException {
+        String fileName = "external-changes.properties";
+        Path file = a(testPath(fileName));
+
+        try {
+            givenProperties(fileName);
+            Files.write(file, "sample=changed".getBytes(), StandardOpenOption.SYNC, StandardOpenOption.TRUNCATE_EXISTING);
+            assertThat(gateway.hasExternalChanges()).isTrue();
+        } finally {
+            Files.write(file, "sample=change me".getBytes(), StandardOpenOption.SYNC, StandardOpenOption.TRUNCATE_EXISTING);
+        }
+    }
+
+    @Test
+    public void externalChanges_sameSize_differentContent() throws IOException {
+        String fileName = "external-changes.properties";
+        Path file = a(testPath(fileName));
+
+        try {
+            givenProperties(fileName);
+            Files.write(file, "sample=change yo".getBytes(), StandardOpenOption.SYNC, StandardOpenOption.TRUNCATE_EXISTING);
+            assertThat(gateway.hasExternalChanges()).isFalse(); // not detected atm to avoid hash calculations
+        } finally {
+            Files.write(file, "sample=change me".getBytes(), StandardOpenOption.SYNC, StandardOpenOption.TRUNCATE_EXISTING);
+        }
+    }
+
+    protected abstract PropertiesGateway createGateway();
 
     private void givenProperties(String... fileNames) {
         List<Path> paths = new ArrayList<>();
@@ -522,6 +577,6 @@ public abstract class PropertiesGatewayTest {
     }
 
     private Path resolvePath(String fileName) {
-        return Paths.get("src", "test", "resources", fileName);
+        return a(testPath(fileName));
     }
 }

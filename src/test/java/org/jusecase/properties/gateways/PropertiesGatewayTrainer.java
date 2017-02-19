@@ -90,6 +90,11 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
         return false;
     }
 
+    @Override
+    public boolean hasExternalChanges() {
+        return false;
+    }
+
     public void thenLoadedPropertiesAre(Set<Path> expected) {
         assertThat(loadedProperties).isEqualTo(expected);
     }
