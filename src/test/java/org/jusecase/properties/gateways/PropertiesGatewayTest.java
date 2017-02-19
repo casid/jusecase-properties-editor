@@ -49,6 +49,12 @@ public abstract class PropertiesGatewayTest {
     }
 
     @Test
+    public void loadProperties_unsavedChanges() {
+        givenProperties("resources.properties");
+        assertThat(gateway.hasUnsavedChanges()).isFalse();
+    }
+
+    @Test
     public void getKeys_uninitialized() {
         assertThat(gateway.getKeys()).isEmpty();
     }
@@ -73,6 +79,13 @@ public abstract class PropertiesGatewayTest {
         givenProperties("resources.properties", "resources_de.properties");
         assertThat(gateway.getKeys().get(0).getPopulation()).isEqualTo(KeyPopulation.Complete); // sample.camelCase
         assertThat(gateway.getKeys().get(1).getPopulation()).isEqualTo(KeyPopulation.Sparse); // sample.long1
+    }
+
+    @Test
+    public void getKeys_unsavedChanges() {
+        givenProperties("resources.properties");
+        gateway.getKeys();
+        assertThat(gateway.hasUnsavedChanges()).isFalse();
     }
 
     @Test
@@ -111,6 +124,13 @@ public abstract class PropertiesGatewayTest {
         givenProperties("resources.properties");
         List<Property> properties = gateway.getProperties("sample");
         assertThat(properties).isEmpty();
+    }
+
+    @Test
+    public void getByKey_unsavedChanges() {
+        givenProperties("resources.properties");
+        gateway.getProperties("sample1");
+        assertThat(gateway.hasUnsavedChanges()).isFalse();
     }
 
     @Test
@@ -210,6 +230,13 @@ public abstract class PropertiesGatewayTest {
     }
 
     @Test
+    public void search_unsavedChanges() {
+        givenProperties("resources.properties");
+        gateway.search("sample1");
+        assertThat(gateway.hasUnsavedChanges()).isFalse();
+    }
+
+    @Test
     public void updateValue_uninitialized() {
         gateway.updateValue(a(property()));
     }
@@ -251,6 +278,17 @@ public abstract class PropertiesGatewayTest {
     }
 
     @Test
+    public void updateValue_unsavedChanges() {
+        givenProperties("resources.properties");
+        Property property = gateway.getProperties("sample1").get(0);
+
+        property.value = "something else";
+        gateway.updateValue(property);
+
+        assertThat(gateway.hasUnsavedChanges()).isTrue();
+    }
+
+    @Test
     public void addKey_uninitialized() {
         gateway.addKey("key"); // shall not throw
     }
@@ -282,6 +320,13 @@ public abstract class PropertiesGatewayTest {
     public void addKey_keyAlreadyExists() {
         givenProperties("resources.properties");
         gateway.addKey("sample1");
+    }
+
+    @Test
+    public void addKey_unsavedChanges() {
+        givenProperties("resources.properties");
+        gateway.addKey("key");
+        assertThat(gateway.hasUnsavedChanges()).isTrue();
     }
 
     @Test
@@ -328,6 +373,13 @@ public abstract class PropertiesGatewayTest {
     }
 
     @Test
+    public void addProperties_unsavedChanges() {
+        givenProperties("resources.properties");
+        gateway.addProperties(a(list(a(property()))));
+        assertThat(gateway.hasUnsavedChanges()).isTrue();
+    }
+
+    @Test
     public void renameKey_uninitialized() {
         gateway.renameKey("sample8", "sample9"); // shall not throw
     }
@@ -353,6 +405,13 @@ public abstract class PropertiesGatewayTest {
         givenProperties("resources.properties");
         gateway.renameKey("unknown", "sample9");
         assertThat(gateway.getProperties("unknown")).isEmpty();
+    }
+
+    @Test
+    public void renameKey_unsavedChanges() {
+        givenProperties("resources.properties");
+        gateway.renameKey("sample8", "sample9");
+        assertThat(gateway.hasUnsavedChanges()).isTrue();
     }
 
     @Test
@@ -390,6 +449,13 @@ public abstract class PropertiesGatewayTest {
     }
 
     @Test
+    public void duplicateKey_unsavedChanges() {
+        givenProperties("resources.properties");
+        gateway.duplicateKey("sample8", "sample9");
+        assertThat(gateway.hasUnsavedChanges()).isTrue();
+    }
+
+    @Test
     public void deleteKey_uninitialized() {
         gateway.deleteKey("sample8"); // shall not throw
     }
@@ -410,6 +476,13 @@ public abstract class PropertiesGatewayTest {
     }
 
     @Test
+    public void deleteKey_unsavedChanges() {
+        givenProperties("resources.properties");
+        gateway.deleteKey("sample8");
+        assertThat(gateway.hasUnsavedChanges()).isTrue();
+    }
+
+    @Test
     public void save_uninitialized() {
         gateway.save(); // shall not throw
     }
@@ -421,7 +494,9 @@ public abstract class PropertiesGatewayTest {
         property.value = "I've been changed!";
         gateway.updateValue(property);
 
+        assertThat(gateway.hasUnsavedChanges()).isTrue();
         gateway.save();
+        assertThat(gateway.hasUnsavedChanges()).isFalse();
 
         gateway = new InMemoryPropertiesGateway();
         givenProperties("for-save.properties");

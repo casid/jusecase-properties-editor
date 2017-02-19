@@ -327,7 +327,14 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
             propertyClone.value = property.value;
             propertyClone.fileName = property.fileName;
             addProperty(propertyClone);
+
+            markAsDirty(property.fileName);
         });
+    }
+
+    @Override
+    public boolean hasUnsavedChanges() {
+        return !dirtyFiles.isEmpty();
     }
 
     private void save(Path file) {

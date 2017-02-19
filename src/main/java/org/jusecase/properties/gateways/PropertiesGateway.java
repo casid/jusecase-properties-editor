@@ -33,4 +33,6 @@ public interface PropertiesGateway {
     void saveAll();
 
     void addProperties(List<Property> properties);
+
+    boolean hasUnsavedChanges();
 }
