@@ -154,9 +154,10 @@ public class TranslationPanel extends JPanel {
         Highlighter highlighter = textArea.getHighlighter();
         highlighter.removeAllHighlights();
 
+        boolean didHighlight = false;
         if (this.property != null && this.property.value != null && !searchQuery.isEmpty()) {
             Matcher m = Pattern.compile(searchQuery.toLowerCase()).matcher(textArea.getText().toLowerCase());
-            boolean didHighlight = false;
+
             while ( m.find() ) {
                 try {
                     didHighlight = true;
@@ -166,8 +167,7 @@ public class TranslationPanel extends JPanel {
                     e.printStackTrace(); // Log and ignore silently
                 }
             }
-
-            isAvailable.setBackground(didHighlight ? searchHighlightColor : transparentBackgroundColor);
         }
+        isAvailable.setBackground(didHighlight ? searchHighlightColor : transparentBackgroundColor);
     }
 }
