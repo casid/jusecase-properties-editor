@@ -10,6 +10,8 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.io.File;
 import java.util.List;
 import java.util.function.Consumer;
@@ -237,6 +239,39 @@ public class Application {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setExtendedState(Frame.MAXIMIZED_BOTH);
         frame.setVisible(true);
+        frame.addWindowFocusListener(new WindowFocusListener() {
+            @Override
+            public void windowGainedFocus(WindowEvent e) {
+                execute(new CheckModifications.Request(), (CheckModifications.Response response) -> {
+                    switch (response) {
+                        case NoActionRequired:
+                            // This is the best case ;-)
+                            break;
+                        case ReloadSilently:
+                            reloadSilently();
+                            break;
+                        case AskUser:
+                            askUserToReload();
+                            break;
+                    }
+                });
+            }
+
+            @Override
+            public void windowLostFocus(WindowEvent e) {
+            }
+        });
+    }
+
+    private void reloadSilently() {
+        execute(new ReloadBundle.Request(), this::onLoadPropertiesComplete);
+    }
+
+    private void askUserToReload() {
+        int result = JOptionPane.showConfirmDialog (null, "External changes detected. Do you want to reload and lose your unsaved changes?", "Warning", JOptionPane.YES_NO_OPTION);
+        if (result == JOptionPane.YES_OPTION) {
+            reloadSilently();
+        }
     }
 
     private void initTranslationsPanel() {

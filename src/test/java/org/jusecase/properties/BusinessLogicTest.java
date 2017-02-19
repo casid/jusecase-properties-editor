@@ -16,6 +16,7 @@ public class BusinessLogicTest extends UsecaseExecutorTest {
     @Test
     public void usecases() {
         thenUsecaseCanBeExecuted(LoadBundle.class);
+        thenUsecaseCanBeExecuted(ReloadBundle.class);
         thenUsecaseCanBeExecuted(SaveBundle.class);
         thenUsecaseCanBeExecuted(Search.class);
         thenUsecaseCanBeExecuted(GetProperties.class);
@@ -28,5 +29,6 @@ public class BusinessLogicTest extends UsecaseExecutorTest {
         thenUsecaseCanBeExecuted(Undo.class);
         thenUsecaseCanBeExecuted(Redo.class);
         thenUsecaseCanBeExecuted(GetUndoStatus.class);
+        thenUsecaseCanBeExecuted(CheckModifications.class);
     }
 }

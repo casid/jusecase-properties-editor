@@ -19,6 +19,8 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
     private Map<String, List<Property>> propertiesForKey = new HashMap<>();
     private List<Property> addedProperties;
     private String renamedKey;
+    private boolean externalChanges;
+    private boolean unsavedChanges;
 
     @Override
     public void loadProperties(List<Path> files) {
@@ -87,12 +89,12 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
 
     @Override
     public boolean hasUnsavedChanges() {
-        return false;
+        return unsavedChanges;
     }
 
     @Override
     public boolean hasExternalChanges() {
-        return false;
+        return externalChanges;
     }
 
     public void thenLoadedPropertiesAre(Set<Path> expected) {
@@ -146,5 +148,13 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
 
     public String getRenamedKey() {
         return renamedKey;
+    }
+
+    public void givenExternalChanges(boolean externalChanges) {
+        this.externalChanges = externalChanges;
+    }
+
+    public void givenUnsavedChanges(boolean unsavedChanges) {
+        this.unsavedChanges = unsavedChanges;
     }
 }

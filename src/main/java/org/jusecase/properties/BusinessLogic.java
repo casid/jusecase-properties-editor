@@ -23,6 +23,7 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
         ));
 
         addUsecase(LoadBundle.class);
+        addUsecase(ReloadBundle.class);
         addUsecase(SaveBundle.class);
         addUsecase(Search.class);
         addUsecase(GetProperties.class);
@@ -35,6 +36,7 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
         addUsecase(Undo.class);
         addUsecase(Redo.class);
         addUsecase(GetUndoStatus.class);
+        addUsecase(CheckModifications.class);
     }
 
     private class GatewayModule extends AbstractModule {
