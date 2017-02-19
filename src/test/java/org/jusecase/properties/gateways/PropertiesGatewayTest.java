@@ -370,6 +370,18 @@ public abstract class PropertiesGatewayTest {
     }
 
     @Test
+    public void addProperties_nullValue_notAddedToInternalModel() {
+        givenProperties("resources.properties", "resources_de.properties");
+
+        gateway.addProperties(a(list(
+                a(property().withFileName("resources.properties").withKey("one").withValue("value")),
+                a(property().withFileName("resources_de.properties").withKey("one").withValue(null))
+        )));
+
+        assertThat(gateway.getKey("one").getPopulation()).isEqualTo(KeyPopulation.Sparse);
+    }
+
+    @Test
     public void addProperties_areCloned() {
         givenProperties("resources.properties");
         Property property = a(property().withValue("sneaky"));
