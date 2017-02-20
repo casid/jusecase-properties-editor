@@ -127,7 +127,7 @@ public class TranslationPanel extends JPanel {
 
     private int calculateRowCount() {
         int rowCount = textArea.getLineCount();
-        if (textArea.getPreferredSize().width > scrollPane.getWidth()) {
+        if (scrollPane.getWidth() > 0 && textArea.getPreferredSize().width > scrollPane.getWidth()) {
             rowCount += 1;
         }
         return rowCount;
