@@ -597,7 +597,7 @@ public abstract class PropertiesGatewayTest {
         try {
             givenProperties(fileName);
             writeTestFile(fileName, "sample=change yo");
-            assertThat(gateway.hasExternalChanges()).isFalse(); // not detected atm to avoid hash calculations
+            assertThat(gateway.hasExternalChanges()).isTrue();
         } finally {
             writeTestFile(fileName, "sample=change me");
         }

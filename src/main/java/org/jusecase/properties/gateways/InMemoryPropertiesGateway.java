@@ -72,6 +72,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     private FileSnapshot computeFileSnapshot(Path file) throws IOException {
         FileSnapshot fileSnapshot = new FileSnapshot();
         fileSnapshot.bytes = Files.size(file);
+        fileSnapshot.lastModified = Files.getLastModifiedTime(file).toMillis();
         fileSnapshot.lineSeparator = guessLineSeparator(file);
         return fileSnapshot;
     }
@@ -380,7 +381,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
             try {
                 FileSnapshot lastSnapshot = fileSnapshots.get(file.getFileName().toString());
                 FileSnapshot currentSnapshot = computeFileSnapshot(file);
-                if (lastSnapshot.bytes != currentSnapshot.bytes) {
+                if (lastSnapshot.bytes != currentSnapshot.bytes || lastSnapshot.lastModified != currentSnapshot.lastModified) {
                     return true;
                 }
             } catch (IOException e) {
@@ -453,6 +454,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
 
     private static class FileSnapshot {
         long bytes;
+        long lastModified;
         String lineSeparator;
     }
 }
