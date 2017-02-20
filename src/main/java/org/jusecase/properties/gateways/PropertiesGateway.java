@@ -37,4 +37,6 @@ public interface PropertiesGateway {
     boolean hasUnsavedChanges();
 
     boolean hasExternalChanges();
+
+    void updateFileSnapshots();
 }

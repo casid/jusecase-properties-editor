@@ -74,7 +74,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         return fileSnapshot;
     }
 
-    private void addProperty( Property property ) {
+    private void addProperty(Property property) {
         this.keys.add(property.key);
         this.properties.add(property);
         List<Property> propertiesByKey = this.propertiesByKey.computeIfAbsent(property.key, s -> new ArrayList<>());
@@ -147,7 +147,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     }
 
     @Override
-    public void renameKey( String key, String newKey ) {
+    public void renameKey(String key, String newKey) {
         if (!isInitialized() || !propertiesByKey.containsKey(key)) {
             return;
         }
@@ -160,7 +160,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         keys.add(newKey);
 
         List<Property> properties = propertiesByKey.remove(key);
-        for ( Property property : properties ) {
+        for (Property property : properties) {
             property.key = newKey;
         }
         propertiesByKey.put(newKey, properties);
@@ -169,7 +169,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     }
 
     @Override
-    public void duplicateKey( String key, String newKey ) {
+    public void duplicateKey(String key, String newKey) {
         if (!isInitialized() || !propertiesByKey.containsKey(key)) {
             return;
         }
@@ -178,7 +178,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
             throw new GatewayException("A key with this name already exists");
         }
 
-        for ( Property property : propertiesByKey.get(key) ) {
+        for (Property property : propertiesByKey.get(key)) {
             Property newProperty = new Property();
             newProperty.key = newKey;
             newProperty.fileName = property.fileName;
@@ -190,12 +190,12 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     }
 
     @Override
-    public void deleteKey( String key ) {
+    public void deleteKey(String key) {
         if (!isInitialized() || !propertiesByKey.containsKey(key)) {
             return;
         }
 
-        for ( Property property : propertiesByKey.get(key) ) {
+        for (Property property : propertiesByKey.get(key)) {
             removePropertyFromList(properties, property);
             markAsDirty(property.fileName);
         }
@@ -211,7 +211,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         }
 
         Set<Key> result = new TreeSet<>();
-        for ( String key : keys ) {
+        for (String key : keys) {
             if (key.contains(queryString)) {
                 result.add(getKey(key));
             }
@@ -260,7 +260,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     private void removePropertyFromList(List<Property> properties, Property property) {
         int indexToDelete = -1;
         int i = 0;
-        for ( Property p : properties ) {
+        for (Property p : properties) {
             if (p.key.equals(property.key) && p.fileName.equals(property.fileName)) {
                 indexToDelete = i;
                 break;
@@ -274,7 +274,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     }
 
     private Property findPropertyInList(List<Property> properties, Property property) {
-        for ( Property p : properties ) {
+        for (Property p : properties) {
             if (p.key.equals(property.key) && p.fileName.equals(property.fileName)) {
                 return p;
             }
@@ -372,6 +372,17 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         }
 
         return false;
+    }
+
+    @Override
+    public void updateFileSnapshots() {
+        for (Path file : files) {
+            try {
+                updateFileSnapshot(file);
+            } catch (IOException e) {
+                throw new GatewayException("Failed to update file snapshot for " + file, e);
+            }
+        }
     }
 
     private void save(Path file) {

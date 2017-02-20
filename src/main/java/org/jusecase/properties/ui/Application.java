@@ -271,6 +271,8 @@ public class Application {
         int result = JOptionPane.showConfirmDialog (null, "External changes detected. Do you want to reload and lose your unsaved changes?", "Warning", JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.YES_OPTION) {
             reloadSilently();
+        } else {
+            execute(new IgnoreModifications.Request());
         }
     }
 

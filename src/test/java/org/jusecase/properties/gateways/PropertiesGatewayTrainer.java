@@ -97,6 +97,11 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
         return externalChanges;
     }
 
+    @Override
+    public void updateFileSnapshots() {
+
+    }
+
     public void thenLoadedPropertiesAre(Set<Path> expected) {
         assertThat(loadedProperties).isEqualTo(expected);
     }
