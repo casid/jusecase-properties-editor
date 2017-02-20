@@ -530,6 +530,38 @@ public abstract class PropertiesGatewayTest {
     }
 
     @Test
+    public void save_preservesLineEndings_unix() {
+        writeTestFile("unix.properties", "key=value\n");
+        givenProperties("unix.properties");
+
+        gateway.saveAll();
+
+        thenTestFileHasContent("unix.properties", "key=value\n");
+        deleteTestFile("unix.properties");
+    }
+
+    @Test
+    public void save_preservesLineEndings_windows() {
+        writeTestFile("windows.properties", "key=value\r\n");
+        givenProperties("windows.properties");
+
+        gateway.saveAll();
+
+        thenTestFileHasContent("windows.properties", "key=value\r\n");
+        deleteTestFile("windows.properties");
+    }
+
+    @Test
+    public void save_preservesLineEndings_unknown_doesNotCrash() {
+        writeTestFile("unknown.properties", "key=value");
+        givenProperties("unknown.properties");
+
+        gateway.saveAll();
+
+        deleteTestFile("unknown.properties");
+    }
+
+    @Test
     public void unsavedChanges_uninitialized() {
         assertThat(gateway.hasUnsavedChanges()).isFalse();
     }
@@ -548,28 +580,26 @@ public abstract class PropertiesGatewayTest {
     @Test
     public void externalChanges_differentSize() throws IOException {
         String fileName = "external-changes.properties";
-        Path file = a(testPath(fileName));
 
         try {
             givenProperties(fileName);
-            Files.write(file, "sample=changed".getBytes(), StandardOpenOption.SYNC, StandardOpenOption.TRUNCATE_EXISTING);
+            writeTestFile(fileName, "sample=changed");
             assertThat(gateway.hasExternalChanges()).isTrue();
         } finally {
-            Files.write(file, "sample=change me".getBytes(), StandardOpenOption.SYNC, StandardOpenOption.TRUNCATE_EXISTING);
+            writeTestFile(fileName, "sample=change me");
         }
     }
 
     @Test
     public void externalChanges_sameSize_differentContent() throws IOException {
         String fileName = "external-changes.properties";
-        Path file = a(testPath(fileName));
 
         try {
             givenProperties(fileName);
-            Files.write(file, "sample=change yo".getBytes(), StandardOpenOption.SYNC, StandardOpenOption.TRUNCATE_EXISTING);
+            writeTestFile(fileName, "sample=change yo");
             assertThat(gateway.hasExternalChanges()).isFalse(); // not detected atm to avoid hash calculations
         } finally {
-            Files.write(file, "sample=change me".getBytes(), StandardOpenOption.SYNC, StandardOpenOption.TRUNCATE_EXISTING);
+            writeTestFile(fileName, "sample=change me");
         }
     }
 
@@ -590,5 +620,26 @@ public abstract class PropertiesGatewayTest {
 
     private Path resolvePath(String fileName) {
         return a(testPath(fileName));
+    }
+
+    private void writeTestFile(String fileName, String content) {
+        try {
+            Files.write(a(testPath(fileName)), content.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.SYNC, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void thenTestFileHasContent(String fileName, String expectedContent) {
+        Path file = a(testPath(fileName));
+        assertThat(file).hasBinaryContent(expectedContent.getBytes());
+    }
+
+    private void deleteTestFile(String fileName) {
+        try {
+            Files.deleteIfExists(a(testPath(fileName)));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

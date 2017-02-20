@@ -7,6 +7,7 @@ import org.jusecase.properties.entities.Property;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -71,7 +72,23 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     private FileSnapshot computeFileSnapshot(Path file) throws IOException {
         FileSnapshot fileSnapshot = new FileSnapshot();
         fileSnapshot.bytes = Files.size(file);
+        fileSnapshot.lineSeparator = guessLineSeparator(file);
         return fileSnapshot;
+    }
+
+    private String guessLineSeparator(Path file) throws IOException {
+        String lineSeparator = System.lineSeparator();
+        try (InputStreamReader is = new InputStreamReader(Files.newInputStream(file), "8859_1")) {
+            int character;
+            while ((character = is.read()) >= 0) {
+                if (character == '\r') {
+                    return "\r\n";
+                } else if (character == '\n') {
+                    return "\n";
+                }
+            }
+        }
+        return lineSeparator;
     }
 
     private void addProperty(Property property) {
@@ -387,7 +404,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
 
     private void save(Path file) {
         try {
-            Properties properties = new CleanProperties();
+            CleanProperties properties = new CleanProperties();
 
             String fileName = file.getFileName().toString();
             for (Property property : this.properties) {
@@ -396,7 +413,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
                 }
             }
 
-            writeJavaProperties(file, properties);
+            writeJavaProperties(file, properties, fileSnapshots.get(fileName).lineSeparator);
             updateFileSnapshot(file);
         } catch (IOException e) {
             throw new GatewayException("Failed to save properties to " + file, e);
@@ -428,13 +445,14 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         }
     }
 
-    private void writeJavaProperties(Path file, Properties properties) throws IOException {
+    private void writeJavaProperties(Path file, CleanProperties properties, String lineSeparator) throws IOException {
         try (OutputStream outputStream = Files.newOutputStream(file)) {
-            properties.store(outputStream, null);
+            properties.storeSpecial(outputStream, lineSeparator);
         }
     }
 
     private static class FileSnapshot {
         long bytes;
+        String lineSeparator;
     }
 }

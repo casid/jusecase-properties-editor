@@ -33,9 +33,8 @@ public class CleanProperties extends Properties {
       return Collections.enumeration(new TreeSet<>(super.keySet()));
    }
 
-   @Override
-   public void store( OutputStream out, String comments ) throws IOException {
-      store0(new BufferedWriter(new OutputStreamWriter(out, "8859_1")), comments, true);
+   public void storeSpecial( OutputStream out, String lineSeparator ) throws IOException {
+      store0(new BufferedWriter(new OutputStreamWriter(out, "8859_1")), true, lineSeparator);
    }
 
    /**
@@ -107,7 +106,7 @@ public class CleanProperties extends Properties {
       return outBuffer.toString();
    }
 
-   private void store0( BufferedWriter bw, String comments, boolean escUnicode ) throws IOException {
+   private void store0( BufferedWriter bw, boolean escUnicode, String lineSeparator ) throws IOException {
       for ( Enumeration<?> e = keys(); e.hasMoreElements(); ) {
          String key = (String)e.nextElement();
          String val = (String)get(key);
@@ -116,8 +115,10 @@ public class CleanProperties extends Properties {
           * pass false to flag.
           */
          val = saveConvert(val, false, escUnicode);
-         bw.write(key + "=" + val);
-         bw.newLine();
+         bw.write(key);
+         bw.write("=");
+         bw.write(val);
+         bw.write(lineSeparator);
       }
 
       bw.flush();
