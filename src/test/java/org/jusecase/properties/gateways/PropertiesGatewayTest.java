@@ -603,6 +603,15 @@ public abstract class PropertiesGatewayTest {
         }
     }
 
+    @Test
+    public void externalChanges_sameContent() throws IOException {
+        String fileName = "external-changes.properties";
+
+        givenProperties(fileName);
+        writeTestFile(fileName, "sample=change me");
+        assertThat(gateway.hasExternalChanges()).isFalse();
+    }
+
     protected abstract PropertiesGateway createGateway();
 
     private void givenProperties(String... fileNames) {
