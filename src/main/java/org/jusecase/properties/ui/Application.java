@@ -32,10 +32,12 @@ public class Application {
     private TranslationsPanel translationsPanel;
     private ApplicationMenuBar menuBar;
 
+    public static String applicationName = "Properties Editor";
+
     public static void main(String args[]) throws Exception {
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
 
-        macSetup("Properties Editor");
+        macSetup(applicationName);
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
         SwingUtilities.invokeLater(() -> {
@@ -255,7 +257,7 @@ public class Application {
     }
 
     private void initFrame() {
-        frame = new JFrame("Properties Editor");
+        frame = new JFrame(applicationName);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setExtendedState(Frame.MAXIMIZED_BOTH);
         frame.setVisible(true);
