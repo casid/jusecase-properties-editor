@@ -374,6 +374,26 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     }
 
     @Override
+    public void deleteProperties( List<Property> properties ) {
+        if (!isInitialized()) {
+            return;
+        }
+
+        for ( Property property : properties ) {
+            deleteProperty(property);
+            markAsDirty(property.fileName);
+        }
+
+        for ( Property property : properties ) {
+            List<Property> propertiesByKey = this.propertiesByKey.get(property.key);
+            if (propertiesByKey != null && propertiesByKey.isEmpty()) {
+                this.propertiesByKey.remove(property.key);
+                this.keys.remove(property.key);
+            }
+        }
+    }
+
+    @Override
     public boolean hasUnsavedChanges() {
         return isInitialized() && !dirtyFiles.isEmpty();
     }
@@ -410,7 +430,40 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         }
     }
 
-    private void save(Path file) {
+   @Override
+   public String resolveFileName( String locale ) {
+       String expectedFileName = resolveBundleName();
+       if (expectedFileName != null) {
+           if (!locale.isEmpty()) {
+               expectedFileName += "_" + locale;
+           }
+           expectedFileName += ".properties";
+
+           for ( String fileName : fileNames ) {
+               if ( fileName.equals(expectedFileName) ) {
+                   return fileName;
+               }
+           }
+       }
+       return null;
+   }
+
+   private String resolveBundleName() {
+        if (fileNames.isEmpty()) {
+            return null;
+        }
+
+        String bundleName = fileNames.iterator().next();
+        int index = bundleName.indexOf('_');
+        if (index >= 0) {
+            return bundleName.substring(0, index);
+        }
+
+        index = bundleName.lastIndexOf('.');
+        return bundleName.substring(index);
+   }
+
+   private void save(Path file) {
         try {
             CleanProperties properties = new CleanProperties();
 

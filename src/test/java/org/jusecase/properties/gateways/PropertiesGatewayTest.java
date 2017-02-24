@@ -142,6 +142,32 @@ public abstract class PropertiesGatewayTest {
     }
 
     @Test
+    public void resolveFileName_none() {
+        givenProperties();
+        assertThat(gateway.resolveFileName("de")).isNull();
+    }
+
+    @Test
+    public void resolveFileName_match() {
+        givenProperties("resources_de.properties");
+        assertThat(gateway.resolveFileName("de")).isEqualTo("resources_de.properties");
+    }
+
+    @Test
+    public void resolveFileName_notTooGreedy() {
+        givenProperties("resources_de.properties", "resources.properties");
+        assertThat(gateway.resolveFileName("")).isEqualTo("resources.properties");
+    }
+
+    @Test
+    public void resolveFileName_notTooGreedy2() {
+        givenProperties("resources.properties", "resources_de.properties");
+        assertThat(gateway.resolveFileName("")).isEqualTo("resources.properties");
+        assertThat(gateway.resolveFileName("de")).isEqualTo("resources_de.properties");
+        assertThat(gateway.resolveFileName("ru")).isNull();
+    }
+
+    @Test
     public void search_uninitialized() {
         assertThat(gateway.search("no npe wanted here!")).isEmpty();
     }
@@ -500,6 +526,25 @@ public abstract class PropertiesGatewayTest {
         givenProperties("resources.properties");
         gateway.deleteKey("sample8");
         assertThat(gateway.hasUnsavedChanges()).isTrue();
+    }
+
+    @Test
+    public void deleteProperties_uninitialized() {
+        gateway.deleteProperties(a(list(a(property().withFileName("resources.properties").withKey("sample1"))))); // shall not throw
+    }
+
+    @Test
+    public void deleteProperties() {
+        givenProperties("resources.properties", "resources_de.properties");
+        gateway.deleteProperties(a(list(
+              a(property().withFileName("resources.properties").withKey("sample1")),
+              a(property().withFileName("resources_de.properties").withKey("sample1")),
+              a(property().withFileName("resources_de.properties").withKey("sample2"))
+        )));
+        assertThat(gateway.getProperties("sample1")).hasSize(0);
+        assertThat(gateway.getProperties("sample2")).hasSize(2);
+        assertThat(gateway.getProperties("sample2").get(1).value).isNull();
+        assertThat(gateway.getKeys()).hasSize(SAMPLE_KEY_COUNT - 1);
     }
 
     @Test

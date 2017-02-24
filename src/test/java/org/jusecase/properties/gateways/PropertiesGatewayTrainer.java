@@ -18,6 +18,7 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
     private String duplicatedKey;
     private Map<String, List<Property>> propertiesForKey = new HashMap<>();
     private List<Property> addedProperties;
+    private List<Property> deletedProperties;
     private String renamedKey;
     private boolean externalChanges;
     private boolean unsavedChanges;
@@ -88,6 +89,11 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
     }
 
     @Override
+    public void deleteProperties( List<Property> properties ) {
+        deletedProperties = properties;
+    }
+
+    @Override
     public boolean hasUnsavedChanges() {
         return unsavedChanges;
     }
@@ -102,7 +108,15 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
 
     }
 
-    public void thenLoadedPropertiesAre(Set<Path> expected) {
+   @Override
+   public String resolveFileName( String locale ) {
+       if ("unknown".equals(locale)) {
+          return null;
+       }
+      return "resources_" + locale + ".properties";
+   }
+
+   public void thenLoadedPropertiesAre(Set<Path> expected) {
         assertThat(loadedProperties).isEqualTo(expected);
     }
 
@@ -145,6 +159,10 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
 
     public List<Property> getAddedProperties() {
         return addedProperties;
+    }
+
+    public List<Property> getDeletedProperties() {
+        return deletedProperties;
     }
 
     public String getDuplicatedKey() {

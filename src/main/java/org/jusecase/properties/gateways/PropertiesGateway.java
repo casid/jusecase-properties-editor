@@ -34,9 +34,13 @@ public interface PropertiesGateway {
 
     void addProperties(List<Property> properties);
 
+    void deleteProperties(List<Property> properties);
+
     boolean hasUnsavedChanges();
 
     boolean hasExternalChanges();
 
     void updateFileSnapshots();
+
+    String resolveFileName(String locale);
 }

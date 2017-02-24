@@ -4,6 +4,7 @@ import net.miginfocom.swing.MigLayout;
 import org.jusecase.properties.BusinessLogic;
 import org.jusecase.properties.entities.Key;
 import org.jusecase.properties.entities.UndoableRequest;
+import org.jusecase.properties.plugins.Plugin;
 import org.jusecase.properties.usecases.*;
 
 import javax.swing.*;
@@ -13,6 +14,8 @@ import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.io.File;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -23,7 +26,7 @@ public class Application {
 
     private JFrame frame;
     private JList<Key> keyList;
-    KeyListModel keyListModel = new KeyListModel();
+    private KeyListModel keyListModel = new KeyListModel();
     private JTextField searchField;
     private JPanel keyPanel;
     private TranslationsPanel translationsPanel;
@@ -61,6 +64,23 @@ public class Application {
 
         if (request instanceof UndoableRequest) {
             menuBar.updateUndoAndRedoItems();
+        }
+    }
+
+    public void importProperties( Plugin plugin ) {
+        JFileChooser fileChooser = new NativeJFileChooser();
+        fileChooser.setMultiSelectionEnabled(true);
+        fileChooser.setDialogTitle("Choose file to import");
+        if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+            Import.Request request = new Import.Request();
+            List<Path> files = new ArrayList<>();
+            for ( File file : fileChooser.getSelectedFiles() ) {
+                files.add(file.toPath());
+            }
+            request.files = files;
+            request.pluginId = plugin.getPluginId();
+            execute(request);
+            refreshSearch();
         }
     }
 
@@ -349,6 +369,10 @@ public class Application {
 
         if (request instanceof RenameKey.Request) {
             onKeyRenamed();
+        }
+
+        if (request instanceof Import.Request) {
+            refreshSearch();
         }
     }
 

@@ -1,5 +1,8 @@
 package org.jusecase.properties.ui;
 
+import org.jusecase.properties.plugins.Plugin;
+import org.jusecase.properties.plugins.importer.PropertiesImporter;
+import org.jusecase.properties.usecases.GetPlugins;
 import org.jusecase.properties.usecases.GetUndoStatus;
 
 import javax.swing.*;
@@ -28,8 +31,10 @@ public class ApplicationMenuBar extends JMenuBar {
     private JMenu createFileMenu() {
         JMenu file = new JMenu("File");
         file.add(createFileOpenMenuItem());
-        file.add(createFileSaveMenuItem());
         file.addSeparator();
+        file.add(createFileImportMenu());
+        file.addSeparator();
+        file.add(createFileSaveMenuItem());
         file.add(createFileSaveAllMenuItem());
         return file;
     }
@@ -95,6 +100,26 @@ public class ApplicationMenuBar extends JMenuBar {
         JMenuItem save = new JMenuItem("Save All");
         save.addActionListener(event -> application.saveAll());
         return save;
+    }
+
+    private JMenu createFileImportMenu() {
+        JMenu menu = new JMenu("Import");
+
+        GetPlugins.Request request = new GetPlugins.Request();
+        request.pluginClass = PropertiesImporter.class;
+        application.execute(request, (GetPlugins.Response response) -> {
+            for ( Plugin plugin : response.plugins ) {
+                menu.add(createFileImportMenuItem(plugin));
+            }
+        });
+
+        return menu;
+    }
+
+    private JMenuItem createFileImportMenuItem(Plugin plugin) {
+        JMenuItem item = new JMenuItem(plugin.getPluginName());
+        item.addActionListener(event -> application.importProperties(plugin));
+        return item;
     }
 
     private JMenuItem createUndoMenuItem() {

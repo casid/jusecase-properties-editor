@@ -7,6 +7,8 @@ import org.jusecase.UsecaseExecutor;
 import org.jusecase.executors.guice.GuiceUsecaseExecutor;
 import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.*;
+import org.jusecase.properties.plugins.PluginManager;
+import org.jusecase.properties.plugins.importer.JavaPropertiesImporter;
 import org.jusecase.properties.usecases.*;
 
 import java.nio.file.Path;
@@ -19,6 +21,7 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
     public BusinessLogic() {
         setInjector(Guice.createInjector(
                 new GatewayModule(),
+                new PluginModule(),
                 new BusinessLogicModule()
         ));
 
@@ -38,6 +41,8 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
         addUsecase(GetUndoStatus.class);
         addUsecase(CheckModifications.class);
         addUsecase(IgnoreModifications.class);
+        addUsecase(Import.class);
+        addUsecase(GetPlugins.class);
     }
 
     private class GatewayModule extends AbstractModule {
@@ -51,6 +56,14 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
             bind(PropertiesGateway.class).to(InMemoryPropertiesGateway.class);
             bind(SettingsGateway.class).to(JsonSettingsGateway.class);
             bind(UndoableRequestGateway.class).toInstance(undoableRequestGateway);
+        }
+    }
+
+    private class PluginModule extends AbstractModule {
+        @Override
+        protected void configure() {
+            bind(PluginManager.class).toInstance(PluginManager.getInstance());
+            PluginManager.getInstance().registerPlugin(new JavaPropertiesImporter());
         }
     }
 

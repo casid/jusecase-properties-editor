@@ -31,5 +31,7 @@ public class BusinessLogicTest extends UsecaseExecutorTest {
         thenUsecaseCanBeExecuted(GetUndoStatus.class);
         thenUsecaseCanBeExecuted(CheckModifications.class);
         thenUsecaseCanBeExecuted(IgnoreModifications.class);
+        thenUsecaseCanBeExecuted(Import.class);
+        thenUsecaseCanBeExecuted(GetPlugins.class);
     }
 }
