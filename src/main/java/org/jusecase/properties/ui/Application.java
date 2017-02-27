@@ -32,7 +32,8 @@ public class Application {
     private TranslationsPanel translationsPanel;
     private ApplicationMenuBar menuBar;
 
-    public static String applicationName = "Properties Editor";
+    protected static String applicationName = "Properties Editor";
+    protected static Class<? extends Application> applicationClass = Application.class;
 
     public static void main(String args[]) throws Exception {
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
@@ -41,7 +42,12 @@ public class Application {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
         SwingUtilities.invokeLater(() -> {
-            new Application().start();
+            try {
+                applicationClass.newInstance().start();
+            }
+            catch ( Exception e ) {
+                throw new RuntimeException(e);
+            }
         });
     }
 
@@ -146,7 +152,7 @@ public class Application {
         }
     }
 
-    private void start() {
+    protected void start() {
         initFrame();
         initMenuBar();
         initPanel();
@@ -260,6 +266,7 @@ public class Application {
         frame = new JFrame(applicationName);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+        initIcons(frame);
         frame.setVisible(true);
         frame.addWindowFocusListener(new WindowFocusListener() {
             @Override
@@ -283,6 +290,9 @@ public class Application {
             public void windowLostFocus(WindowEvent e) {
             }
         });
+    }
+
+    protected void initIcons(JFrame frame) {
     }
 
     private void reloadSilently() {
