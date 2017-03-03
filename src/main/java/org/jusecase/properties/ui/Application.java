@@ -87,8 +87,10 @@ public class Application {
             }
             request.files = files;
             request.pluginId = plugin.getPluginId();
-            execute(request);
-            refreshSearch();
+            execute(request, (Consumer<Import.Response>) response -> {
+                JOptionPane.showMessageDialog(null, "Added " + response.amountAdded + " new values and updated " + response.amountChanged + " existing values.", "Import was successful", JOptionPane.PLAIN_MESSAGE);
+                refreshSearch();
+            });
         }
     }
 

@@ -90,6 +90,23 @@ public class ImportTest extends UsecaseTest<Request, Response> {
     }
 
     @Test
+    public void response() {
+        List<Property> importedProperties = a(list(
+              a(property().withKey("key1")),
+              a(property().withKey("key2")),
+              a(property().withKey("key3"))
+        ));
+        propertiesImporterTrainer.givenProperties(importedProperties);
+        propertiesGatewayTrainer.givenProperties("key1", a(list(
+              a(property().withKey("key1"))
+        )));
+
+        whenRequestIsExecuted();
+        assertThat(response.amountChanged).isEqualTo(1);
+        assertThat(response.amountAdded).isEqualTo(2);
+    }
+
+    @Test
     public void undo_name() {
         assertThat(request.name).isNull();
         whenRequestIsExecuted();

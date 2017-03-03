@@ -31,6 +31,8 @@ public class Import implements Usecase<Import.Request, Import.Response> {
 
     @Override
     public Response execute(Request request) {
+        Response response = new Response();
+
         if (request.undo) {
             propertiesGateway.deleteProperties(request.importedProperties);
             propertiesGateway.addProperties(request.overwrittenProperties);
@@ -38,11 +40,15 @@ public class Import implements Usecase<Import.Request, Import.Response> {
             if (request.importedProperties == null) {
                 request.importedProperties = loadProperties(request);
                 request.overwrittenProperties = findOverwrittenProperties(request.importedProperties);
+
+                response.amountAdded = request.importedProperties.size() - request.overwrittenProperties.size();
+                response.amountChanged = request.overwrittenProperties.size();
             }
 
             propertiesGateway.addProperties(request.importedProperties);
         }
-        return new Response();
+
+        return response;
     }
 
     private List<Property> loadProperties(Request request) {
@@ -91,5 +97,7 @@ public class Import implements Usecase<Import.Request, Import.Response> {
     }
 
     public static class Response {
+        public int amountChanged;
+        public int amountAdded;
     }
 }
