@@ -11,6 +11,7 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.io.File;
@@ -266,7 +267,7 @@ public class Application {
 
     private void initFrame() {
         frame = new JFrame(applicationName);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         frame.setExtendedState(Frame.MAXIMIZED_BOTH);
         initIcons(frame);
         frame.setVisible(true);
@@ -290,6 +291,24 @@ public class Application {
 
             @Override
             public void windowLostFocus(WindowEvent e) {
+            }
+        });
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing( WindowEvent e ) {
+                execute(new IsAllowedToQuit.Request(), (IsAllowedToQuit.Response response) -> {
+                    if (response.askUser) {
+                        int result = JOptionPane.showConfirmDialog (null, "Do you want to save your unsaved changes?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION);
+                        if (result == JOptionPane.CANCEL_OPTION) {
+                            return;
+                        }
+
+                        if (result == JOptionPane.YES_OPTION) {
+                            save();
+                        }
+                    }
+                    System.exit(0);
+                });
             }
         });
     }
