@@ -419,6 +419,18 @@ public abstract class PropertiesGatewayTest {
     }
 
     @Test
+    public void addProperties_willNoExistTwice() {
+        givenProperties("resources.properties");
+        Property property = a(property().withKey("sample1").withValue("Sample 1"));
+
+        gateway.addProperties(a(list(property)));
+        property.value = "new value";
+        gateway.updateValue(property);
+
+        assertThat(gateway.getProperties("sample1").get(0).value).isEqualTo("new value");
+    }
+
+    @Test
     public void addProperties_unsavedChanges() {
         givenProperties("resources.properties");
         gateway.addProperties(a(list(a(property()))));
