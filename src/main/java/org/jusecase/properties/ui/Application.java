@@ -267,6 +267,10 @@ public class Application {
 
     private void initFrame() {
         frame = new JFrame(applicationName);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        screenSize.width = (int)(0.4 * screenSize.width);
+        screenSize.height = (int)(0.4 * screenSize.height);
+        frame.setMinimumSize(screenSize);
         frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         frame.setExtendedState(Frame.MAXIMIZED_BOTH);
         initIcons(frame);
