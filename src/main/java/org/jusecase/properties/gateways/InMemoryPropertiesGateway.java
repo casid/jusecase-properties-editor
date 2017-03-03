@@ -361,7 +361,10 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         }
 
         properties.forEach(property -> {
-            deleteProperty(property);
+            if (keys.contains(property.key)) {
+                deleteProperty(property);
+            }
+
             if (property.value != null) {
                 Property propertyClone = new Property();
                 propertyClone.key = property.key;
