@@ -60,6 +60,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
             property.fileName = file.getFileName().toString();
             property.key = entry.getKey().toString();
             property.value = entry.getValue().toString();
+            property.valueLowercase = property.value.toLowerCase();
 
             addProperty(property);
         }
@@ -242,9 +243,10 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
             }
         }
 
+        queryString = queryString.toLowerCase();
         for (Property property : properties) {
             if (!result.contains(getKey(property.key))) {
-                if (property.value.contains(queryString)) {
+                if (property.valueLowercase.contains(queryString)) {
                     result.add(getKey(property.key));
                 }
             }
@@ -266,7 +268,9 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
             Property propertyInList = findPropertyInList(storedProperties, property);
             if (propertyInList != null) {
                 propertyInList.value = property.value;
+                propertyInList.valueLowercase = property.value.toLowerCase();
             } else {
+                property.valueLowercase = property.value.toLowerCase();
                 addProperty(property);
             }
         }
@@ -321,7 +325,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
 
         Property property = new Property();
         property.key = key;
-        property.value = "";
+        property.value = property.valueLowercase = "";
         property.fileName = file.getFileName().toString();
         addProperty(property);
 
@@ -369,6 +373,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
                 Property propertyClone = new Property();
                 propertyClone.key = property.key;
                 propertyClone.value = property.value;
+                propertyClone.valueLowercase = property.value.toLowerCase();
                 propertyClone.fileName = property.fileName;
                 addProperty(propertyClone);
 

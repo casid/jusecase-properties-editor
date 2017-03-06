@@ -210,7 +210,7 @@ public abstract class PropertiesGatewayTest {
     @Test
     public void search_value2() {
         givenProperties("resources.properties");
-        List<Key> keys = gateway.search("search");
+        List<Key> keys = gateway.search("search engine");
         assertThatKeys(keys).containsExactly("sample.long1");
     }
 
@@ -253,6 +253,13 @@ public abstract class PropertiesGatewayTest {
     public void search_fullSentence() {
         givenProperties("resources.properties");
         List<Key> keys = gateway.search("Apache Lucene is a high-performance, full-featured text search");
+        assertThatKeys(keys).containsExactly("sample.long1");
+    }
+
+    @Test
+    public void search_lowercase() {
+        givenProperties("resources.properties");
+        List<Key> keys = gateway.search("apache lucene");
         assertThatKeys(keys).containsExactly("sample.long1");
     }
 
@@ -320,6 +327,28 @@ public abstract class PropertiesGatewayTest {
         gateway.updateValue(property);
 
         assertThat(gateway.hasUnsavedChanges()).isTrue();
+    }
+
+    @Test
+    public void updateValue_lowerCaseSearchStillWorks() {
+        givenProperties("resources.properties");
+        Property property = gateway.getProperties("sample1").get(0);
+
+        property.value = "UPPERCASE";
+        gateway.updateValue(property);
+
+        assertThat(gateway.search("uppercase")).hasSize(1);
+    }
+
+    @Test
+    public void updateValue_lowerCaseSearchStillWorks_ifPreviousValueIsNull() {
+        givenProperties("resources.properties", "resources_de.properties");
+        Property german = gateway.getProperties("sample.long1").get(1);
+
+        german.value = "ENDLICH EIN WERT";
+        gateway.updateValue(german);
+
+        assertThat(gateway.search("endlich ein wert")).hasSize(1);
     }
 
     @Test
