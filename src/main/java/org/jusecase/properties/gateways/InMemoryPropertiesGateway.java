@@ -209,6 +209,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
             newProperty.key = newKey;
             newProperty.fileName = property.fileName;
             newProperty.value = property.value;
+            newProperty.valueLowercase = property.value.toLowerCase();
             addProperty(newProperty);
 
             markAsDirty(property.fileName);

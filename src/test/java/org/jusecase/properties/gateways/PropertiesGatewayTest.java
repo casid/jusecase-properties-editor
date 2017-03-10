@@ -543,6 +543,13 @@ public abstract class PropertiesGatewayTest {
     }
 
     @Test
+    public void duplicateKey_lowerCaseSearchStillWorks() {
+        givenProperties("resources.properties");
+        gateway.duplicateKey("sample1", "sample1copy");
+        assertThat(gateway.search("sample 1")).hasSize(2);
+    }
+
+    @Test
     public void deleteKey_uninitialized() {
         gateway.deleteKey("sample8"); // shall not throw
     }
