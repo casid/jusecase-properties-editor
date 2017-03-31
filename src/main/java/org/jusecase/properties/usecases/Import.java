@@ -73,16 +73,15 @@ public class Import implements Usecase<Import.Request, Import.Response> {
     }
 
     private List<Property> findOverwrittenProperties( List<Property> importedProperties ) {
-        Set<String> keys = new HashSet<>();
-        for ( Property importedProperty : importedProperties ) {
-            keys.add(importedProperty.key);
-        }
-
         List<Property> overwrittenProperties = new ArrayList<>();
-        for ( String key : keys ) {
-            List<Property> properties = propertiesGateway.getProperties(key);
-            if (properties != null) {
-                overwrittenProperties.addAll(properties);
+        for ( Property importedProperty : importedProperties ) {
+            List<Property> existingProperties = propertiesGateway.getProperties(importedProperty.key);
+            if (existingProperties != null) {
+                for ( Property existingProperty : existingProperties ) {
+                    if (existingProperty.fileName.equals(importedProperty.fileName)) {
+                        overwrittenProperties.add(existingProperty);
+                    }
+                }
             }
         }
 

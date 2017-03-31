@@ -110,9 +110,13 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
 
    @Override
    public String resolveFileName( String locale ) {
-       if ("unknown".equals(locale)) {
+      if ("unknown".equals(locale)) {
           return null;
-       }
+      }
+      if (locale.isEmpty()) {
+         return "resources.properties";
+      }
+
       return "resources_" + locale + ".properties";
    }
 

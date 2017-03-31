@@ -75,12 +75,12 @@ public class ImportTest extends UsecaseTest<Request, Response> {
     @Test
     public void overwrittenPropertiesAreAddedToRequest() {
         List<Property> importedProperties = a(list(
-              a(property().withKey("key1")),
-              a(property().withKey("key2"))
+              a(property().withKey("key1").withFileName("de")),
+              a(property().withKey("key2").withFileName("de"))
         ));
         propertiesImporterTrainer.givenProperties(importedProperties);
         propertiesGatewayTrainer.givenProperties("key1", a(list(
-              a(property().withKey("key1"))
+              a(property().withKey("key1").withFileName("resources_de.properties"))
         )));
 
         whenRequestIsExecuted();
@@ -90,11 +90,28 @@ public class ImportTest extends UsecaseTest<Request, Response> {
     }
 
     @Test
+    public void overwrittenPropertiesAreAddedToRequest_onlyForImportedLocales() {
+        List<Property> importedProperties = a(list(
+              a(property().withKey("key1").withFileName("de"))
+        ));
+        propertiesImporterTrainer.givenProperties(importedProperties);
+        propertiesGatewayTrainer.givenProperties("key1", a(list(
+              a(property().withKey("key1").withFileName("resources_de.properties")),
+              a(property().withKey("key1").withFileName("resources_en.properties"))
+        )));
+
+        whenRequestIsExecuted();
+
+        assertThat(request.overwrittenProperties).hasSize(1);
+        assertThat(request.overwrittenProperties.get(0).fileName).isEqualTo("resources_de.properties");
+    }
+
+    @Test
     public void response() {
         List<Property> importedProperties = a(list(
-              a(property().withKey("key1")),
-              a(property().withKey("key2")),
-              a(property().withKey("key3"))
+              a(property().withKey("key1").withFileName("")),
+              a(property().withKey("key2").withFileName("")),
+              a(property().withKey("key3").withFileName(""))
         ));
         propertiesImporterTrainer.givenProperties(importedProperties);
         propertiesGatewayTrainer.givenProperties("key1", a(list(
@@ -102,6 +119,7 @@ public class ImportTest extends UsecaseTest<Request, Response> {
         )));
 
         whenRequestIsExecuted();
+
         assertThat(response.amountChanged).isEqualTo(1);
         assertThat(response.amountAdded).isEqualTo(2);
     }
