@@ -12,7 +12,7 @@ public class KeyListCellRenderer extends DefaultListCellRenderer {
     Map<KeyPopulation, Color> backgroundColorForPopulation = new HashMap<>();
 
     public KeyListCellRenderer() {
-        backgroundColorForPopulation.put(KeyPopulation.Sparse, new Color(231, 211, 186));
+        backgroundColorForPopulation.put(KeyPopulation.Sparse, new Color(255, 250, 227));
     }
 
     @Override
