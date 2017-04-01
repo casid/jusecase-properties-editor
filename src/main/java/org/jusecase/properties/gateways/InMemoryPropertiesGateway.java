@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Singleton
@@ -237,23 +238,26 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
             return getKeys();
         }
 
-        Set<Key> result = new TreeSet<>();
-        for (String key : keys) {
+        Set<Key> result = ConcurrentHashMap.newKeySet();
+        keys.parallelStream().forEach(key -> {
             if (key.contains(queryString)) {
                 result.add(getKey(key));
             }
-        }
+        });
 
-        queryString = queryString.toLowerCase();
-        for (Property property : properties) {
+        String queryStringLowerCase = queryString.toLowerCase();
+        properties.parallelStream().forEach(property -> {
             if (!result.contains(getKey(property.key))) {
-                if (property.valueLowercase.contains(queryString)) {
+                if (property.valueLowercase.contains(queryStringLowerCase)) {
                     result.add(getKey(property.key));
                 }
             }
-        }
+        });
 
-        return new ArrayList<>(result);
+        ArrayList<Key> keys = new ArrayList<>(result);
+        Collections.sort(keys);
+
+        return keys;
     }
 
     @Override
@@ -384,17 +388,17 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     }
 
     @Override
-    public void deleteProperties( List<Property> properties ) {
+    public void deleteProperties(List<Property> properties) {
         if (!isInitialized()) {
             return;
         }
 
-        for ( Property property : properties ) {
+        for (Property property : properties) {
             deleteProperty(property);
             markAsDirty(property.fileName);
         }
 
-        for ( Property property : properties ) {
+        for (Property property : properties) {
             List<Property> propertiesByKey = this.propertiesByKey.get(property.key);
             if (propertiesByKey != null && propertiesByKey.isEmpty()) {
                 this.propertiesByKey.remove(property.key);
@@ -440,25 +444,25 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         }
     }
 
-   @Override
-   public String resolveFileName( String locale ) {
-       String expectedFileName = resolveBundleName();
-       if (expectedFileName != null) {
-           if (!locale.isEmpty()) {
-               expectedFileName += "_" + locale;
-           }
-           expectedFileName += ".properties";
+    @Override
+    public String resolveFileName(String locale) {
+        String expectedFileName = resolveBundleName();
+        if (expectedFileName != null) {
+            if (!locale.isEmpty()) {
+                expectedFileName += "_" + locale;
+            }
+            expectedFileName += ".properties";
 
-           for ( String fileName : fileNames ) {
-               if ( fileName.equals(expectedFileName) ) {
-                   return fileName;
-               }
-           }
-       }
-       return null;
-   }
+            for (String fileName : fileNames) {
+                if (fileName.equals(expectedFileName)) {
+                    return fileName;
+                }
+            }
+        }
+        return null;
+    }
 
-   private String resolveBundleName() {
+    private String resolveBundleName() {
         if (fileNames.isEmpty()) {
             return null;
         }
@@ -471,9 +475,9 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
 
         index = bundleName.lastIndexOf('.');
         return bundleName.substring(index);
-   }
+    }
 
-   private void save(Path file) {
+    private void save(Path file) {
         try {
             CleanProperties properties = new CleanProperties();
 
