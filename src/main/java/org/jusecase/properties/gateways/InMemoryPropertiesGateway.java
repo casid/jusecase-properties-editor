@@ -35,35 +35,28 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         this.files = files;
         this.fileNames = files.stream().map(f -> f.getFileName().toString()).collect(Collectors.toSet());
         this.dirtyFiles = new HashSet<>();
-        this.fileSnapshots = new HashMap<>();
+        this.fileSnapshots = new ConcurrentHashMap<>();
         this.keys = new TreeSet<>();
         this.keyPool = new HashMap<>();
         this.properties = new ArrayList<>();
         this.propertiesByKey = new HashMap<>();
 
-        try {
-            for (Path file : files) {
-                loadProperties(file);
-            }
-
-            initialized = true;
-        } catch (IOException e) {
-            throw new GatewayException("Failed to load properties!", e);
-        }
+        loadProperties();
+        initialized = true;
     }
 
-    private void loadProperties(Path file) throws IOException {
-        Properties properties = loadJavaProperties(file);
-        updateFileSnapshot(file);
+    private void loadProperties() {
+        List<LoadTask> loadTasks = new ArrayList<>();
+        for (Path file : files) {
+            loadTasks.add(new LoadTask(file));
+        }
 
-        for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-            Property property = new Property();
-            property.fileName = file.getFileName().toString();
-            property.key = entry.getKey().toString();
-            property.value = entry.getValue().toString();
-            property.valueLowercase = property.value.toLowerCase();
+        loadTasks.parallelStream().forEach(LoadTask::load);
 
-            addProperty(property);
+        for (LoadTask loadTask : loadTasks) {
+            for (Property property : loadTask.properties) {
+                addProperty(property);
+            }
         }
     }
 
@@ -530,5 +523,37 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         long bytes;
         String hash;
         String lineSeparator;
+    }
+
+    private class LoadTask {
+        private final Path file;
+        private final List<Property> properties = new ArrayList<>();
+
+        public LoadTask(Path file) {
+            this.file = file;
+        }
+
+        public void load() {
+            try {
+                Properties properties = loadJavaProperties(file);
+                updateFileSnapshot(file);
+
+                for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+                    Property property = new Property();
+                    property.fileName = file.getFileName().toString();
+                    property.key = entry.getKey().toString();
+                    property.value = entry.getValue().toString();
+                    property.valueLowercase = property.value.toLowerCase();
+
+                    this.properties.add(property);
+                }
+            } catch (IOException e) {
+                throw new GatewayException("Failed to load properties!", e);
+            }
+        }
+
+        public List<Property> getProperties() {
+            return properties;
+        }
     }
 }

@@ -56,6 +56,11 @@ public abstract class PropertiesGatewayTest {
         assertThat(gateway.getKeys()).hasSize(SAMPLE_KEY_COUNT);
     }
 
+    @Test(expected = GatewayException.class)
+    public void loadProperties_doesNotExist() {
+        givenProperties("resources.properties", "resources_that_do_not_exist.properties");
+    }
+
     @Test
     public void loadProperties_unsavedChanges() {
         givenProperties("resources.properties");
