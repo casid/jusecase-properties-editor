@@ -14,6 +14,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Singleton
@@ -226,26 +228,14 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     }
 
     @Override
-    public List<Key> search(String queryString) {
+    public List<Key> search(String queryString, boolean regex) {
         if (!isInitialized() || queryString.isEmpty()) {
             return getKeys();
         }
 
         Set<Key> result = ConcurrentHashMap.newKeySet();
-        keys.parallelStream().forEach(key -> {
-            if (key.contains(queryString)) {
-                result.add(getKey(key));
-            }
-        });
-
-        String queryStringLowerCase = queryString.toLowerCase();
-        properties.parallelStream().forEach(property -> {
-            if (!result.contains(getKey(property.key))) {
-                if (property.valueLowercase.contains(queryStringLowerCase)) {
-                    result.add(getKey(property.key));
-                }
-            }
-        });
+        keys.parallelStream().forEach(regex ? new RegexKeyMatcher(queryString, result) : new ContainsKeyMatcher(queryString, result));
+        properties.parallelStream().forEach(regex ? new RegexValueMatcher(queryString, result) : new ContainsValueMatcher(queryString, result));
 
         ArrayList<Key> keys = new ArrayList<>(result);
         Collections.sort(keys);
@@ -529,11 +519,11 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         private final Path file;
         private final List<Property> properties = new ArrayList<>();
 
-        public LoadTask(Path file) {
+        LoadTask(Path file) {
             this.file = file;
         }
 
-        public void load() {
+        void load() {
             try {
                 Properties properties = loadJavaProperties(file);
                 updateFileSnapshot(file);
@@ -554,6 +544,98 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
 
         public List<Property> getProperties() {
             return properties;
+        }
+    }
+
+    private abstract class KeyMatcher implements Consumer<String> {
+        final String queryString;
+        final Set<Key> result;
+
+        KeyMatcher( String queryString, Set<Key> result ) {
+            this.queryString = queryString;
+            this.result = result;
+        }
+
+        @Override
+        public void accept( String key ) {
+            if (isMatch(key)) {
+                result.add(getKey(key));
+            }
+        }
+
+        protected abstract boolean isMatch( String key );
+    }
+
+    private class ContainsKeyMatcher extends KeyMatcher {
+
+        ContainsKeyMatcher( String queryString, Set<Key> result ) {
+            super(queryString, result);
+        }
+
+        @Override
+        protected boolean isMatch( String key ) {
+            return key.contains(queryString);
+        }
+    }
+
+    private class RegexKeyMatcher extends KeyMatcher {
+
+        final Pattern queryPattern;
+
+        RegexKeyMatcher( String queryString, Set<Key> result ) {
+            super(queryString, result);
+            queryPattern = Pattern.compile(queryString);
+        }
+
+        @Override
+        protected boolean isMatch( String key ) {
+            return queryPattern.matcher(key).matches();
+        }
+    }
+
+    private abstract class ValueMatcher implements Consumer<Property> {
+        final String queryStringLowerCase;
+        final Set<Key> result;
+
+        ValueMatcher( String queryString, Set<Key> result ) {
+            this.queryStringLowerCase = queryString.toLowerCase();
+            this.result = result;
+        }
+
+        @Override
+        public void accept( Property property ) {
+            if (!result.contains(getKey(property.key)) && isMatch(property)) {
+                result.add(getKey(property.key));
+            }
+        }
+
+        protected abstract boolean isMatch( Property property );
+    }
+
+    private class ContainsValueMatcher extends ValueMatcher {
+
+        ContainsValueMatcher( String queryString, Set<Key> result ) {
+            super(queryString, result);
+        }
+
+        @Override
+        protected boolean isMatch( Property property ) {
+            return property.valueLowercase.contains(queryStringLowerCase);
+        }
+    }
+
+    private class RegexValueMatcher extends ValueMatcher {
+
+        final Pattern queryPatternLowerCase;
+
+        RegexValueMatcher( String queryString, Set<Key> result ) {
+            super(queryString, result);
+            queryPatternLowerCase = Pattern.compile(queryStringLowerCase);
+        }
+
+        @Override
+        protected boolean isMatch( Property property ) {
+            return queryPatternLowerCase.matcher(property.valueLowercase).matches();
         }
     }
 }

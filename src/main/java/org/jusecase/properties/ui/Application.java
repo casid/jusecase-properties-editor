@@ -29,6 +29,7 @@ public class Application {
     private JList<Key> keyList;
     private KeyListModel keyListModel = new KeyListModel();
     private JTextField searchField;
+    private JCheckBox regexBox;
     private JPanel keyPanel;
     private TranslationsPanel translationsPanel;
     private ApplicationMenuBar menuBar;
@@ -114,6 +115,7 @@ public class Application {
     public void search(String query) {
         Search.Request request = new Search.Request();
         request.query = query;
+        request.regex = regexBox.isSelected();
         execute(request, (Consumer<Search.Response>) response -> {
             updateKeyList(response.keys);
 
@@ -198,6 +200,7 @@ public class Application {
     public void onNewKeyAdded(String key) {
         Search.Request request = new Search.Request();
         request.query = searchField.getText();
+        request.regex = regexBox.isSelected();
         execute(request, (Consumer<Search.Response>) response -> {
             if (response.keys.contains(new Key(key))) {
                 keyListModel.setKeys(response.keys);
@@ -220,6 +223,7 @@ public class Application {
     public void refreshSearch() {
         Search.Request request = new Search.Request();
         request.query = searchField.getText();
+        request.regex = regexBox.isSelected();
         execute(request, (Consumer<Search.Response>) response -> {
             int previousSelectedIndex = keyList.getSelectedIndex();
             keyListModel.setKeys(response.keys);
@@ -258,6 +262,10 @@ public class Application {
             }
         });
         keyPanel.add(searchField, "wrap,growx");
+
+        regexBox = new JCheckBox("Regex", false);
+        regexBox.addItemListener(e -> search(searchField.getText()));
+        keyPanel.add(regexBox, "wrap,growx");
     }
 
     private void initMenuBar() {

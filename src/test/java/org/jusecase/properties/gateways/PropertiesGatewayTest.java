@@ -174,111 +174,125 @@ public abstract class PropertiesGatewayTest {
 
     @Test
     public void search_uninitialized() {
-        assertThat(gateway.search("no npe wanted here!")).isEmpty();
+        assertThat(gateway.search("no npe wanted here!", false)).isEmpty();
     }
 
     @Test
     public void search_empty() {
         givenProperties("resources.properties");
-        List<Key> keys = gateway.search("");
+        List<Key> keys = gateway.search("", false);
         assertThat(keys).hasSize(SAMPLE_KEY_COUNT);
     }
 
     @Test
     public void search_keyPrefix() {
         givenProperties("resources.properties");
-        List<Key> keys = gateway.search("sample.lo");
+        List<Key> keys = gateway.search("sample.lo", false);
         assertThatKeys(keys).containsExactly("sample.long1", "sample.long2");
     }
 
     @Test
     public void search_keyPart() {
         givenProperties("resources.properties");
-        List<Key> keys = gateway.search("le.lo");
+        List<Key> keys = gateway.search("le.lo", false);
         assertThatKeys(keys).containsExactly("sample.long1", "sample.long2");
     }
 
     @Test
     public void search_keyCamelCase() {
         givenProperties("resources.properties");
-        List<Key> keys = gateway.search("camelCase");
+        List<Key> keys = gateway.search("camelCase", false);
         assertThatKeys(keys).containsExactly("sample.camelCase");
     }
 
     @Test
     public void search_value1() {
         givenProperties("resources.properties");
-        List<Key> keys = gateway.search("Lucene");
+        List<Key> keys = gateway.search("Lucene", false);
         assertThatKeys(keys).containsExactly("sample.long1");
     }
 
     @Test
     public void search_value2() {
         givenProperties("resources.properties");
-        List<Key> keys = gateway.search("search engine");
+        List<Key> keys = gateway.search("search engine", false);
         assertThatKeys(keys).containsExactly("sample.long1");
     }
 
     @Test
     public void search_whitespaceInQuery() {
         givenProperties("resources.properties");
-        List<Key> keys = gateway.search("Apache Lucene");
+        List<Key> keys = gateway.search("Apache Lucene", false);
         assertThatKeys(keys).containsExactly("sample.long1");
+    }
+
+    @Test
+    public void search_regex_inValue() {
+        givenProperties("resources.properties");
+        List<Key> keys = gateway.search("^sample$", true);
+        assertThatKeys(keys).containsExactly("sample.camelCase");
+    }
+
+    @Test
+    public void search_regex_inKey() {
+        givenProperties("resources.properties");
+        List<Key> keys = gateway.search("^sample.camelCase$", true);
+        assertThatKeys(keys).containsExactly("sample.camelCase");
     }
 
     @Test
     public void search_queryWithThirdWordMatchingEverything() {
         givenProperties("resources.properties");
-        List<Key> keys = gateway.search("Apache Lucene is");
+        List<Key> keys = gateway.search("Apache Lucene is", false);
         assertThatKeys(keys).containsExactly("sample.long1");
     }
 
     @Test
     public void search_separatedByMinus() {
         givenProperties("resources.properties");
-        List<Key> keys = gateway.search("full-featured");
+        List<Key> keys = gateway.search("full-featured", false);
         assertThatKeys(keys).containsExactly("sample.long1");
     }
 
     @Test
     public void search_separatedByComma() {
         givenProperties("resources.properties");
-        List<Key> keys = gateway.search("Powerful, Accurate");
+        List<Key> keys = gateway.search("Powerful, Accurate", false);
         assertThatKeys(keys).containsExactly("sample.long2");
     }
 
     @Test
     public void search_multipleFiles() {
         givenProperties("resources.properties", "resources_de.properties");
-        List<Key> keys = gateway.search("sample");
+        List<Key> keys = gateway.search("sample", false);
         assertThatKeys(keys).hasSize(SAMPLE_KEY_COUNT);
     }
 
     @Test
     public void search_fullSentence() {
         givenProperties("resources.properties");
-        List<Key> keys = gateway.search("Apache Lucene is a high-performance, full-featured text search");
+        List<Key> keys = gateway.search("Apache Lucene is a high-performance, full-featured text search", false);
         assertThatKeys(keys).containsExactly("sample.long1");
     }
 
     @Test
     public void search_lowercase() {
         givenProperties("resources.properties");
-        List<Key> keys = gateway.search("apache lucene");
+        List<Key> keys = gateway.search("apache lucene", false);
         assertThatKeys(keys).containsExactly("sample.long1");
     }
 
     @Test
     public void search_onlyAFewLettersOfSentence() {
         givenProperties("resources.properties");
-        List<Key> keys = gateway.search("Ap");
+        List<Key> keys = gateway.search("Ap", false);
         assertThatKeys(keys).contains("sample.long1");
     }
 
     @Test
     public void search_unsavedChanges() {
         givenProperties("resources.properties");
-        gateway.search("sample1");
+        gateway.search("sample1", false);
         assertThat(gateway.hasUnsavedChanges()).isFalse();
     }
 
@@ -342,7 +356,7 @@ public abstract class PropertiesGatewayTest {
         property.value = "UPPERCASE";
         gateway.updateValue(property);
 
-        assertThat(gateway.search("uppercase")).hasSize(1);
+        assertThat(gateway.search("uppercase", false)).hasSize(1);
     }
 
     @Test
@@ -353,7 +367,7 @@ public abstract class PropertiesGatewayTest {
         german.value = "ENDLICH EIN WERT";
         gateway.updateValue(german);
 
-        assertThat(gateway.search("endlich ein wert")).hasSize(1);
+        assertThat(gateway.search("endlich ein wert", false)).hasSize(1);
     }
 
     @Test
@@ -449,7 +463,7 @@ public abstract class PropertiesGatewayTest {
         gateway.addProperties(a(list(property)));
 
         property.value = null;
-        gateway.search("sneaky"); // We do not want a null pointer exception here (a clone of the property must be added to the gateway!)
+        gateway.search("sneaky", false); // We do not want a null pointer exception here (a clone of the property must be added to the gateway!)
     }
 
     @Test
@@ -551,7 +565,7 @@ public abstract class PropertiesGatewayTest {
     public void duplicateKey_lowerCaseSearchStillWorks() {
         givenProperties("resources.properties");
         gateway.duplicateKey("sample1", "sample1copy");
-        assertThat(gateway.search("sample 1")).hasSize(2);
+        assertThat(gateway.search("sample 1", false)).hasSize(2);
     }
 
     @Test

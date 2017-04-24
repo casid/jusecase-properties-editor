@@ -59,7 +59,7 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
     }
 
     @Override
-    public List<Key> search(String query) {
+    public List<Key> search( String query, boolean regex ) {
         return null;
     }
 

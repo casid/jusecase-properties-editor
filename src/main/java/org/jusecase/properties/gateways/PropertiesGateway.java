@@ -14,7 +14,7 @@ public interface PropertiesGateway {
 
     List<Key> getKeys();
 
-    List<Key> search(String query);
+    List<Key> search(String query, boolean regex);
 
     List<Property> getProperties(String key);
 

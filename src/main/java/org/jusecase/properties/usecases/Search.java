@@ -20,12 +20,13 @@ public class Search implements Usecase<Search.Request, Search.Response> {
     @Override
     public Response execute(Request request) {
         Response response = new Response();
-        response.keys = propertiesGateway.search(request.query);
+        response.keys = propertiesGateway.search(request.query, request.regex);
         return response;
     }
 
     public static class Request {
         public String query;
+        public boolean regex;
     }
 
     public static class Response {
