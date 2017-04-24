@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class NewKeyTest extends UsecaseTest<Request, Response> {
 
-    PropertiesGatewayTrainer propertiesGatewayTrainer = new PropertiesGatewayTrainer();
+    private PropertiesGatewayTrainer propertiesGatewayTrainer = new PropertiesGatewayTrainer();
 
     @Before
     public void setUp() {
@@ -36,6 +36,26 @@ public class NewKeyTest extends UsecaseTest<Request, Response> {
         whenRequestIsExecuted();
 
         thenErrorMessageIs("Key name must not be empty");
+        propertiesGatewayTrainer.thenNoKeyIsAdded();
+    }
+
+    @Test
+    public void whiteSpaceName() {
+        request.key = " key";
+
+        whenRequestIsExecuted();
+
+        thenErrorMessageIs("Key name must not contain whitespaces");
+        propertiesGatewayTrainer.thenNoKeyIsAdded();
+    }
+
+    @Test
+    public void tabName() {
+        request.key = "ke\ty";
+
+        whenRequestIsExecuted();
+
+        thenErrorMessageIs("Key name must not contain tabs");
         propertiesGatewayTrainer.thenNoKeyIsAdded();
     }
 

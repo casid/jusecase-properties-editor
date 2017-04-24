@@ -3,6 +3,7 @@ package org.jusecase.properties.usecases;
 import org.jusecase.Usecase;
 import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.PropertiesGateway;
+import org.jusecase.properties.plugins.validation.KeyValidator;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -11,21 +12,19 @@ import javax.inject.Singleton;
 public class NewKey implements Usecase<NewKey.Request, NewKey.Response> {
 
     private final PropertiesGateway propertiesGateway;
+    private final KeyValidator keyValidator = new KeyValidator();
 
     @Inject
     public NewKey(PropertiesGateway propertiesGateway) {
-        this.propertiesGateway = propertiesGateway;
+         this.propertiesGateway = propertiesGateway;
     }
 
     @Override
     public Response execute(Request request) {
-        if (request.key == null || request.key.isEmpty()) {
-            throw new UsecaseException("Key name must not be empty");
-        }
-
         if (request.undo) {
             propertiesGateway.deleteKey(request.key);
         } else {
+            keyValidator.validate(request.key);
             propertiesGateway.addKey(request.key);
         }
 

@@ -3,6 +3,7 @@ package org.jusecase.properties.usecases;
 import org.jusecase.Usecase;
 import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.PropertiesGateway;
+import org.jusecase.properties.plugins.validation.KeyValidator;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -12,6 +13,7 @@ import javax.inject.Singleton;
 public class DuplicateKey implements Usecase<DuplicateKey.Request, DuplicateKey.Response> {
 
     private final PropertiesGateway propertiesGateway;
+    private final KeyValidator keyValidator = new KeyValidator();
 
     @Inject
     public DuplicateKey(PropertiesGateway propertiesGateway) {
@@ -23,6 +25,7 @@ public class DuplicateKey implements Usecase<DuplicateKey.Request, DuplicateKey.
         if (request.undo) {
             propertiesGateway.deleteKey(request.newKey);
         } else {
+            keyValidator.validate(request.newKey);
             propertiesGateway.duplicateKey(request.key, request.newKey);
         }
         return new Response();
