@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
 public class Application {
@@ -116,7 +117,7 @@ public class Application {
         Search.Request request = new Search.Request();
         request.query = query;
         request.regex = regexBox.isSelected();
-        execute(request, (Consumer<Search.Response>) response -> {
+        search(request, response -> {
             updateKeyList(response.keys);
 
             if (response.keys.isEmpty()) {
@@ -128,6 +129,32 @@ public class Application {
                 translationsPanel.setSearchQuery(query);
             }
         });
+    }
+
+    private void search(Consumer<Search.Response> responseConsumer) {
+        Search.Request request = new Search.Request();
+        request.query = searchField.getText();
+        request.regex = regexBox.isSelected();
+        search(request, responseConsumer);
+    }
+
+    private void search(Search.Request request, Consumer<Search.Response> responseConsumer) {
+        try {
+            resetRegexError();
+            execute(request, responseConsumer);
+        } catch ( PatternSyntaxException e ) {
+            setRegexError(e);
+        }
+    }
+
+    private void setRegexError( PatternSyntaxException e ) {
+        regexBox.setText(e.getMessage());
+        regexBox.setForeground(Color.red);
+    }
+
+    private void resetRegexError() {
+        regexBox.setText("Regex");
+        regexBox.setForeground(keyList.getForeground());
     }
 
     private void updateKeyList( List<Key> keys) {
@@ -198,10 +225,7 @@ public class Application {
     }
 
     public void onNewKeyAdded(String key) {
-        Search.Request request = new Search.Request();
-        request.query = searchField.getText();
-        request.regex = regexBox.isSelected();
-        execute(request, (Consumer<Search.Response>) response -> {
+        search(response -> {
             if (response.keys.contains(new Key(key))) {
                 keyListModel.setKeys(response.keys);
             } else {
@@ -221,10 +245,7 @@ public class Application {
     }
 
     public void refreshSearch() {
-        Search.Request request = new Search.Request();
-        request.query = searchField.getText();
-        request.regex = regexBox.isSelected();
-        execute(request, (Consumer<Search.Response>) response -> {
+        search(response -> {
             int previousSelectedIndex = keyList.getSelectedIndex();
             keyListModel.setKeys(response.keys);
             keyList.setSelectedIndex(Math.max(0, previousSelectedIndex));
@@ -264,7 +285,10 @@ public class Application {
         keyPanel.add(searchField, "wrap,growx");
 
         regexBox = new JCheckBox("Regex", false);
-        regexBox.addItemListener(e -> search(searchField.getText()));
+        regexBox.addItemListener(e -> {
+            resetRegexError();
+            search(searchField.getText());
+        });
         keyPanel.add(regexBox, "wrap,growx");
     }
 

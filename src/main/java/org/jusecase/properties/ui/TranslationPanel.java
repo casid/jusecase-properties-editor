@@ -13,6 +13,7 @@ import javax.swing.text.Highlighter;
 import java.awt.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 
 public class TranslationPanel extends JPanel {
@@ -156,16 +157,19 @@ public class TranslationPanel extends JPanel {
 
         boolean didHighlight = false;
         if (this.property != null && this.property.value != null && !searchQuery.isEmpty()) {
-            Matcher m = Pattern.compile(searchQuery.toLowerCase()).matcher(textArea.getText().toLowerCase());
-
-            while ( m.find() ) {
-                try {
-                    didHighlight = true;
-                    highlighter.addHighlight(m.start(), m.end(), hightlightPainter);
+            try {
+                Matcher m = Pattern.compile(searchQuery.toLowerCase()).matcher(textArea.getText().toLowerCase());
+                while ( m.find() ) {
+                    try {
+                        didHighlight = true;
+                        highlighter.addHighlight(m.start(), m.end(), hightlightPainter);
+                    }
+                    catch ( BadLocationException e ) {
+                        e.printStackTrace(); // Log and ignore silently
+                    }
                 }
-                catch ( BadLocationException e ) {
-                    e.printStackTrace(); // Log and ignore silently
-                }
+            } catch ( PatternSyntaxException e ) {
+                e.printStackTrace(); // Log and ignore silently
             }
         }
         isAvailable.setBackground(didHighlight ? searchHighlightColor : transparentBackgroundColor);
