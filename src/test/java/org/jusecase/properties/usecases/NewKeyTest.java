@@ -16,7 +16,6 @@ public class NewKeyTest extends UsecaseTest<Request, Response> {
     @Before
     public void setUp() {
         usecase = new NewKey(propertiesGatewayTrainer);
-        request = new Request();
     }
 
     @Test

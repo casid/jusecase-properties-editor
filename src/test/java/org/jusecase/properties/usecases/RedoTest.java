@@ -12,7 +12,6 @@ public class RedoTest extends AbstractUndoRedoTest<Request, Response> {
     public void setUp() {
         super.setUp();
         usecase = new Redo(usecaseExecutor, undoableRequestGateway);
-        request = new Request();
     }
 
     @Test

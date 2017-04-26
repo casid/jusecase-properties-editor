@@ -19,7 +19,6 @@ public class DeleteKeyTest extends UsecaseTest<Request, Response> {
     @Before
     public void setUp() {
         usecase = new DeleteKey(propertiesGatewayTrainer);
-        request = new Request();
     }
 
     @Test

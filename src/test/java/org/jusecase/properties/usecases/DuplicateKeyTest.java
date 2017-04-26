@@ -16,7 +16,6 @@ public class DuplicateKeyTest extends UsecaseTest<Request, Response> {
     @Before
     public void setUp() {
         usecase = new DuplicateKey(propertiesGatewayTrainer);
-        request = new Request();
     }
 
     @Test

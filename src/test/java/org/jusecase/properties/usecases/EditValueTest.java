@@ -19,7 +19,6 @@ public class EditValueTest extends UsecaseTest<Request, Response> {
     @Before
     public void setUp() {
         usecase = new EditValue(propertiesGatewayTrainer);
-        request = new Request();
         request.value = "new value";
         request.property = a(property());
     }

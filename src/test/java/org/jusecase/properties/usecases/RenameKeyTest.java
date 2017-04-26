@@ -16,7 +16,6 @@ public class RenameKeyTest extends UsecaseTest<Request, Response> {
     @Before
     public void setUp() {
         usecase = new RenameKey(propertiesGatewayTrainer);
-        request = new Request();
     }
 
     @Test

@@ -1,7 +1,5 @@
 package org.jusecase.properties.usecases;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.jusecase.UsecaseTest;
@@ -12,6 +10,8 @@ import org.jusecase.properties.plugins.importer.PropertiesImporterTrainer;
 import org.jusecase.properties.usecases.GetPlugins.Request;
 import org.jusecase.properties.usecases.GetPlugins.Response;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class GetPluginsTest extends UsecaseTest<Request, Response> {
     private PluginManager pluginManager = new PluginManager();
@@ -19,7 +19,6 @@ public class GetPluginsTest extends UsecaseTest<Request, Response> {
     @Before
     public void setUp() {
         usecase = new GetPlugins(pluginManager);
-        request = new Request();
     }
 
     @Test

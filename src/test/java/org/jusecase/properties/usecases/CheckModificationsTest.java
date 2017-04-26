@@ -14,7 +14,6 @@ public class CheckModificationsTest extends UsecaseTest<Request, Response> {
     @Before
     public void setUp() {
         usecase = new CheckModifications(propertiesGatewayTrainer);
-        request = new Request();
     }
 
     @Test

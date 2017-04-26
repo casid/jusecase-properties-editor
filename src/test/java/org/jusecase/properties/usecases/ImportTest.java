@@ -1,13 +1,5 @@
 package org.jusecase.properties.usecases;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.jusecase.Builders.a;
-import static org.jusecase.Builders.list;
-import static org.jusecase.properties.entities.Builders.property;
-import static org.jusecase.properties.entities.Builders.testPath;
-
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.jusecase.UsecaseTest;
@@ -18,6 +10,14 @@ import org.jusecase.properties.plugins.importer.PropertiesImporterTrainer;
 import org.jusecase.properties.usecases.Import.Request;
 import org.jusecase.properties.usecases.Import.Response;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.jusecase.Builders.a;
+import static org.jusecase.Builders.list;
+import static org.jusecase.properties.entities.Builders.property;
+import static org.jusecase.properties.entities.Builders.testPath;
+
 
 public class ImportTest extends UsecaseTest<Request, Response> {
     private PropertiesGatewayTrainer propertiesGatewayTrainer = new PropertiesGatewayTrainer();
@@ -27,7 +27,6 @@ public class ImportTest extends UsecaseTest<Request, Response> {
     @Before
     public void setUp() {
         usecase = new Import(propertiesGatewayTrainer, pluginManager);
-        request = new Request();
         request.pluginId = "pluginId";
         request.files = a(list(a(testPath("something-else.txt"))));
 

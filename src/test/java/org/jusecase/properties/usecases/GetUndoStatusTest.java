@@ -17,7 +17,6 @@ public class GetUndoStatusTest extends UsecaseTest<Request, Response> {
     @Before
     public void setUp() {
         usecase = new GetUndoStatus(undoableRequestGateway);
-        request = new Request();
     }
 
     @Test

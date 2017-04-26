@@ -22,7 +22,6 @@ public class InitializeTest extends UsecaseTest<Request, Response> {
     @Before
     public void setUp() {
         usecase = new Initialize(propertiesGatewayTrainer, settingsGatewayTrainer, undoableRequestGateway);
-        request = new Request();
     }
 
     @Test
