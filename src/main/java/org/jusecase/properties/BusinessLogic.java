@@ -44,6 +44,7 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
         addUsecase(Import.class);
         addUsecase(GetPlugins.class);
         addUsecase(IsAllowedToQuit.class);
+        addUsecase(Export.class);
     }
 
     private class GatewayModule extends AbstractModule {
