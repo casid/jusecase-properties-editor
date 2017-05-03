@@ -7,7 +7,9 @@ import org.jusecase.UsecaseExecutor;
 import org.jusecase.executors.guice.GuiceUsecaseExecutor;
 import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.*;
+import org.jusecase.properties.plugins.Plugin;
 import org.jusecase.properties.plugins.PluginManager;
+import org.jusecase.properties.plugins.exporter.JsonPropertiesExporter;
 import org.jusecase.properties.plugins.importer.JavaPropertiesImporter;
 import org.jusecase.properties.usecases.*;
 
@@ -17,6 +19,7 @@ import java.nio.file.Paths;
 public class BusinessLogic extends GuiceUsecaseExecutor {
 
     private UndoableRequestGateway undoableRequestGateway = new UndoableRequestGateway();
+    private PluginManager pluginManager;
 
     public BusinessLogic() {
         setInjector(Guice.createInjector(
@@ -45,6 +48,9 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
         addUsecase(GetPlugins.class);
         addUsecase(IsAllowedToQuit.class);
         addUsecase(Export.class);
+
+        registerPlugin(JavaPropertiesImporter.class);
+        registerPlugin(JsonPropertiesExporter.class);
     }
 
     private class GatewayModule extends AbstractModule {
@@ -64,8 +70,7 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
     private class PluginModule extends AbstractModule {
         @Override
         protected void configure() {
-            bind(PluginManager.class).toInstance(PluginManager.getInstance());
-            PluginManager.getInstance().registerPlugin(new JavaPropertiesImporter());
+            bind(PluginManager.class).toProvider(BusinessLogic.this::getPluginManager);
         }
     }
 
@@ -89,5 +94,16 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
             }
         }
         return response;
+    }
+
+    public void registerPlugin(Class<? extends Plugin> pluginClass) {
+        getPluginManager().registerPlugin(pluginClass);
+    }
+
+    public PluginManager getPluginManager() {
+        if (pluginManager == null) {
+            pluginManager = new PluginManager(getInjector());
+        }
+        return pluginManager;
     }
 }

@@ -3,7 +3,12 @@ package org.jusecase.properties;
 import org.junit.Before;
 import org.junit.Test;
 import org.jusecase.UsecaseExecutorTest;
+import org.jusecase.properties.plugins.Plugin;
+import org.jusecase.properties.plugins.exporter.JsonPropertiesExporter;
+import org.jusecase.properties.plugins.importer.JavaPropertiesImporter;
 import org.jusecase.properties.usecases.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class BusinessLogicTest extends UsecaseExecutorTest {
     BusinessLogic businessLogic;
@@ -35,5 +40,15 @@ public class BusinessLogicTest extends UsecaseExecutorTest {
         thenUsecaseCanBeExecuted(GetPlugins.class);
         thenUsecaseCanBeExecuted(IsAllowedToQuit.class);
         thenUsecaseCanBeExecuted(Export.class);
+    }
+
+    @Test
+    public void plugins() {
+        thenPluginIsAvailable(JavaPropertiesImporter.ID, JavaPropertiesImporter.class);
+        thenPluginIsAvailable(JsonPropertiesExporter.ID, JsonPropertiesExporter.class);
+    }
+
+    private void thenPluginIsAvailable(String id, Class<? extends Plugin> pluginClass) {
+        assertThat(businessLogic.getPluginManager().getPlugin(id)).isInstanceOf(pluginClass);
     }
 }

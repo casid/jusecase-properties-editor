@@ -97,6 +97,13 @@ public class Application {
         }
     }
 
+    public void exportProperties(Plugin plugin) {
+        Export.Request request = new Export.Request();
+        request.keys = keyList.getSelectedValuesList();
+        request.pluginId = plugin.getPluginId();
+        execute(request);
+    }
+
     public void loadProperties(File file) {
         LoadBundle.Request request = new LoadBundle.Request();
         request.propertiesFile = file.toPath();
@@ -447,5 +454,10 @@ public class Application {
 
     public void onKeyDeleted() {
         refreshSearch();
+    }
+
+    @SuppressWarnings("unused") // Used by derived projects
+    public void registerPlugin(Class<? extends Plugin> pluginClass) {
+        businessLogic.registerPlugin(pluginClass);
     }
 }

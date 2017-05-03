@@ -1,5 +1,7 @@
 package org.jusecase.properties.plugins.importer;
 
+import org.jusecase.properties.entities.Property;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -9,14 +11,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.jusecase.properties.entities.Property;
-
 
 public class JavaPropertiesImporter implements PropertiesImporter {
 
+    public static final String ID = "jusecase-java-properties-importer";
+
     @Override
     public String getPluginId() {
-        return "jusecase-java-properties-importer";
+        return ID;
     }
 
     @Override
