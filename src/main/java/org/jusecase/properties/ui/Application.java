@@ -233,12 +233,13 @@ public class Application {
 
     public void onNewKeyAdded(String key) {
         search(response -> {
-            if (response.keys.contains(new Key(key))) {
+            Key keyEntity = new Key(key);
+            if (response.keys.contains(keyEntity)) {
                 keyListModel.setKeys(response.keys);
             } else {
                 resetSearch();
             }
-            keyList.setSelectedValue(key, true);
+            keyList.setSelectedValue(keyEntity, true);
         });
     }
 
