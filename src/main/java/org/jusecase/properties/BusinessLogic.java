@@ -15,16 +15,21 @@ import org.jusecase.properties.usecases.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class BusinessLogic extends GuiceUsecaseExecutor {
 
     private UndoableRequestGateway undoableRequestGateway = new UndoableRequestGateway();
     private PluginManager pluginManager;
+    private Map<Class<?>, Class<?>> externalDependencies = new HashMap<>();
 
     public BusinessLogic() {
         setInjector(Guice.createInjector(
                 new GatewayModule(),
                 new PluginModule(),
+                new ExternalDependenciesModule(),
                 new BusinessLogicModule()
         ));
 
@@ -74,6 +79,17 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
         }
     }
 
+    private class ExternalDependenciesModule extends AbstractModule {
+        @Override
+        protected void configure() {
+            addExternalDependencies(externalDependencies);
+            externalDependencies.forEach(( from, to ) -> {
+                //noinspection unchecked
+                bind(from).to((Class)to);
+            });
+        }
+    }
+
     private class BusinessLogicModule extends AbstractModule {
         @Override
         protected void configure() {
@@ -105,5 +121,9 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
             pluginManager = new PluginManager(getInjector());
         }
         return pluginManager;
+    }
+
+    @SuppressWarnings("unused") // Used by derived projects
+    protected void addExternalDependencies( Map<Class<?>, Class<?>> externalDependencies ) {
     }
 }

@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 public class Application {
 
-    private final BusinessLogic businessLogic = new BusinessLogic();
+    private final BusinessLogic businessLogic = createBusinessLogic();
 
     private JFrame frame;
     private JList<Key> keyList;
@@ -52,6 +52,10 @@ public class Application {
                 throw new RuntimeException(e);
             }
         });
+    }
+
+    protected BusinessLogic createBusinessLogic() {
+        return new BusinessLogic();
     }
 
     private static void macSetup(String appName) {
