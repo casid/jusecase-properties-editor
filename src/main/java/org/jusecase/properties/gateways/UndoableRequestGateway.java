@@ -22,7 +22,11 @@ public class UndoableRequestGateway {
         return requests.contains(undoableRequest);
     }
 
-    public UndoableRequest getNextRequestToUndo() {
+   public List<UndoableRequest> getAll() {
+      return new ArrayList<>(requests);
+   }
+
+   public UndoableRequest getNextRequestToUndo() {
         if (redoIndex > 0) {
             return requests.get(redoIndex - 1);
         }
