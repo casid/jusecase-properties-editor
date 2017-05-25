@@ -2,6 +2,7 @@ package org.jusecase.properties.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.jusecase.properties.entities.Property;
+import org.jusecase.properties.usecases.Search;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -44,9 +45,9 @@ public class TranslationsPanel extends JPanel {
         revalidate();
     }
 
-    public void setSearchQuery( String searchQuery ) {
+    public void setSearchRequest(Search.Request request ) {
         for ( TranslationPanel translationPanel : translationPanels ) {
-            translationPanel.setSearchQuery(searchQuery);
+            translationPanel.setSearchRequest(request);
         }
     }
 }

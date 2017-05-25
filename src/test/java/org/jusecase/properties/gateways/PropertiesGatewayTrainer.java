@@ -2,6 +2,7 @@ package org.jusecase.properties.gateways;
 
 import org.jusecase.properties.entities.Key;
 import org.jusecase.properties.entities.Property;
+import org.jusecase.properties.usecases.Search;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -59,7 +60,7 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
     }
 
     @Override
-    public List<Key> search( String query, boolean regex ) {
+    public List<Key> search(Search.Request request) {
         return null;
     }
 

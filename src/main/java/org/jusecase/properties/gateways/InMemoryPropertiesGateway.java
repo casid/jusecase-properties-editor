@@ -4,6 +4,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.jusecase.properties.entities.Key;
 import org.jusecase.properties.entities.KeyPopulation;
 import org.jusecase.properties.entities.Property;
+import org.jusecase.properties.usecases.Search;
 
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -228,19 +229,38 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     }
 
     @Override
-    public List<Key> search(String queryString, boolean regex) {
-        if (!isInitialized() || queryString.isEmpty()) {
+    public List<Key> search(Search.Request request) {
+        if (!isInitialized() || request.query.isEmpty()) {
             return getKeys();
         }
 
         Set<Key> result = ConcurrentHashMap.newKeySet();
-        keys.parallelStream().forEach(regex ? new RegexKeyMatcher(queryString, result) : new ContainsKeyMatcher(queryString, result));
-        properties.parallelStream().forEach(regex ? new RegexValueMatcher(queryString, result) : new ContainsValueMatcher(queryString, result));
+        KeyMatcher keyMatcher = createKeyMatcher(request, result);
+        ValueMatcher valueMatcher = createValueMatcher(request, result);
+
+        keys.parallelStream().forEach(keyMatcher);
+        properties.parallelStream().forEach(valueMatcher);
 
         ArrayList<Key> keys = new ArrayList<>(result);
         Collections.sort(keys);
 
         return keys;
+    }
+
+    private KeyMatcher createKeyMatcher(Search.Request request, Set<Key> result) {
+        if (request.regex) {
+            return new RegexKeyMatcher(request, result);
+        } else {
+            return new ContainsKeyMatcher(request, result);
+        }
+    }
+
+    private ValueMatcher createValueMatcher(Search.Request request, Set<Key> result) {
+        if (request.regex) {
+            return new RegexValueMatcher(request, result);
+        } else {
+            return new ContainsValueMatcher(request, result);
+        }
     }
 
     @Override
@@ -551,8 +571,8 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         final String queryString;
         final Set<Key> result;
 
-        KeyMatcher( String queryString, Set<Key> result ) {
-            this.queryString = queryString;
+        KeyMatcher( Search.Request request, Set<Key> result ) {
+            this.queryString = request.query;
             this.result = result;
         }
 
@@ -568,8 +588,8 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
 
     private class ContainsKeyMatcher extends KeyMatcher {
 
-        ContainsKeyMatcher( String queryString, Set<Key> result ) {
-            super(queryString, result);
+        ContainsKeyMatcher( Search.Request request, Set<Key> result ) {
+            super(request, result);
         }
 
         @Override
@@ -582,8 +602,8 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
 
         final Pattern queryPattern;
 
-        RegexKeyMatcher( String queryString, Set<Key> result ) {
-            super(queryString, result);
+        RegexKeyMatcher( Search.Request request, Set<Key> result ) {
+            super(request, result);
             queryPattern = Pattern.compile(queryString);
         }
 
@@ -594,11 +614,17 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     }
 
     private abstract class ValueMatcher implements Consumer<Property> {
-        final String queryStringLowerCase;
+        final Search.Request request;
+        final String queryString;
         final Set<Key> result;
 
-        ValueMatcher( String queryString, Set<Key> result ) {
-            this.queryStringLowerCase = queryString.toLowerCase();
+        ValueMatcher( Search.Request request, Set<Key> result ) {
+            this.request = request;
+            if (request.caseSensitive) {
+                this.queryString = request.query;
+            } else {
+                this.queryString = request.query.toLowerCase();
+            }
             this.result = result;
         }
 
@@ -614,28 +640,36 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
 
     private class ContainsValueMatcher extends ValueMatcher {
 
-        ContainsValueMatcher( String queryString, Set<Key> result ) {
-            super(queryString, result);
+        ContainsValueMatcher( Search.Request request, Set<Key> result ) {
+            super(request, result);
         }
 
         @Override
         protected boolean isMatch( Property property ) {
-            return property.valueLowercase.contains(queryStringLowerCase);
+            if (request.caseSensitive) {
+                return property.value.contains(queryString);
+            } else {
+                return property.valueLowercase.contains(queryString);
+            }
         }
     }
 
     private class RegexValueMatcher extends ValueMatcher {
 
-        final Pattern queryPatternLowerCase;
+        final Pattern queryPattern;
 
-        RegexValueMatcher( String queryString, Set<Key> result ) {
-            super(queryString, result);
-            queryPatternLowerCase = Pattern.compile(queryStringLowerCase);
+        RegexValueMatcher( Search.Request request, Set<Key> result ) {
+            super(request, result);
+            queryPattern = Pattern.compile(queryString);
         }
 
         @Override
         protected boolean isMatch( Property property ) {
-            return queryPatternLowerCase.matcher(property.valueLowercase).matches();
+            if (request.caseSensitive) {
+                return queryPattern.matcher(property.value).matches();
+            } else {
+                return queryPattern.matcher(property.valueLowercase).matches();
+            }
         }
     }
 }

@@ -30,6 +30,7 @@ public class Application {
     private JList<Key> keyList;
     private KeyListModel keyListModel = new KeyListModel();
     private JTextField searchField;
+    private JCheckBox caseSensitiveBox;
     private JCheckBox regexBox;
     private JPanel keyPanel;
     private TranslationsPanel translationsPanel;
@@ -124,10 +125,17 @@ public class Application {
         execute(request);
     }
 
-    public void search(String query) {
+    private Search.Request createSearchRequest() {
         Search.Request request = new Search.Request();
-        request.query = query;
+        request.query = searchField.getText();
         request.regex = regexBox.isSelected();
+        request.caseSensitive = caseSensitiveBox.isSelected();
+        return request;
+    }
+
+    public void search(String query) {
+        Search.Request request = createSearchRequest();
+        request.query = query;
         search(request, response -> {
             updateKeyList(response.keys);
 
@@ -137,16 +145,13 @@ public class Application {
                 if (getSelectedKey() == null) {
                     keyList.setSelectedIndex(0);
                 }
-                translationsPanel.setSearchQuery(query);
+                translationsPanel.setSearchRequest(request);
             }
         });
     }
 
     private void search(Consumer<Search.Response> responseConsumer) {
-        Search.Request request = new Search.Request();
-        request.query = searchField.getText();
-        request.regex = regexBox.isSelected();
-        search(request, responseConsumer);
+        search(createSearchRequest(), responseConsumer);
     }
 
     private void search(Search.Request request, Consumer<Search.Response> responseConsumer) {
@@ -295,6 +300,12 @@ public class Application {
             }
         });
         keyPanel.add(searchField, "wrap,growx");
+
+        caseSensitiveBox = new JCheckBox("Case sensitive", false);
+        caseSensitiveBox.addItemListener(e -> {
+            search(searchField.getText());
+        });
+        keyPanel.add(caseSensitiveBox, "wrap,growx");
 
         regexBox = new JCheckBox("Regex", false);
         regexBox.addItemListener(e -> {

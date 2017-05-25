@@ -2,6 +2,7 @@ package org.jusecase.properties.gateways;
 
 import org.jusecase.properties.entities.Key;
 import org.jusecase.properties.entities.Property;
+import org.jusecase.properties.usecases.Search;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -14,7 +15,7 @@ public interface PropertiesGateway {
 
     List<Key> getKeys();
 
-    List<Key> search(String query, boolean regex);
+    List<Key> search(Search.Request request);
 
     List<Property> getProperties(String key);
 

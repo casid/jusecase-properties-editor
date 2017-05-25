@@ -3,6 +3,7 @@ package org.jusecase.properties.ui;
 import net.miginfocom.swing.MigLayout;
 import org.jusecase.properties.entities.Property;
 import org.jusecase.properties.usecases.EditValue;
+import org.jusecase.properties.usecases.Search;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -24,7 +25,7 @@ public class TranslationPanel extends JPanel {
     private JTextArea textArea;
     private DocumentListener textAreaListener;
     private Property property;
-    private String searchQuery = "";
+    private Search.Request searchRequest = new Search.Request();
     private Color searchHighlightColor = new Color(230, 230, 255);
     private Color transparentBackgroundColor;
     private Highlighter.HighlightPainter hightlightPainter = new DefaultHighlighter.DefaultHighlightPainter(searchHighlightColor);
@@ -36,11 +37,12 @@ public class TranslationPanel extends JPanel {
         this.application = application;
         this.fileName = fileName;
         this.transparentBackgroundColor = getBackground();
+        this.searchRequest.query = "";
         init();
     }
 
-    public void setSearchQuery( String searchQuery ) {
-        this.searchQuery = searchQuery;
+    public void setSearchRequest(Search.Request request ) {
+        this.searchRequest = request;
         highlightSearchQuery();
     }
 
@@ -156,9 +158,9 @@ public class TranslationPanel extends JPanel {
         highlighter.removeAllHighlights();
 
         boolean didHighlight = false;
-        if (this.property != null && this.property.value != null && !searchQuery.isEmpty()) {
+        if (this.property != null && this.property.value != null && !searchRequest.query.isEmpty()) {
             try {
-                Matcher m = Pattern.compile(searchQuery.toLowerCase()).matcher(textArea.getText().toLowerCase());
+                Matcher m = createHighlightMatcher();
                 while ( m.find() ) {
                     try {
                         didHighlight = true;
@@ -173,5 +175,13 @@ public class TranslationPanel extends JPanel {
             }
         }
         isAvailable.setBackground(didHighlight ? searchHighlightColor : transparentBackgroundColor);
+    }
+
+    private Matcher createHighlightMatcher() {
+        if (searchRequest.caseSensitive) {
+            return Pattern.compile(searchRequest.query).matcher(textArea.getText());
+        } else {
+            return Pattern.compile(searchRequest.query.toLowerCase()).matcher(textArea.getText().toLowerCase());
+        }
     }
 }
