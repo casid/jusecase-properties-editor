@@ -1,17 +1,24 @@
 package org.jusecase.properties.usecases;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Before;
 import org.junit.Test;
+import org.jusecase.UsecaseExecutor;
 import org.jusecase.UsecaseTest;
 import org.jusecase.properties.gateways.UndoableRequestGateway;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 @SuppressWarnings("SameParameterValue")
 public class GetChangedKeysTest extends UsecaseTest<GetChangedKeys.Request, GetChangedKeys.Response> {
 
    UndoableRequestGateway undoableRequestGateway = new UndoableRequestGateway();
+   Undo undo = new Undo(new UsecaseExecutor() {
+      @Override
+      public <Request, Response> Response execute(Request request) {
+         return null;
+      }
+   }, undoableRequestGateway);
 
    @Before
    public void before() {
@@ -44,7 +51,7 @@ public class GetChangedKeysTest extends UsecaseTest<GetChangedKeys.Request, GetC
    @Test
    public void oneAddedAndUndone() {
       givenKeyWasAdded("key1");
-      givenUndoKeyWasAdded("key1");
+      givenUndoIsCalled();
 
       whenRequestIsExecuted();
 
@@ -67,7 +74,7 @@ public class GetChangedKeysTest extends UsecaseTest<GetChangedKeys.Request, GetC
       givenKeyWasAdded("key2");
       givenKeyWasRemoved("key2");
       givenKeyWasRemoved("key1");
-      givenUndoKeyWasRemoved("key1");
+      givenUndoIsCalled();
 
       whenRequestIsExecuted();
 
@@ -88,7 +95,7 @@ public class GetChangedKeysTest extends UsecaseTest<GetChangedKeys.Request, GetC
    public void oneAddedAndRenamedAndUndone() {
       givenKeyWasAdded("key1");
       givenKeyWasRenamed("key1", "bazinga!");
-      givenUndoKeyWasRenamed("key1", "bazinga!");
+      givenUndoIsCalled();
 
       whenRequestIsExecuted();
 
@@ -102,18 +109,29 @@ public class GetChangedKeysTest extends UsecaseTest<GetChangedKeys.Request, GetC
 
       whenRequestIsExecuted();
 
-      thenKeysAre("key1", "bazinga!");
+      thenKeysAre("bazinga!", "key1");
    }
 
    @Test
    public void oneAddedAndDuplicatedAndUndone() {
       givenKeyWasAdded("key1");
       givenKeyWasDuplicated("key1", "bazinga!");
-      givenUndoKeyWasDuplicated("key1", "bazinga!");
+      givenUndoIsCalled();
 
       whenRequestIsExecuted();
 
       thenKeysAre("key1");
+   }
+
+   @Test
+   public void noDuplicates() {
+      givenKeyWasDuplicated("key", "key2");
+      givenKeyWasRenamed("key2", "key22");
+      givenUndoIsCalled();
+
+      whenRequestIsExecuted();
+
+      thenKeysAre("key2");
    }
 
    private void givenKeyWasAdded(String key) {
@@ -142,34 +160,8 @@ public class GetChangedKeysTest extends UsecaseTest<GetChangedKeys.Request, GetC
       undoableRequestGateway.add(request);
    }
 
-   private void givenUndoKeyWasAdded(String key) {
-      NewKey.Request request = new NewKey.Request();
-      request.key = key;
-      request.undo = true;
-      undoableRequestGateway.add(request);
-   }
-
-   private void givenUndoKeyWasRemoved(String key) {
-      DeleteKey.Request request = new DeleteKey.Request();
-      request.key = key;
-      request.undo = true;
-      undoableRequestGateway.add(request);
-   }
-
-   private void givenUndoKeyWasRenamed( String key, String newKey ) {
-      RenameKey.Request request = new RenameKey.Request();
-      request.key = key;
-      request.newKey = newKey;
-      request.undo = true;
-      undoableRequestGateway.add(request);
-   }
-
-   private void givenUndoKeyWasDuplicated( String key, String newKey ) {
-      DuplicateKey.Request request = new DuplicateKey.Request();
-      request.key = key;
-      request.newKey = newKey;
-      request.undo = true;
-      undoableRequestGateway.add(request);
+   private void givenUndoIsCalled() {
+      undo.execute(new Undo.Request());
    }
 
    private void thenKeysAre( String... keys ) {

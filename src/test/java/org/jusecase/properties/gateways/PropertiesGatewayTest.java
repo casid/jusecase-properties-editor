@@ -206,6 +206,33 @@ public abstract class PropertiesGatewayTest {
     }
 
     @Test
+    public void search_onlySpecificKeys() {
+        givenProperties("resources.properties");
+        searchRequest.query = "le.lo";
+        searchRequest.keysToSearch = a(list("sample.long1"));
+        List<Key> keys = gateway.search(searchRequest);
+        assertThatKeys(keys).containsExactly("sample.long1");
+    }
+
+    @Test
+    public void search_onlySpecificKeys_thatDoNotExist() {
+        givenProperties("resources.properties");
+        searchRequest.query = "";
+        searchRequest.keysToSearch = a(list("sample.long1", "unknown"));
+        List<Key> keys = gateway.search(searchRequest);
+        assertThatKeys(keys).containsExactly("sample.long1");
+    }
+
+    @Test
+    public void search_onlySpecificKeys_value() {
+        givenProperties("resources.properties");
+        searchRequest.query = "search";
+        searchRequest.keysToSearch = a(list("sample.long2"));
+        List<Key> keys = gateway.search(searchRequest);
+        assertThatKeys(keys).containsExactly("sample.long2");
+    }
+
+    @Test
     public void search_keyCamelCase() {
         givenProperties("resources.properties");
         searchRequest.query = "camelCase";

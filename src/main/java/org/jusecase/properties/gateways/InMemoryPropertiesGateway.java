@@ -133,12 +133,11 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
             return new ArrayList<>();
         }
 
-        List<Key> result = new ArrayList<>(keys.size());
-        for (String key : keys) {
-            result.add(getKey(key));
-        }
+        return getKeys(keys);
+    }
 
-        return result;
+    private List<Key> getKeys(Collection<String> keys) {
+        return keys.stream().map(this::getKey).collect(Collectors.toList());
     }
 
     @Override
@@ -230,8 +229,31 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
 
     @Override
     public List<Key> search(Search.Request request) {
-        if (!isInitialized() || request.query.isEmpty()) {
-            return getKeys();
+        if (!isInitialized()) {
+            return new ArrayList<>();
+        }
+
+        if (request.keysToSearch != null) {
+            List<Property> properties = new ArrayList<>();
+            Iterator<String> iterator = request.keysToSearch.iterator();
+            while (iterator.hasNext()) {
+                List<Property> propertiesByKey = this.propertiesByKey.get(iterator.next());
+                if (propertiesByKey != null) {
+                    properties.addAll(propertiesByKey);
+                } else {
+                    iterator.remove();
+                }
+            }
+
+            return search(request, request.keysToSearch, properties);
+        } else {
+            return search(request, keys, properties);
+        }
+    }
+
+    private List<Key> search(Search.Request request, Collection<String> keys, List<Property> properties) {
+        if (request.query.isEmpty()) {
+            return getKeys(keys);
         }
 
         Set<Key> result = ConcurrentHashMap.newKeySet();
@@ -241,10 +263,10 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         keys.parallelStream().forEach(keyMatcher);
         properties.parallelStream().forEach(valueMatcher);
 
-        ArrayList<Key> keys = new ArrayList<>(result);
-        Collections.sort(keys);
+        ArrayList<Key> resultKeys = new ArrayList<>(result);
+        Collections.sort(resultKeys);
 
-        return keys;
+        return resultKeys;
     }
 
     private KeyMatcher createKeyMatcher(Search.Request request, Set<Key> result) {

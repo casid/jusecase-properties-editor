@@ -1,14 +1,15 @@
 package org.jusecase.properties.usecases;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import org.jusecase.Usecase;
 import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.UndoableRequestGateway;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.TreeSet;
 
 
 @Singleton
@@ -32,7 +33,7 @@ public class GetChangedKeys implements Usecase<GetChangedKeys.Request, GetChange
    @Override
    public Response execute( Request request ) {
       Response response = new Response();
-      response.keys = new ArrayList<>();
+      response.keys = new TreeSet<>();
 
       for ( UndoableRequest undoableRequest : undoableRequestGateway.getAll() ) {
          for ( ChangeDetector changeDetector : changeDetectors ) {
@@ -51,12 +52,12 @@ public class GetChangedKeys implements Usecase<GetChangedKeys.Request, GetChange
    }
 
    public static class Response {
-      List<String> keys;
+      Collection<String> keys;
    }
 
    private interface ChangeDetector {
       boolean canHandle( UndoableRequest request );
-      void handle( UndoableRequest request, List<String> keys );
+      void handle( UndoableRequest request, Collection<String> keys );
    }
 
    private static class NewKeyDetector implements ChangeDetector {
@@ -66,7 +67,7 @@ public class GetChangedKeys implements Usecase<GetChangedKeys.Request, GetChange
       }
 
       @Override
-      public void handle( UndoableRequest request, List<String> keys ) {
+      public void handle( UndoableRequest request, Collection<String> keys ) {
          NewKey.Request r = (NewKey.Request)request;
          if ( r.undo ) {
             keys.remove(r.key);
@@ -83,7 +84,7 @@ public class GetChangedKeys implements Usecase<GetChangedKeys.Request, GetChange
       }
 
       @Override
-      public void handle( UndoableRequest request, List<String> keys ) {
+      public void handle( UndoableRequest request, Collection<String> keys ) {
          DeleteKey.Request r = (DeleteKey.Request)request;
          if ( r.undo ) {
             keys.add(r.key);
@@ -100,7 +101,7 @@ public class GetChangedKeys implements Usecase<GetChangedKeys.Request, GetChange
       }
 
       @Override
-      public void handle( UndoableRequest request, List<String> keys ) {
+      public void handle( UndoableRequest request, Collection<String> keys ) {
          RenameKey.Request r = (RenameKey.Request)request;
          if ( r.undo ) {
             keys.remove(r.newKey);
@@ -119,7 +120,7 @@ public class GetChangedKeys implements Usecase<GetChangedKeys.Request, GetChange
       }
 
       @Override
-      public void handle( UndoableRequest request, List<String> keys ) {
+      public void handle( UndoableRequest request, Collection<String> keys ) {
          DuplicateKey.Request r = (DuplicateKey.Request)request;
          if ( r.undo ) {
             keys.remove(r.newKey);

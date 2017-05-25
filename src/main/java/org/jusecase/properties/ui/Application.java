@@ -32,6 +32,7 @@ public class Application {
     private JTextField searchField;
     private JCheckBox caseSensitiveBox;
     private JCheckBox regexBox;
+    private JCheckBox changesBox;
     private JPanel keyPanel;
     private TranslationsPanel translationsPanel;
     private ApplicationMenuBar menuBar;
@@ -130,6 +131,7 @@ public class Application {
         request.query = searchField.getText();
         request.regex = regexBox.isSelected();
         request.caseSensitive = caseSensitiveBox.isSelected();
+        request.changes = changesBox.isSelected();
         return request;
     }
 
@@ -248,6 +250,7 @@ public class Application {
             } else {
                 resetSearch();
             }
+            keyList.clearSelection();
             keyList.setSelectedValue(keyEntity, true);
         });
     }
@@ -302,9 +305,7 @@ public class Application {
         keyPanel.add(searchField, "wrap,growx");
 
         caseSensitiveBox = new JCheckBox("Case sensitive", false);
-        caseSensitiveBox.addItemListener(e -> {
-            search(searchField.getText());
-        });
+        caseSensitiveBox.addItemListener(e -> search(searchField.getText()));
         keyPanel.add(caseSensitiveBox, "wrap,growx");
 
         regexBox = new JCheckBox("Regex", false);
@@ -313,6 +314,10 @@ public class Application {
             search(searchField.getText());
         });
         keyPanel.add(regexBox, "wrap,growx");
+
+        changesBox = new JCheckBox("Changed Properties", false);
+        changesBox.addItemListener(e -> search(searchField.getText()));
+        keyPanel.add(changesBox, "wrap,growx");
     }
 
     private void initMenuBar() {
