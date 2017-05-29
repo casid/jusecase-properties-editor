@@ -9,7 +9,8 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.TreeSet;
+import java.util.Map;
+import java.util.TreeMap;
 
 
 @Singleton
@@ -28,22 +29,24 @@ public class GetChangedKeys implements Usecase<GetChangedKeys.Request, GetChange
       changeDetectors.add(new DeleteKeyDetector());
       changeDetectors.add(new RenameKeyDetector());
       changeDetectors.add(new DuplicateKeyDetector());
+      changeDetectors.add(new EditValueDetector());
    }
 
    @Override
    public Response execute( Request request ) {
       Response response = new Response();
-      response.keys = new TreeSet<>();
 
+      Map<String, Integer> keys = new TreeMap<>();
       for ( UndoableRequest undoableRequest : undoableRequestGateway.getAll() ) {
          for ( ChangeDetector changeDetector : changeDetectors ) {
             if ( changeDetector.canHandle(undoableRequest) ) {
-               changeDetector.handle(undoableRequest, response.keys);
+               changeDetector.handle(undoableRequest, keys);
                break;
             }
          }
       }
 
+      response.keys = keys.keySet();
       return response;
    }
 
@@ -57,7 +60,29 @@ public class GetChangedKeys implements Usecase<GetChangedKeys.Request, GetChange
 
    private interface ChangeDetector {
       boolean canHandle( UndoableRequest request );
-      void handle( UndoableRequest request, Collection<String> keys );
+      void handle( UndoableRequest request, Map<String, Integer> keys );
+
+      default void remove(Map<String, Integer> keys, String key) {
+         keys.compute(key, ( s, count ) -> {
+            if (count != null) {
+               if (--count > 0) {
+                  return count;
+               } else {
+                  return null;
+               }
+            }
+            return null;
+         });
+      }
+
+      default void add(Map<String, Integer> keys, String key) {
+         keys.compute(key, ( s, count ) -> {
+            if ( count != null ) {
+               return ++count;
+            }
+            return 1;
+         });
+      }
    }
 
    private static class NewKeyDetector implements ChangeDetector {
@@ -67,12 +92,12 @@ public class GetChangedKeys implements Usecase<GetChangedKeys.Request, GetChange
       }
 
       @Override
-      public void handle( UndoableRequest request, Collection<String> keys ) {
+      public void handle( UndoableRequest request, Map<String, Integer> keys ) {
          NewKey.Request r = (NewKey.Request)request;
          if ( r.undo ) {
-            keys.remove(r.key);
+            remove(keys, r.key);
          } else {
-            keys.add(r.key);
+            add(keys, r.key);
          }
       }
    }
@@ -84,12 +109,12 @@ public class GetChangedKeys implements Usecase<GetChangedKeys.Request, GetChange
       }
 
       @Override
-      public void handle( UndoableRequest request, Collection<String> keys ) {
+      public void handle( UndoableRequest request, Map<String, Integer> keys ) {
          DeleteKey.Request r = (DeleteKey.Request)request;
          if ( r.undo ) {
-            keys.add(r.key);
+            add(keys, r.key);
          } else {
-            keys.remove(r.key);
+            remove(keys, r.key);
          }
       }
    }
@@ -101,14 +126,14 @@ public class GetChangedKeys implements Usecase<GetChangedKeys.Request, GetChange
       }
 
       @Override
-      public void handle( UndoableRequest request, Collection<String> keys ) {
+      public void handle( UndoableRequest request, Map<String, Integer> keys ) {
          RenameKey.Request r = (RenameKey.Request)request;
          if ( r.undo ) {
-            keys.remove(r.newKey);
-            keys.add(r.key);
+            remove(keys, r.newKey);
+            add(keys, r.key);
          } else {
-            keys.remove(r.key);
-            keys.add(r.newKey);
+            remove(keys, r.key);
+            add(keys, r.newKey);
          }
       }
    }
@@ -120,12 +145,29 @@ public class GetChangedKeys implements Usecase<GetChangedKeys.Request, GetChange
       }
 
       @Override
-      public void handle( UndoableRequest request, Collection<String> keys ) {
+      public void handle( UndoableRequest request, Map<String, Integer> keys ) {
          DuplicateKey.Request r = (DuplicateKey.Request)request;
          if ( r.undo ) {
-            keys.remove(r.newKey);
+            remove(keys, r.newKey);
          } else {
-            keys.add(r.newKey);
+            add(keys, r.newKey);
+         }
+      }
+   }
+
+   private static class EditValueDetector implements ChangeDetector {
+      @Override
+      public boolean canHandle( UndoableRequest request ) {
+         return request instanceof EditValue.Request;
+      }
+
+      @Override
+      public void handle( UndoableRequest request, Map<String, Integer> keys ) {
+         EditValue.Request r = (EditValue.Request)request;
+         if ( r.undo ) {
+            remove(keys, r.property.key);
+         } else {
+            add(keys, r.property.key);
          }
       }
    }
