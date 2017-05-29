@@ -111,9 +111,7 @@ public class GetChangedKeys implements Usecase<GetChangedKeys.Request, GetChange
       @Override
       public void handle( UndoableRequest request, Map<String, Integer> keys ) {
          DeleteKey.Request r = (DeleteKey.Request)request;
-         if ( r.undo ) {
-            add(keys, r.key);
-         } else {
+         if ( !r.undo ) {
             remove(keys, r.key);
          }
       }

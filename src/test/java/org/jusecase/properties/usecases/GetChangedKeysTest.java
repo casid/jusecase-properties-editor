@@ -84,6 +84,21 @@ public class GetChangedKeysTest extends UsecaseTest<GetChangedKeys.Request, GetC
    }
 
    @Test
+   public void oneRemoved_noChange() {
+      givenKeyWasRemoved("key1");
+      whenRequestIsExecuted();
+      thenKeysAre();
+   }
+
+   @Test
+   public void oneRemoved_undo_noChange() {
+      givenKeyWasRemoved("key1");
+      givenUndoIsCalled();
+      whenRequestIsExecuted();
+      thenKeysAre();
+   }
+
+   @Test
    public void oneAddedAndRenamed() {
       givenKeyWasAdded("key1");
       givenKeyWasRenamed("key1", "bazinga!");
