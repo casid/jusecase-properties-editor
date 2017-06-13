@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.jusecase.UsecaseExecutorTest;
 import org.jusecase.properties.plugins.Plugin;
-import org.jusecase.properties.plugins.exporter.JsonPropertiesExporter;
 import org.jusecase.properties.plugins.importer.JavaPropertiesImporter;
 import org.jusecase.properties.usecases.*;
 
@@ -46,7 +45,6 @@ public class BusinessLogicTest extends UsecaseExecutorTest {
     @Test
     public void plugins() {
         thenPluginIsAvailable(JavaPropertiesImporter.ID, JavaPropertiesImporter.class);
-        thenPluginIsAvailable(JsonPropertiesExporter.ID, JsonPropertiesExporter.class);
     }
 
     private void thenPluginIsAvailable(String id, Class<? extends Plugin> pluginClass) {

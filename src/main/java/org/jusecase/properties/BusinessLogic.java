@@ -9,7 +9,6 @@ import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.*;
 import org.jusecase.properties.plugins.Plugin;
 import org.jusecase.properties.plugins.PluginManager;
-import org.jusecase.properties.plugins.exporter.JsonPropertiesExporter;
 import org.jusecase.properties.plugins.importer.JavaPropertiesImporter;
 import org.jusecase.properties.usecases.*;
 
@@ -56,7 +55,6 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
         addUsecase(GetChangedKeys.class);
 
         registerPlugin(JavaPropertiesImporter.class);
-        registerPlugin(JsonPropertiesExporter.class);
     }
 
     private class GatewayModule extends AbstractModule {
