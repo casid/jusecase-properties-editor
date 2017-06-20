@@ -72,7 +72,7 @@ public class LoadBundleTest extends UsecaseTest<LoadBundle.Request, LoadBundle.R
 
     private void thenLoadedPropertiesAre(String... fileNames) {
         propertiesGatewayTrainer.thenLoadedPropertiesAre(fileNames);
-        assertThat(response.fileNames).containsExactly(fileNames);
+        assertThat(response.fileNames).containsExactlyInAnyOrder(fileNames);
     }
 
     private void givenPropertiesFile(String fileName) {

@@ -55,6 +55,6 @@ public class InitializeTest extends UsecaseTest<Request, Response> {
 
     private void thenLoadedPropertiesAre(String... fileNames) {
         propertiesGatewayTrainer.thenLoadedPropertiesAre(fileNames);
-        assertThat(response.fileNames).containsExactly(fileNames);
+        assertThat(response.fileNames).containsExactlyInAnyOrder(fileNames);
     }
 }
