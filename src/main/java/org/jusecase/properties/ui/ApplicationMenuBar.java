@@ -5,12 +5,15 @@ import org.jusecase.properties.plugins.exporter.PropertiesExporter;
 import org.jusecase.properties.plugins.importer.PropertiesImporter;
 import org.jusecase.properties.usecases.GetPlugins;
 import org.jusecase.properties.usecases.GetUndoStatus;
+import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.File;
+
 
 public class ApplicationMenuBar extends JMenuBar {
     private final Application application;
@@ -83,10 +86,9 @@ public class ApplicationMenuBar extends JMenuBar {
     private JMenuItem createFileOpenMenuItem() {
         JMenuItem open = createItem("Open", KeyEvent.VK_O);
         open.addActionListener(event -> {
-            JFileChooser fileChooser = new NativeJFileChooser();
-            fileChooser.setDialogTitle("Open Resource File");
-            if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
-                application.loadProperties(fileChooser.getSelectedFile());
+            File file = NativeFileDialog.open("Open Resource File");
+            if (file != null) {
+                application.loadProperties(file);
             }
         });
         return open;
