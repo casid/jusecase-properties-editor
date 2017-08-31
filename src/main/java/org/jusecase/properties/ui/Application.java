@@ -85,14 +85,16 @@ public class Application {
     }
 
     public void importProperties( Plugin plugin ) {
-        List<File> files = NativeFileDialog.openMultiple("Choose file(s) to import");
-        if (!files.isEmpty()) {
+        JFileChooser fileChooser = new NativeJFileChooser();
+        fileChooser.setMultiSelectionEnabled(true);
+        fileChooser.setDialogTitle("Choose file to import");
+        if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
             Import.Request request = new Import.Request();
-            List<Path> paths = new ArrayList<>();
-            for ( File file : files ) {
-                paths.add(file.toPath());
+            List<Path> files = new ArrayList<>();
+            for ( File file : fileChooser.getSelectedFiles() ) {
+                files.add(file.toPath());
             }
-            request.files = paths;
+            request.files = files;
             request.pluginId = plugin.getPluginId();
             execute(request, (Consumer<Import.Response>) response -> {
                 JOptionPane.showMessageDialog(null, "Added " + response.amountAdded + " new values and updated " + response.amountChanged + " existing values.", "Import was successful", JOptionPane.PLAIN_MESSAGE);
