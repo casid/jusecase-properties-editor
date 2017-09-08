@@ -171,7 +171,7 @@ public class Application {
     }
 
     private void resetRegexError() {
-        regexBox.setText("Regex");
+        regexBox.setText(getRegexBoxTitle());
         regexBox.setForeground(keyList.getForeground());
     }
 
@@ -308,7 +308,7 @@ public class Application {
         caseSensitiveBox.addItemListener(e -> search(searchField.getText()));
         keyPanel.add(caseSensitiveBox, "wrap,growx");
 
-        regexBox = new JCheckBox("Regex", false);
+        regexBox = new JCheckBox(getRegexBoxTitle(), false);
         regexBox.addItemListener(e -> {
             resetRegexError();
             search(searchField.getText());
@@ -318,6 +318,10 @@ public class Application {
         changesBox = new JCheckBox("Changed Properties", false);
         changesBox.addItemListener(e -> search(searchField.getText()));
         keyPanel.add(changesBox, "wrap,growx");
+    }
+
+    private String getRegexBoxTitle() {
+        return "Regex (exact match)";
     }
 
     private void initMenuBar() {
