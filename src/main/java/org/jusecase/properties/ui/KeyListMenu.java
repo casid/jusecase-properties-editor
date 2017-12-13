@@ -87,7 +87,7 @@ public class KeyListMenu extends JPopupMenu {
 
     private void addDuplicates( List<String> selectedKeys ) {
         String replace = (String)JOptionPane
-              .showInputDialog(null, "You are about to replace more than one key. First, select what key part should be replaced:", "Duplicate keys", JOptionPane.PLAIN_MESSAGE, null, null, "");
+              .showInputDialog(null, "You are about to duplicate more than one key. First, select what key part should be replaced:", "Duplicate keys", JOptionPane.PLAIN_MESSAGE, null, null, "");
         if (replace == null) {
             return;
         }
