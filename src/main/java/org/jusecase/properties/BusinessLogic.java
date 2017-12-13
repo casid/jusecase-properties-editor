@@ -42,6 +42,7 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
         addUsecase(NewKey.class);
         addUsecase(RenameKey.class);
         addUsecase(DuplicateKey.class);
+        addUsecase(DuplicateKeys.class);
         addUsecase(DeleteKey.class);
         addUsecase(Undo.class);
         addUsecase(Redo.class);

@@ -2,12 +2,14 @@ package org.jusecase.properties.ui;
 
 import org.jusecase.properties.usecases.DeleteKey;
 import org.jusecase.properties.usecases.DuplicateKey;
+import org.jusecase.properties.usecases.DuplicateKeys;
 import org.jusecase.properties.usecases.NewKey;
 import org.jusecase.properties.usecases.RenameKey;
 
 import javax.swing.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class KeyListMenu extends JPopupMenu {
@@ -61,18 +63,44 @@ public class KeyListMenu extends JPopupMenu {
     private void addDuplicate() {
         JMenuItem item = new JMenuItem("Duplicate");
         item.addActionListener(event -> {
-            String key = application.getSelectedKey();
-            String newKey = (String)JOptionPane.showInputDialog(null, "Duplicate key", "Duplicate key", JOptionPane.PLAIN_MESSAGE, null, null, key);
-            if (newKey != null) {
-                DuplicateKey.Request request = new DuplicateKey.Request();
-                request.key = key;
-                request.newKey = newKey;
-                application.execute(request);
-                application.onNewKeyAdded(newKey);
+            List<String> selectedKeys = application.getSelectedValues();
+            if (selectedKeys.size() > 1) {
+                addDuplicates(selectedKeys);
+            } else {
+                String key = application.getSelectedKey();
+                addDuplicate(key);
             }
-
         });
         add(item);
+    }
+
+    private void addDuplicate( String key ) {
+        String newKey = (String)JOptionPane.showInputDialog(null, "Duplicate key", "Duplicate key", JOptionPane.PLAIN_MESSAGE, null, null, key);
+        if ( newKey != null ) {
+            DuplicateKey.Request request = new DuplicateKey.Request();
+            request.key = key;
+            request.newKey = newKey;
+            application.execute(request);
+            application.onNewKeyAdded(newKey);
+        }
+    }
+
+    private void addDuplicates( List<String> selectedKeys ) {
+        String replace = (String)JOptionPane
+              .showInputDialog(null, "You are about to replace more than one key. First, select what key part should be replaced:", "Duplicate keys", JOptionPane.PLAIN_MESSAGE, null, null, "");
+        if (replace == null) {
+            return;
+        }
+        String replaceWith = (String)JOptionPane.showInputDialog(null, "Replace " + replace +  " with", "Duplicate keys", JOptionPane.PLAIN_MESSAGE, null, null, "");
+        if (replaceWith == null) {
+            return;
+        }
+
+        DuplicateKeys.Request request = new DuplicateKeys.Request();
+        request.keys = selectedKeys;
+        request.newKeys = selectedKeys.stream().map(s -> s.replaceAll(replace, replaceWith)).collect(Collectors.toList());
+        application.execute(request);
+        request.keys.forEach(application::onNewKeyAdded);
     }
 
     private void addNew() {
