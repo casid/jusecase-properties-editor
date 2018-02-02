@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.jusecase.UsecaseTest;
 import org.jusecase.properties.gateways.PropertiesGatewayTrainer;
+import org.jusecase.properties.gateways.UndoableRequestGateway;
 import org.jusecase.properties.plugins.diff.Diff;
 import org.jusecase.properties.plugins.diff.DiffPluginTrainer;
 
@@ -18,13 +19,14 @@ import org.jusecase.properties.plugins.diff.DiffPluginTrainer;
 @SuppressWarnings("SameParameterValue")
 public class GetChangedKeys_FromDiffTest extends UsecaseTest<GetChangedKeys.Request, GetChangedKeys.Response> {
 
+   UndoableRequestGateway   undoableRequestGateway   = new UndoableRequestGateway();
    DiffPluginTrainer        diffPluginTrainer        = new DiffPluginTrainer();
    PropertiesGatewayTrainer propertiesGatewayTrainer = new PropertiesGatewayTrainer();
 
 
    @Before
    public void before() {
-      usecase = new GetChangedKeys(null, diffPluginTrainer, propertiesGatewayTrainer);
+      usecase = new GetChangedKeys(undoableRequestGateway, diffPluginTrainer, propertiesGatewayTrainer);
       propertiesGatewayTrainer.givenFiles(a(list(Paths.get("/dev/ws/project/src/main/resources/resources.properties"))));
       diffPluginTrainer.givenRepositoryDirectory(Paths.get("/dev/ws/project"));
    }
