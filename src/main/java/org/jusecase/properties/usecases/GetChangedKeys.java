@@ -49,12 +49,9 @@ public class GetChangedKeys implements Usecase<GetChangedKeys.Request, GetChange
    public Response execute( Request request ) {
       Response response = new Response();
 
-      try {
-         response.keys = getChangedKeysFromDiff();
-      }
-      catch ( DiffException e ) {
-         response.keys = getChangedKeysFromHistory();
-      }
+      response.keys = new TreeSet<>();
+      response.keys.addAll(getChangedKeysFromDiff());
+      response.keys.addAll(getChangedKeysFromHistory());
 
       return response;
    }
@@ -64,13 +61,18 @@ public class GetChangedKeys implements Usecase<GetChangedKeys.Request, GetChange
 
       List<Path> propertyFiles = propertiesGateway.getFiles();
       if (propertyFiles != null && !propertyFiles.isEmpty()) {
-         Path repository = diffPlugin.getRepositoryDirectory(propertyFiles.get(0));
-         Set<Path> paths = propertyFiles.stream().map(repository::relativize).collect(Collectors.toSet());
+         try {
+            Path repository = diffPlugin.getRepositoryDirectory(propertyFiles.get(0));
+            Set<Path> paths = propertyFiles.stream().map(repository::relativize).collect(Collectors.toSet());
 
-         for ( Diff diff : diffPlugin.getChangedFiles(repository, paths) ) {
-            for ( String addedLine : diff.addedLines ) {
-               keys.add(addedLine.substring(0, addedLine.indexOf('=')).trim());
+            for ( Diff diff : diffPlugin.getChangedFiles(repository, paths) ) {
+               for ( String addedLine : diff.addedLines ) {
+                  keys.add(addedLine.substring(0, addedLine.indexOf('=')).trim());
+               }
             }
+         }
+         catch ( DiffException e ) {
+            // Ignore silently, we will grab the key changes from memory later
          }
       }
 

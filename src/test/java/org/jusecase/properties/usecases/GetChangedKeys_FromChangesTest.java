@@ -5,6 +5,7 @@ import static org.jusecase.Builders.a;
 import static org.jusecase.Builders.list;
 import static org.jusecase.properties.entities.Builders.property;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Before;
@@ -13,6 +14,7 @@ import org.jusecase.UsecaseExecutor;
 import org.jusecase.UsecaseTest;
 import org.jusecase.properties.gateways.PropertiesGatewayTrainer;
 import org.jusecase.properties.gateways.UndoableRequestGateway;
+import org.jusecase.properties.plugins.diff.Diff;
 import org.jusecase.properties.plugins.diff.DiffPluginTrainer;
 
 
@@ -197,6 +199,24 @@ public class GetChangedKeys_FromChangesTest extends UsecaseTest<GetChangedKeys.R
       whenRequestIsExecuted();
 
       thenKeysAre("key1");
+   }
+
+   @Test
+   public void fromChangesAndFromDiff() {
+      givenKeyWasAdded("key-from-changes");
+      givenKeyFromDiff("key-from-diff");
+
+      whenRequestIsExecuted();
+
+      thenKeysAre("key-from-changes", "key-from-diff");
+   }
+
+   private void givenKeyFromDiff( String key ) {
+      diffPluginTrainer.givenRepositoryDirectory(Paths.get("/dev/ws/project"));
+      Path file = Paths.get("src/main/resources/resources.properties");
+      Diff diff = new Diff(file);
+      diff.addedLines.add(key + "=value");
+      diffPluginTrainer.givenChangedFiles(a(list(diff)));
    }
 
    private void givenKeyWasAdded( String key ) {
