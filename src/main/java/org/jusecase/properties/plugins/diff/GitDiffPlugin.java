@@ -37,10 +37,7 @@ public class GitDiffPlugin implements DiffPlugin {
       }
 
       try {
-
          Process process = Runtime.getRuntime().exec(command, null, repository.toFile());
-         process.waitFor();
-
          return extractChangedFiles(process.getInputStream());
       }
       catch ( Exception e ) {
