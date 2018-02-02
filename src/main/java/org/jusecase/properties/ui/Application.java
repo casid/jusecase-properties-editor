@@ -118,12 +118,14 @@ public class Application {
 
     public void save() {
         execute(new SaveBundle.Request());
+        searchAfterSave();
     }
 
     public void saveAll() {
         SaveBundle.Request request = new SaveBundle.Request();
         request.saveAll = true;
         execute(request);
+        searchAfterSave();
     }
 
     private Search.Request createSearchRequest() {
@@ -152,8 +154,16 @@ public class Application {
         });
     }
 
-    private void search(Consumer<Search.Response> responseConsumer) {
-        search(createSearchRequest(), responseConsumer);
+    private void searchAfterSave() {
+        if (changesBox.isSelected()) {
+            refreshSearch();
+        }
+    }
+
+    private void searchAfterChange(Consumer<Search.Response> responseConsumer) {
+        Search.Request searchRequest = createSearchRequest();
+        searchRequest.reloadChanges = true;
+        search(searchRequest, responseConsumer);
     }
 
     private void search(Search.Request request, Consumer<Search.Response> responseConsumer) {
@@ -243,7 +253,7 @@ public class Application {
     }
 
     public void onNewKeyAdded(String key) {
-        search(response -> {
+        searchAfterChange(response -> {
             Key keyEntity = new Key(key);
             if (response.keys.contains(keyEntity)) {
                 keyListModel.setKeys(response.keys);
@@ -265,7 +275,7 @@ public class Application {
     }
 
     public void refreshSearch() {
-        search(response -> {
+        searchAfterChange(response -> {
             int previousSelectedIndex = keyList.getSelectedIndex();
             keyListModel.setKeys(response.keys);
             keyList.setSelectedIndex(Math.max(0, previousSelectedIndex));

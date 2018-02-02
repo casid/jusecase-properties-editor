@@ -551,6 +551,11 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         }
     }
 
+    @Override
+    public List<Path> getFiles() {
+        return files;
+    }
+
     private static class FileSnapshot {
         long bytes;
         String hash;

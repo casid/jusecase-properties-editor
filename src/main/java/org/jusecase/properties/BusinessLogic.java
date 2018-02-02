@@ -9,6 +9,8 @@ import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.*;
 import org.jusecase.properties.plugins.Plugin;
 import org.jusecase.properties.plugins.PluginManager;
+import org.jusecase.properties.plugins.diff.DiffPlugin;
+import org.jusecase.properties.plugins.diff.GitDiffPlugin;
 import org.jusecase.properties.plugins.importer.JavaPropertiesImporter;
 import org.jusecase.properties.usecases.*;
 
@@ -76,6 +78,7 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
         @Override
         protected void configure() {
             bind(PluginManager.class).toProvider(BusinessLogic.this::getPluginManager);
+            bind(DiffPlugin.class).to(GitDiffPlugin.class);
         }
     }
 

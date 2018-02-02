@@ -15,6 +15,8 @@ public class Search implements Usecase<Search.Request, Search.Response> {
     private final PropertiesGateway propertiesGateway;
     private final UsecaseExecutor usecaseExecutor;
 
+    private Collection<String> changedKeys;
+
     @Inject
     public Search(PropertiesGateway propertiesGateway, UsecaseExecutor usecaseExecutor) {
         this.propertiesGateway = propertiesGateway;
@@ -24,7 +26,12 @@ public class Search implements Usecase<Search.Request, Search.Response> {
     @Override
     public Response execute(Request request) {
         if (request.changes) {
-            request.keysToSearch = getChangedKeys();
+            if (changedKeys == null || request.reloadChanges) {
+                changedKeys = getChangedKeys();
+            }
+            request.keysToSearch = changedKeys;
+        } else {
+            changedKeys = null;
         }
 
         Response response = new Response();
@@ -42,6 +49,7 @@ public class Search implements Usecase<Search.Request, Search.Response> {
         public boolean regex;
         public boolean caseSensitive;
         public boolean changes;
+        public boolean reloadChanges;
         public Collection<String> keysToSearch;
     }
 

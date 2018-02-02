@@ -44,4 +44,6 @@ public interface PropertiesGateway {
     void updateFileSnapshots();
 
     String resolveFileName(String locale);
+
+    List<Path> getFiles();
 }

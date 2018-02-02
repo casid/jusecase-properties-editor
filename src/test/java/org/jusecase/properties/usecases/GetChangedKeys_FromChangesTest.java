@@ -2,30 +2,40 @@ package org.jusecase.properties.usecases;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jusecase.Builders.a;
+import static org.jusecase.Builders.list;
 import static org.jusecase.properties.entities.Builders.property;
+
+import java.nio.file.Paths;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.jusecase.UsecaseExecutor;
 import org.jusecase.UsecaseTest;
+import org.jusecase.properties.gateways.PropertiesGatewayTrainer;
 import org.jusecase.properties.gateways.UndoableRequestGateway;
+import org.jusecase.properties.plugins.diff.DiffPluginTrainer;
 
 
 @SuppressWarnings("SameParameterValue")
-public class GetChangedKeysTest extends UsecaseTest<GetChangedKeys.Request, GetChangedKeys.Response> {
+public class GetChangedKeys_FromChangesTest extends UsecaseTest<GetChangedKeys.Request, GetChangedKeys.Response> {
 
-   UndoableRequestGateway undoableRequestGateway = new UndoableRequestGateway();
-   Undo                   undo                   = new Undo(new UsecaseExecutor() {
+   UndoableRequestGateway   undoableRequestGateway   = new UndoableRequestGateway();
+   Undo                     undo                     = new Undo(new UsecaseExecutor() {
+
       @Override
       public <Request, Response> Response execute( Request request ) {
          return null;
       }
    }, undoableRequestGateway);
+   DiffPluginTrainer        diffPluginTrainer        = new DiffPluginTrainer();
+   PropertiesGatewayTrainer propertiesGatewayTrainer = new PropertiesGatewayTrainer();
 
 
    @Before
    public void before() {
-      usecase = new GetChangedKeys(undoableRequestGateway);
+      usecase = new GetChangedKeys(undoableRequestGateway, diffPluginTrainer, propertiesGatewayTrainer);
+      diffPluginTrainer.givenDiffNotSupported();
+      propertiesGatewayTrainer.givenFiles(a(list(Paths.get("/resources.properties"))));
    }
 
    @Test
@@ -84,21 +94,6 @@ public class GetChangedKeysTest extends UsecaseTest<GetChangedKeys.Request, GetC
    }
 
    @Test
-   public void oneRemoved_noChange() {
-      givenKeyWasRemoved("key1");
-      whenRequestIsExecuted();
-      thenKeysAre();
-   }
-
-   @Test
-   public void oneRemoved_undo_noChange() {
-      givenKeyWasRemoved("key1");
-      givenUndoIsCalled();
-      whenRequestIsExecuted();
-      thenKeysAre();
-   }
-
-   @Test
    public void oneAddedAndRenamed() {
       givenKeyWasAdded("key1");
       givenKeyWasRenamed("key1", "bazinga!");
@@ -126,6 +121,21 @@ public class GetChangedKeysTest extends UsecaseTest<GetChangedKeys.Request, GetC
 
       whenRequestIsExecuted();
 
+      thenKeysAre();
+   }
+
+   @Test
+   public void oneRemoved_noChange() {
+      givenKeyWasRemoved("key1");
+      whenRequestIsExecuted();
+      thenKeysAre();
+   }
+
+   @Test
+   public void oneRemoved_undo_noChange() {
+      givenKeyWasRemoved("key1");
+      givenUndoIsCalled();
+      whenRequestIsExecuted();
       thenKeysAre();
    }
 
