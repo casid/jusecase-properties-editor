@@ -30,19 +30,22 @@ public class GitDiffPlugin implements DiffPlugin {
 
    @Override
    public List<Diff> getChangedFiles( Path repository, Collection<Path> files ) {
-      String command = "git diff --unified=0";
-      if (!files.isEmpty()) {
-         String filesAsString = String.join(" ", files.stream().map(Path::toString).collect(Collectors.toList()));
-         command += " " + filesAsString;
-      }
-
       try {
-         Process process = Runtime.getRuntime().exec(command, null, repository.toFile());
+         Process process = Runtime.getRuntime().exec(createDiffCommand(files), null, repository.toFile());
          return extractChangedFiles(process.getInputStream());
       }
       catch ( Exception e ) {
          throw new DiffException("Failed to find out changed files.", e);
       }
+   }
+
+   private String createDiffCommand( Collection<Path> files ) {
+      String command = "git diff --unified=0";
+      if (!files.isEmpty()) {
+         String filesAsString = String.join(" ", files.stream().map(Path::toString).collect(Collectors.toList()));
+         command += " " + filesAsString;
+      }
+      return command;
    }
 
    List<Diff> extractChangedFiles( InputStream inputStream ) throws IOException {
