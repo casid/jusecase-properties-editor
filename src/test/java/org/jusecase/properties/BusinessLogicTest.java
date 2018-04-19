@@ -40,6 +40,8 @@ public class BusinessLogicTest extends UsecaseExecutorTest {
         thenUsecaseCanBeExecuted(IsAllowedToQuit.class);
         thenUsecaseCanBeExecuted(Export.class);
         thenUsecaseCanBeExecuted(GetChangedKeys.class);
+        thenUsecaseCanBeExecuted(LoadLookAndFeel.class);
+        thenUsecaseCanBeExecuted(SaveLookAndFeel.class);
     }
 
     @Test

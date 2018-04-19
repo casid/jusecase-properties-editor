@@ -5,14 +5,12 @@ import org.jusecase.properties.entities.KeyPopulation;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
 
 public class KeyListCellRenderer extends DefaultListCellRenderer {
-    Map<KeyPopulation, Color> backgroundColorForPopulation = new HashMap<>();
+    private final Application application;
 
-    public KeyListCellRenderer() {
-        backgroundColorForPopulation.put(KeyPopulation.Sparse, new Color(246, 235, 188));
+    public KeyListCellRenderer(Application application) {
+        this.application = application;
     }
 
     @Override
@@ -21,9 +19,8 @@ public class KeyListCellRenderer extends DefaultListCellRenderer {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
         if (!isSelected) {
-            Color color = backgroundColorForPopulation.get(key.getPopulation());
-            if (color != null) {
-                label.setBackground(color);
+            if (key.getPopulation() == KeyPopulation.Sparse) {
+                label.setBackground(application.getLookAndFeel().sparseKeyBackgroundColor);
             }
         }
 

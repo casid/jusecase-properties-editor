@@ -26,9 +26,9 @@ public class TranslationPanel extends JPanel {
     private DocumentListener textAreaListener;
     private Property property;
     private Search.Request searchRequest = new Search.Request();
-    private Color searchHighlightColor = new Color(230, 230, 255);
+    private Color searchHighlightColor;
     private Color transparentBackgroundColor;
-    private Highlighter.HighlightPainter hightlightPainter = new DefaultHighlighter.DefaultHighlightPainter(searchHighlightColor);
+    private Highlighter.HighlightPainter hightlightPainter;
     private TranslationTextScrollPane scrollPane;
     private boolean documentListenerAdded;
 
@@ -36,7 +36,9 @@ public class TranslationPanel extends JPanel {
         super(new MigLayout("insets 0", "", "[][grow]"));
         this.application = application;
         this.fileName = fileName;
+        this.searchHighlightColor = application.getLookAndFeel().searchHighlightColor;
         this.transparentBackgroundColor = getBackground();
+        this.hightlightPainter = new DefaultHighlighter.DefaultHighlightPainter(searchHighlightColor);
         this.searchRequest.query = "";
         init();
     }

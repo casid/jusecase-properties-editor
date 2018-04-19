@@ -1,5 +1,6 @@
 package org.jusecase.properties.ui;
 
+import com.bulenkov.darcula.DarculaLaf;
 import net.miginfocom.swing.MigLayout;
 import org.jusecase.properties.BusinessLogic;
 import org.jusecase.properties.entities.Key;
@@ -36,15 +37,15 @@ public class Application {
     private JPanel keyPanel;
     private TranslationsPanel translationsPanel;
     private ApplicationMenuBar menuBar;
+    private LookAndFeel lookAndFeel;
 
     protected static String applicationName = "Properties Editor";
     protected static Class<? extends Application> applicationClass = Application.class;
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String args[]) {
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
 
         macSetup(applicationName);
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
         SwingUtilities.invokeLater(() -> {
             try {
@@ -213,11 +214,21 @@ public class Application {
     }
 
     protected void start() {
+        initLookAndFeel();
+
         initFrame();
         initMenuBar();
         initPanel();
 
         execute(new Initialize.Request(), this::onLoadPropertiesComplete);
+    }
+
+    protected void initLookAndFeel() {
+        execute(new LoadLookAndFeel.Request(), this::applyLookAndFeel);
+    }
+
+    public LookAndFeel getLookAndFeel() {
+        return lookAndFeel;
     }
 
     private void initPanel() {
@@ -246,7 +257,7 @@ public class Application {
         keyList = new JList<>(keyListModel);
         keyList.addListSelectionListener(e -> updateTranslationPanel(getSelectedKey()));
         keyList.setComponentPopupMenu(new KeyListMenu(this));
-        keyList.setCellRenderer(new KeyListCellRenderer());
+        keyList.setCellRenderer(new KeyListCellRenderer(this));
 
         JScrollPane scrollPane = new JScrollPane(keyList);
         keyPanel.add(scrollPane, "wrap,push,grow,w 250::");
@@ -391,6 +402,7 @@ public class Application {
         });
     }
 
+    @SuppressWarnings("unused")
     protected void initIcons(JFrame frame) {
     }
 
@@ -494,5 +506,32 @@ public class Application {
     @SuppressWarnings("unused") // Used by derived projects
     public void registerPlugin(Class<? extends Plugin> pluginClass) {
         businessLogic.registerPlugin(pluginClass);
+    }
+
+    public void changeLookAndFeel(LookAndFeel lookAndFeel) {
+        SaveLookAndFeel.Request request = new SaveLookAndFeel.Request();
+        request.lookAndFeel = lookAndFeel;
+        execute(request);
+
+        applyLookAndFeel(lookAndFeel);
+
+        SwingUtilities.updateComponentTreeUI(frame);
+    }
+
+    protected void applyLookAndFeel(LookAndFeel lookAndFeel) {
+        try {
+            switch (lookAndFeel) {
+                case Default:
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                    break;
+                case Darcula:
+                    UIManager.setLookAndFeel(new DarculaLaf());
+                    break;
+            }
+
+            this.lookAndFeel = lookAndFeel;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load look and feel " + lookAndFeel);
+        }
     }
 }

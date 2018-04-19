@@ -27,6 +27,7 @@ public class ApplicationMenuBar extends JMenuBar {
     private void init() {
         add(createFileMenu());
         add(createEditMenu());
+        add(createViewMenu());
     }
 
     private JMenu createFileMenu() {
@@ -61,6 +62,13 @@ public class ApplicationMenuBar extends JMenuBar {
             }
         });
         return edit;
+    }
+
+    private JMenu createViewMenu() {
+        JMenu view = new JMenu("View");
+        view.add(createLookAndFeelMenu());
+
+        return view;
     }
 
     public void updateUndoAndRedoItems() {
@@ -162,6 +170,27 @@ public class ApplicationMenuBar extends JMenuBar {
             updateUndoAndRedoItems();
         });
         return redo;
+    }
+
+    private JMenu createLookAndFeelMenu() {
+        JMenu menu = new JMenu("Look & Feel");
+
+        for (LookAndFeel lookAndFeel : LookAndFeel.values()) {
+            JCheckBoxMenuItem item = new JCheckBoxMenuItem(lookAndFeel.name());
+            item.setState(application.getLookAndFeel() == lookAndFeel);
+            item.addActionListener(event -> {
+                application.changeLookAndFeel(lookAndFeel);
+
+                for (int i = 0; i < menu.getItemCount(); ++i) {
+                    JCheckBoxMenuItem menuItem = (JCheckBoxMenuItem) menu.getItem(i);
+                    menuItem.setState(application.getLookAndFeel().ordinal() == i);
+                }
+            });
+            menu.add(item);
+        }
+
+
+        return menu;
     }
 
     private JMenuItem createItem(String name, int accelerator) {
