@@ -36,11 +36,15 @@ public class TranslationPanel extends JPanel {
         super(new MigLayout("insets 0", "", "[][grow]"));
         this.application = application;
         this.fileName = fileName;
-        this.searchHighlightColor = application.getLookAndFeel().searchHighlightColor;
-        this.transparentBackgroundColor = getBackground();
-        this.hightlightPainter = new DefaultHighlighter.DefaultHighlightPainter(searchHighlightColor);
         this.searchRequest.query = "";
+        updateColors();
         init();
+    }
+
+    private void updateColors() {
+        this.searchHighlightColor = application.getLookAndFeel().searchHighlightColor;
+        this.hightlightPainter = new DefaultHighlighter.DefaultHighlightPainter(searchHighlightColor);
+        this.transparentBackgroundColor = getBackground();
     }
 
     public void setSearchRequest(Search.Request request ) {
@@ -146,6 +150,15 @@ public class TranslationPanel extends JPanel {
         textArea.setRows(1);
         isAvailable.setSelected(false);
         isAvailable.setBackground(transparentBackgroundColor);
+    }
+
+    @Override
+    public void doLayout() {
+        super.doLayout();
+        if (this.searchHighlightColor != application.getLookAndFeel().searchHighlightColor) {
+            updateColors();
+            highlightSearchQuery();
+        }
     }
 
     private void stopListeningForDocumentChanges() {
