@@ -14,6 +14,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,6 +74,7 @@ public class LoadBundle implements Usecase<LoadBundle.Request, LoadBundle.Respon
         } catch (IOException e) {
             throw new UsecaseException("Failed to detect properties in directory!", e);
         }
+        Collections.sort(propertyFiles);
         return propertyFiles;
     }
 
