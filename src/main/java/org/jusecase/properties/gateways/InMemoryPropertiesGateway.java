@@ -30,6 +30,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     private List<Property> properties;
     private Map<String, List<Property>> propertiesByKey;
     private boolean initialized;
+    private boolean useMultipleThreads = true;
 
     @Override
     public void loadProperties(List<Path> files) {
@@ -54,7 +55,11 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
             loadTasks.add(new LoadTask(file));
         }
 
-        loadTasks.parallelStream().forEach(LoadTask::load);
+        if (useMultipleThreads) {
+            loadTasks.parallelStream().forEach(LoadTask::load);
+        } else {
+            loadTasks.forEach(LoadTask::load);
+        }
 
         for (LoadTask loadTask : loadTasks) {
             for (Property property : loadTask.properties) {
@@ -260,8 +265,13 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         KeyMatcher keyMatcher = createKeyMatcher(request, result);
         ValueMatcher valueMatcher = createValueMatcher(request, result);
 
-        keys.parallelStream().forEach(keyMatcher);
-        properties.parallelStream().forEach(valueMatcher);
+        if (useMultipleThreads) {
+            keys.parallelStream().forEach(keyMatcher);
+            properties.parallelStream().forEach(valueMatcher);
+        } else {
+            keys.forEach(keyMatcher);
+            properties.forEach(valueMatcher);
+        }
 
         ArrayList<Key> resultKeys = new ArrayList<>(result);
         Collections.sort(resultKeys);
@@ -379,7 +389,11 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     }
 
     private void saveFiles(List<Path> files) {
-        files.parallelStream().forEach(this::save);
+        if (useMultipleThreads) {
+            files.parallelStream().forEach(this::save);
+        } else {
+            files.forEach(this::save);
+        }
     }
 
     @Override
@@ -554,6 +568,10 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     @Override
     public List<Path> getFiles() {
         return files;
+    }
+
+    public void setUseMultipleThreads(boolean useMultipleThreads) {
+        this.useMultipleThreads = useMultipleThreads;
     }
 
     private static class FileSnapshot {
