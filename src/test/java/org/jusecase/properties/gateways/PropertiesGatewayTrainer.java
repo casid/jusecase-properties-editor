@@ -5,11 +5,7 @@ import static org.jusecase.Builders.a;
 import static org.jusecase.properties.entities.Builders.testPath;
 
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.jusecase.properties.entities.Key;
 import org.jusecase.properties.entities.Property;
@@ -30,6 +26,7 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
    private boolean                     externalChanges;
    private boolean                     unsavedChanges;
    private List<Path>                  files;
+   private List<Key>                   searchResults = new ArrayList<>();
 
 
    @Override
@@ -121,6 +118,10 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
       this.unsavedChanges = unsavedChanges;
    }
 
+   public void givenSearchResults(Key ... searchResults) {
+      this.searchResults = Arrays.asList(searchResults);
+   }
+
    @Override
    public boolean hasExternalChanges() {
       return externalChanges;
@@ -165,7 +166,7 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
 
    @Override
    public List<Key> search( Search.Request request ) {
-      return null;
+      return searchResults;
    }
 
    public void thenLoadedPropertiesAre( Set<Path> expected ) {

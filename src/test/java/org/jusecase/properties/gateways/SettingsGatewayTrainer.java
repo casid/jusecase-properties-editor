@@ -1,6 +1,9 @@
 package org.jusecase.properties.gateways;
 
+import org.assertj.core.api.Assertions;
 import org.jusecase.properties.entities.Settings;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SettingsGatewayTrainer implements SettingsGateway {
     private Settings settings = new Settings();
@@ -27,5 +30,9 @@ public class SettingsGatewayTrainer implements SettingsGateway {
 
     public Settings getSavedSettings() {
         return savedSettings;
+    }
+
+    public void thenSearchHistoryIs(String ... expected) {
+        assertThat(settings.searchHistory).containsExactly(expected);
     }
 }
