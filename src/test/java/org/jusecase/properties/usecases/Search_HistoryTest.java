@@ -73,6 +73,13 @@ public class Search_HistoryTest extends UsecaseTest<Request, Response> {
     }
 
     @Test
+    public void name() {
+        settingsGatewayTrainer.givenSearchHistory("foo", "bar", "bla");
+        whenSearchQueryIsSent("bar");
+        settingsGatewayTrainer.thenSearchHistoryIs("bar", "foo", "bla");
+    }
+
+    @Test
     public void noResult() {
         propertiesGatewayTrainer.givenSearchResults();
         whenSearchQueryIsSent("u3rgp9p5");

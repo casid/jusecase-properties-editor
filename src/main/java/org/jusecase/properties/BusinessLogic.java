@@ -58,6 +58,7 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
         addUsecase(GetChangedKeys.class);
         addUsecase(LoadLookAndFeel.class);
         addUsecase(SaveLookAndFeel.class);
+        addUsecase(GetSearchHistory.class);
 
         registerPlugin(JavaPropertiesImporter.class);
     }

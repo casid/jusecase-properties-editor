@@ -3,6 +3,8 @@ package org.jusecase.properties.gateways;
 import org.assertj.core.api.Assertions;
 import org.jusecase.properties.entities.Settings;
 
+import java.util.Arrays;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SettingsGatewayTrainer implements SettingsGateway {
@@ -30,6 +32,10 @@ public class SettingsGatewayTrainer implements SettingsGateway {
 
     public Settings getSavedSettings() {
         return savedSettings;
+    }
+
+    public void givenSearchHistory(String ... queries) {
+        settings.searchHistory.addAll(Arrays.asList(queries));
     }
 
     public void thenSearchHistoryIs(String ... expected) {

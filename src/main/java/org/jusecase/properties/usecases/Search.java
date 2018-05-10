@@ -56,18 +56,30 @@ public class Search implements Usecase<Search.Request, Search.Response> {
         if (isNewHistoryEntryRequired(history, query)) {
             history.add(0, query);
         } else {
-            history.set(0, query);
+            int i = history.indexOf(query);
+            if (i >= 0) {
+                history.remove(i);
+                history.add(0, query);
+            } else {
+                history.set(0, query);
+            }
         }
 
         int maxSize = settingsGateway.getSettings().maxSearchHistorySize;
         while (history.size() > maxSize) {
             history.remove(maxSize);
         }
+
+        settingsGateway.saveSettings(settingsGateway.getSettings());
     }
 
     private boolean isNewHistoryEntryRequired(List<String> history, String query) {
         if (history.isEmpty()) {
             return true;
+        }
+
+        if (history.contains(query)) {
+            return false;
         }
 
         String lastQuery = history.get(0);

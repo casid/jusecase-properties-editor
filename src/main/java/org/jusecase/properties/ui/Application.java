@@ -1,6 +1,8 @@
 package org.jusecase.properties.ui;
 
 import com.bulenkov.darcula.DarculaLaf;
+import com.bulenkov.darcula.ui.DarculaTextFieldUI;
+import com.bulenkov.iconloader.IconLoader;
 import net.miginfocom.swing.MigLayout;
 import org.jusecase.properties.BusinessLogic;
 import org.jusecase.properties.entities.Key;
@@ -11,13 +13,13 @@ import org.jusecase.properties.usecases.*;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.plaf.basic.BasicArrowButton;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
+import java.awt.event.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.regex.PatternSyntaxException;
@@ -277,8 +279,12 @@ public class Application {
     }
 
     private void resetSearch() {
-        searchField.setText("");
-        search("");
+        triggerSearch("");
+    }
+
+    private void triggerSearch(String query) {
+        searchField.setText(query);
+        search(query);
     }
 
     public void onKeyRenamed() {
@@ -306,6 +312,8 @@ public class Application {
     }
 
     private void initSearchField() {
+        JPanel searchPanel = new JPanel(new MigLayout("insets 0,fill"));
+
         searchField = new JTextField();
         searchField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -323,7 +331,28 @@ public class Application {
                 search(searchField.getText());
             }
         });
-        keyPanel.add(searchField, "wrap,growx");
+        searchPanel.add(searchField, "pushx,growx,wmax 100%");
+
+        Icon icon = IconLoader.findIcon("/com/bulenkov/darcula/icons/searchWithHistory.png", DarculaTextFieldUI.class, true);
+        JButton searchHistoryButton = new JButton(icon);
+        searchHistoryButton.addActionListener(e -> {
+            GetSearchHistory.Request request = new GetSearchHistory.Request();
+            request.currentQuery = searchField.getText();
+            execute(request, (GetSearchHistory.Response r) -> {
+                JPopupMenu popMenu = new JPopupMenu();
+                for (String query : r.queries) {
+                    JMenuItem menuItem = new JMenuItem(query);
+                    menuItem.addActionListener(menuItemEvent -> {
+                        triggerSearch(query);
+                    });
+                    popMenu.add(menuItem);
+                }
+                popMenu.show(searchHistoryButton, searchField.getX(), searchField.getY() + searchField.getHeight());
+            });
+        });
+        searchPanel.add(searchHistoryButton, "align right");
+
+        keyPanel.add(searchPanel, "growx, wrap");
 
         caseSensitiveBox = new JCheckBox("Case sensitive", false);
         caseSensitiveBox.addItemListener(e -> search(searchField.getText()));
