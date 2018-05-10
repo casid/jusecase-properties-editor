@@ -519,7 +519,16 @@ public class Application {
             }
         }
 
-        if (request instanceof RenameKey.Request) {
+        if (request instanceof DuplicateKeys.Request) {
+            DuplicateKeys.Request duplicateKey = (DuplicateKeys.Request) request;
+            if (duplicateKey.undo) {
+                onKeyDeleted();
+            } else {
+                duplicateKey.newKeys.forEach(this::onNewKeyAdded);
+            }
+        }
+
+        if (request instanceof RenameKey.Request || request instanceof RenameKeys.Request) {
             onKeyRenamed();
         }
 

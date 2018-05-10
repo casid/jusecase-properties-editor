@@ -1,10 +1,6 @@
 package org.jusecase.properties.ui;
 
-import org.jusecase.properties.usecases.DeleteKey;
-import org.jusecase.properties.usecases.DuplicateKey;
-import org.jusecase.properties.usecases.DuplicateKeys;
-import org.jusecase.properties.usecases.NewKey;
-import org.jusecase.properties.usecases.RenameKey;
+import org.jusecase.properties.usecases.*;
 
 import javax.swing.*;
 
@@ -46,18 +42,44 @@ public class KeyListMenu extends JPopupMenu {
     private void addRename() {
         JMenuItem item = new JMenuItem("Rename");
         item.addActionListener(event -> {
-            String key = application.getSelectedKey();
-            String newKey = (String)JOptionPane.showInputDialog(null, "Rename key", "Rename key", JOptionPane.PLAIN_MESSAGE, null, null, key);
-            if (newKey != null) {
-                RenameKey.Request request = new RenameKey.Request();
-                request.key = key;
-                request.newKey = newKey;
-                application.execute(request);
-                application.onKeyRenamed();
+            List<String> selectedKeys = application.getSelectedValues();
+            if (selectedKeys.size() > 1) {
+                rename(selectedKeys);
+            } else {
+                String key = application.getSelectedKey();
+                rename(key);
             }
-
         });
         add(item);
+    }
+
+    private void rename(String key) {
+        String newKey = (String)JOptionPane.showInputDialog(null, "Rename key", "Rename key", JOptionPane.PLAIN_MESSAGE, null, null, key);
+        if (newKey != null) {
+            RenameKey.Request request = new RenameKey.Request();
+            request.key = key;
+            request.newKey = newKey;
+            application.execute(request);
+            application.onKeyRenamed();
+        }
+    }
+
+    private void rename(List<String> selectedKeys) {
+        String replace = (String)JOptionPane
+                .showInputDialog(null, "You are about to rename more than one key. First, select what key part should be replaced:", "Rename keys", JOptionPane.PLAIN_MESSAGE, null, null, "");
+        if (replace == null) {
+            return;
+        }
+        String replaceWith = (String)JOptionPane.showInputDialog(null, "Replace " + replace +  " with", "Rename keys", JOptionPane.PLAIN_MESSAGE, null, null, "");
+        if (replaceWith == null) {
+            return;
+        }
+
+        RenameKeys.Request request = new RenameKeys.Request();
+        request.keys = selectedKeys;
+        request.newKeys = selectedKeys.stream().map(s -> s.replaceAll(replace, replaceWith)).collect(Collectors.toList());
+        application.execute(request);
+        application.onKeyRenamed();
     }
 
     private void addDuplicate() {
