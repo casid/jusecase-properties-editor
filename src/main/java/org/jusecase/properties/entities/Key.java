@@ -2,12 +2,11 @@ package org.jusecase.properties.entities;
 
 public class Key implements Comparable<Key> {
     private final String key;
+    private KeyPopulation population;
 
     public void setPopulation(KeyPopulation population) {
         this.population = population;
     }
-
-    private KeyPopulation population;
 
     public Key(String key) {
         this.key = key;
