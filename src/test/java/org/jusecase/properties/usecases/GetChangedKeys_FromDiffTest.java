@@ -67,6 +67,19 @@ public class GetChangedKeys_FromDiffTest extends UsecaseTest<GetChangedKeys.Requ
       thenKeysAre();
    }
 
+   @Test
+   public void lineMoved() {
+      Path file = Paths.get("src/main/resources/resources.properties");
+      Diff diff = new Diff(file);
+      diff.deletedLines.add("key=value");
+      diff.addedLines.add("key=value");
+      diffPluginTrainer.givenChangedFiles(a(list(diff)));
+
+      whenRequestIsExecuted();
+
+      thenKeysAre();
+   }
+
    private void thenKeysAre( String... keys ) {
       assertThat(response.keys).containsExactly(keys);
    }

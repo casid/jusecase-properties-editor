@@ -3,6 +3,7 @@ package org.jusecase.properties.usecases;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -66,7 +67,8 @@ public class GetChangedKeys implements Usecase<GetChangedKeys.Request, GetChange
             Set<Path> paths = propertyFiles.stream().map(repository::relativize).collect(Collectors.toSet());
 
             for ( Diff diff : diffPlugin.getChangedFiles(repository, paths) ) {
-               for ( String addedLine : diff.addedLines ) {
+               Set<String> addedLines = getAddedLines(diff);
+               for ( String addedLine : addedLines ) {
                   keys.add(addedLine.substring(0, addedLine.indexOf('=')).trim());
                }
             }
@@ -77,6 +79,12 @@ public class GetChangedKeys implements Usecase<GetChangedKeys.Request, GetChange
       }
 
       return keys;
+   }
+
+   private Set<String> getAddedLines( Diff diff ) {
+      Set<String> addedLines = new LinkedHashSet<>(diff.addedLines);
+      addedLines.removeAll(diff.deletedLines);
+      return addedLines;
    }
 
    private Set<String> getChangedKeysFromHistory() {
