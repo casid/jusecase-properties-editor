@@ -13,13 +13,11 @@ import org.jusecase.properties.usecases.*;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.plaf.basic.BasicArrowButton;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.regex.PatternSyntaxException;
@@ -381,7 +379,8 @@ public class Application {
 
     private void initFrame() {
         frame = new JFrame(applicationName);
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+        Dimension screenSize = getScreenSize();
         screenSize.width = (int)(0.4 * screenSize.width);
         screenSize.height = (int)(0.4 * screenSize.height);
         frame.setMinimumSize(screenSize);
@@ -429,6 +428,12 @@ public class Application {
                 });
             }
         });
+    }
+
+    protected Dimension getScreenSize() {
+        GraphicsDevice defaultScreenDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        DisplayMode displayMode = defaultScreenDevice.getDisplayMode();
+        return new Dimension(displayMode.getWidth(), displayMode.getHeight());
     }
 
     @SuppressWarnings("unused")
