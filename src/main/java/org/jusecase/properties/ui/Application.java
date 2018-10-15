@@ -65,8 +65,8 @@ public class Application {
         String os = System.getProperty("os.name").toLowerCase();
         if (os.startsWith("mac")) {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
-            System.setProperty("com.apple.mrj.application.apple.menu.about.name",
-                    appName);
+            System.setProperty("com.apple.mrj.application.apple.menu.about.name", appName);
+            System.setProperty("apple.eawt.quitStrategy", "CLOSE_ALL_WINDOWS");
         }
     }
 
