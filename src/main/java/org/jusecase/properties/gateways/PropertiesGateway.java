@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface PropertiesGateway {
 
+    boolean isInitialized();
+
     void loadProperties(List<Path> files);
 
     Key getKey(String key);

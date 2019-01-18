@@ -5,7 +5,13 @@ import static org.jusecase.Builders.a;
 import static org.jusecase.properties.entities.Builders.testPath;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.jusecase.properties.entities.Key;
 import org.jusecase.properties.entities.Property;
@@ -26,7 +32,8 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
    private boolean                     externalChanges;
    private boolean                     unsavedChanges;
    private List<Path>                  files;
-   private List<Key>                   searchResults = new ArrayList<>();
+   private List<Key>                   searchResults    = new ArrayList<>();
+   private boolean                     initialized      = true;
 
 
    @Override
@@ -110,6 +117,10 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
       this.files = files;
    }
 
+   public void givenInitialized( boolean initialized ) {
+      this.initialized = initialized;
+   }
+
    public void givenProperties( String key, List<Property> properties ) {
       propertiesForKey.put(key, properties);
    }
@@ -118,7 +129,7 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
       this.unsavedChanges = unsavedChanges;
    }
 
-   public void givenSearchResults(Key ... searchResults) {
+   public void givenSearchResults( Key... searchResults ) {
       this.searchResults = Arrays.asList(searchResults);
    }
 
@@ -130,6 +141,11 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
    @Override
    public boolean hasUnsavedChanges() {
       return unsavedChanges;
+   }
+
+   @Override
+   public boolean isInitialized() {
+      return initialized;
    }
 
    @Override

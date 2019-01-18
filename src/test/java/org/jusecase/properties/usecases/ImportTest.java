@@ -42,6 +42,13 @@ public class ImportTest extends UsecaseTest<Request, Response> {
     }
 
     @Test
+    public void notInitialized() {
+        propertiesGatewayTrainer.givenInitialized(false);
+        whenRequestIsExecuted();
+        thenErrorMessageIs("No properties opened yet. You probably want to do File -> Open first.");
+    }
+
+    @Test
     public void success() {
         List<Property> importedProperties = a(list(
               a(property().withFileName("de")),

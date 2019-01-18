@@ -2,9 +2,7 @@ package org.jusecase.properties.usecases;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -52,6 +50,10 @@ public class Import implements Usecase<Import.Request, Import.Response> {
     }
 
     private List<Property> loadProperties(Request request) {
+        if (!propertiesGateway.isInitialized()) {
+            throw new UsecaseException("No properties opened yet. You probably want to do File -> Open first.");
+        }
+
         PropertiesImporter importer = pluginManager.getPlugin(request.pluginId, PropertiesImporter.class);
         if (importer == null) {
             throw new UsecaseException("No plugin '" + request.pluginId + "' found to import properties");

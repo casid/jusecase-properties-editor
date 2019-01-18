@@ -534,7 +534,8 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         }
     }
 
-    private boolean isInitialized() {
+    @Override
+    public boolean isInitialized() {
         return initialized;
     }
 
