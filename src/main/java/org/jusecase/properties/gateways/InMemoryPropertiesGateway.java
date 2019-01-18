@@ -502,7 +502,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     }
 
     private String resolveBundleName() {
-        if (fileNames.isEmpty()) {
+        if (fileNames == null || fileNames.isEmpty()) {
             return null;
         }
 

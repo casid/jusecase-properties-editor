@@ -156,6 +156,11 @@ public abstract class PropertiesGatewayTest {
     }
 
     @Test
+    public void resolveFileName_noPropertiesLoaded() {
+        assertThat(gateway.resolveFileName("de")).isNull();
+    }
+
+    @Test
     public void resolveFileName_match() {
         givenProperties("resources_de.properties");
         assertThat(gateway.resolveFileName("de")).isEqualTo("resources_de.properties");
