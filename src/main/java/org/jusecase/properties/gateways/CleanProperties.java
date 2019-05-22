@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -34,7 +35,7 @@ public class CleanProperties extends Properties {
    }
 
    public void storeSpecial( OutputStream out, String lineSeparator ) throws IOException {
-      store0(new BufferedWriter(new OutputStreamWriter(out, "8859_1")), true, lineSeparator);
+      store0(new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8)), false, lineSeparator);
    }
 
    /**

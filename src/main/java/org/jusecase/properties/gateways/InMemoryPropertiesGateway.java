@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -554,9 +555,11 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
 
     private Properties loadJavaProperties(Path file) throws IOException {
         try (InputStream inputStream = Files.newInputStream(file)) {
-            Properties properties = new Properties();
-            properties.load(inputStream);
-            return properties;
+            try (InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
+                Properties properties = new Properties();
+                properties.load(reader);
+                return properties;
+            }
         }
     }
 
