@@ -4,7 +4,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.name.Names;
 import org.jusecase.UsecaseExecutor;
-import org.jusecase.executors.guice.GuiceUsecaseExecutor;
 import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.*;
 import org.jusecase.properties.plugins.Plugin;

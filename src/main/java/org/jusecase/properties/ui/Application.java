@@ -86,7 +86,7 @@ public class Application {
     }
 
     public void importProperties( Plugin plugin ) {
-        JFileChooser fileChooser = new NativeJFileChooser();
+        JFileChooser fileChooser = new JFileChooser();
         fileChooser.setMultiSelectionEnabled(true);
         fileChooser.setDialogTitle("Choose file to import");
         if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
