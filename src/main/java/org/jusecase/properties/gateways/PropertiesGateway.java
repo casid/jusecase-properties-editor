@@ -27,6 +27,8 @@ public interface PropertiesGateway {
 
     void deleteKey( String key );
 
+    void setIgnoreLocalesForKeyPopulation( String ... locales );
+
     void updateValue(Property property);
 
     void addKey(String key);

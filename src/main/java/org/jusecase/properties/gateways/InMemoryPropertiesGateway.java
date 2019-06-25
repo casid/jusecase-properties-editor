@@ -30,6 +30,8 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     private Map<String, Key> keyPool;
     private List<Property> properties;
     private Map<String, List<Property>> propertiesByKey;
+    private String[] ignoreLocalesForKeyPopulation = {};
+    private Set<String> ignoreFilesForKeyPopulation = new HashSet<>();
     private boolean initialized;
     private boolean useMultipleThreads = true;
 
@@ -45,6 +47,10 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
         this.keyPool = new HashMap<>();
         this.properties = new ArrayList<>();
         this.propertiesByKey = new HashMap<>();
+
+        for ( String locale : ignoreLocalesForKeyPopulation ) {
+            ignoreFilesForKeyPopulation.add(resolveFileName(locale));
+        }
 
         loadProperties();
         initialized = true;
@@ -114,8 +120,9 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     private void updateKeyState(String key, List<Property> propertiesByKey) {
         int propertiesWithContent = 0;
         if (propertiesByKey != null) {
+            propertiesWithContent = ignoreFilesForKeyPopulation.size();
             for (Property property : propertiesByKey) {
-                if (property.key != null) {
+                if (property.key != null && !ignoreFilesForKeyPopulation.contains(property.fileName)) {
                     ++propertiesWithContent;
                 }
             }
@@ -231,6 +238,11 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
 
         propertiesByKey.remove(key);
         keys.remove(key);
+    }
+
+    @Override
+    public void setIgnoreLocalesForKeyPopulation( String... locales ) {
+        ignoreLocalesForKeyPopulation = locales;
     }
 
     @Override

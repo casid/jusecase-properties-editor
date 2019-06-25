@@ -42,6 +42,7 @@ public class LoadBundle implements Usecase<LoadBundle.Request, LoadBundle.Respon
         }
 
         List<Path> propertyFiles = findPropertyFiles(request.propertiesFile);
+        propertiesGateway.setIgnoreLocalesForKeyPopulation(System.getProperty("ignoreLocalesForKeyPopulation", "").split(","));
         propertiesGateway.loadProperties(propertyFiles);
         updateSettings(request);
         undoableRequestGateway.clear();

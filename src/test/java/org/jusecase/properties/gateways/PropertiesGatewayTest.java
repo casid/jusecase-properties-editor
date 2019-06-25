@@ -98,6 +98,14 @@ public abstract class PropertiesGatewayTest {
     }
 
     @Test
+    public void getKeys_state_twoFiles_ignore() {
+        gateway.setIgnoreLocalesForKeyPopulation("de");
+        givenProperties("resources.properties", "resources_de.properties");
+        assertThat(gateway.getKeys().get(0).getPopulation()).isEqualTo(KeyPopulation.Complete); // sample.camelCase
+        assertThat(gateway.getKeys().get(1).getPopulation()).isEqualTo(KeyPopulation.Complete); // sample.long1
+    }
+
+    @Test
     public void getKeys_unsavedChanges() {
         givenProperties("resources.properties");
         gateway.getKeys();

@@ -52,6 +52,11 @@ public class PropertiesGatewayTrainer implements PropertiesGateway {
    }
 
    @Override
+   public void setIgnoreLocalesForKeyPopulation( String... locales ) {
+
+   }
+
+   @Override
    public void deleteProperties( List<Property> properties ) {
       deletedProperties = properties;
    }
