@@ -118,21 +118,30 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     }
 
     private void updateKeyState(String key, List<Property> propertiesByKey) {
-        int propertiesWithContent = 0;
-        if (propertiesByKey != null) {
-            propertiesWithContent = ignoreFilesForKeyPopulation.size();
-            for (Property property : propertiesByKey) {
-                if (property.key != null && !ignoreFilesForKeyPopulation.contains(property.fileName)) {
-                    ++propertiesWithContent;
-                }
+        getKey(key).setPopulation(calculateKeyPopulation(propertiesByKey));
+    }
+
+    private KeyPopulation calculateKeyPopulation(List<Property> propertiesByKey) {
+        if (propertiesByKey == null) {
+            return KeyPopulation.Dev;
+        }
+
+        int propertiesWithContent = ignoreFilesForKeyPopulation.size();
+        for (Property property : propertiesByKey) {
+            if (property.key != null && !ignoreFilesForKeyPopulation.contains(property.fileName) ) {
+                ++propertiesWithContent;
             }
         }
 
-        if (propertiesWithContent < files.size()) {
-            getKey(key).setPopulation(KeyPopulation.Sparse);
-        } else {
-            getKey(key).setPopulation(KeyPopulation.Complete);
+        if (propertiesWithContent == files.size()) {
+            return KeyPopulation.Complete;
         }
+
+        if (propertiesWithContent <= ignoreFilesForKeyPopulation.size() + 1) {
+            return KeyPopulation.Dev;
+        }
+
+        return KeyPopulation.Sparse;
     }
 
     @Override

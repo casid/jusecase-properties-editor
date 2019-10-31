@@ -21,6 +21,8 @@ public class KeyListCellRenderer extends DefaultListCellRenderer {
         if (!isSelected) {
             if (key.getPopulation() == KeyPopulation.Sparse) {
                 label.setBackground(application.getLookAndFeel().sparseKeyBackgroundColor);
+            } else if (key.getPopulation() == KeyPopulation.Dev) {
+                label.setBackground(application.getLookAndFeel().devKeyBackgroundColor);
             }
         }
 

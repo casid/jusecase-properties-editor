@@ -91,16 +91,16 @@ public abstract class PropertiesGatewayTest {
     }
 
     @Test
-    public void getKeys_state_twoFiles() {
-        givenProperties("resources.properties", "resources_de.properties");
+    public void getKeys_state_threeFiles() {
+        givenProperties("resources.properties", "resources_de.properties", "resources_es.properties");
         assertThat(gateway.getKeys().get(0).getPopulation()).isEqualTo(KeyPopulation.Complete); // sample.camelCase
         assertThat(gateway.getKeys().get(1).getPopulation()).isEqualTo(KeyPopulation.Sparse); // sample.long1
     }
 
     @Test
-    public void getKeys_state_twoFiles_ignore() {
+    public void getKeys_state_threeFiles_ignore() {
         gateway.setIgnoreLocalesForKeyPopulation("de");
-        givenProperties("resources.properties", "resources_de.properties");
+        givenProperties("resources.properties", "resources_de.properties", "resources_es.properties");
         assertThat(gateway.getKeys().get(0).getPopulation()).isEqualTo(KeyPopulation.Complete); // sample.camelCase
         assertThat(gateway.getKeys().get(1).getPopulation()).isEqualTo(KeyPopulation.Complete); // sample.long1
     }
@@ -416,7 +416,7 @@ public abstract class PropertiesGatewayTest {
 
     @Test
     public void updateValue_null() {
-        givenProperties("resources.properties", "resources_de.properties");
+        givenProperties("resources.properties", "resources_de.properties", "resources_es.properties");
         Property german = gateway.getProperties("sample8").get(1);
 
         german.value = null;
@@ -548,10 +548,11 @@ public abstract class PropertiesGatewayTest {
 
     @Test
     public void addProperties_nullValue_notAddedToInternalModel() {
-        givenProperties("resources.properties", "resources_de.properties");
+        givenProperties("resources.properties", "resources_de.properties", "resources_es.properties");
 
         gateway.addProperties(a(list(
                 a(property().withFileName("resources.properties").withKey("one").withValue("value")),
+                a(property().withFileName("resources_es.properties").withKey("one").withValue("value")),
                 a(property().withFileName("resources_de.properties").withKey("one").withValue(null))
         )));
 
