@@ -66,6 +66,7 @@ public class TranslationPanel extends JPanel {
         add(isAvailable, "align left,wrap");
 
         textArea = new JTextArea();
+        TextUtils.enableDefaultShortcuts(textArea);
         textAreaListener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {

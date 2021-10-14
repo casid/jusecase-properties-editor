@@ -313,6 +313,7 @@ public class Application {
         JPanel searchPanel = new JPanel(new MigLayout("insets 0,fill"));
 
         searchField = new JTextField();
+        TextUtils.enableDefaultShortcuts(searchField);
         searchField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
