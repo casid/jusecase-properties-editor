@@ -18,7 +18,7 @@ public class TextUtils {
          @Override
          public void actionPerformed( ActionEvent e ) {
             try {
-               textComponent.getDocument().insertString(textComponent.getCaretPosition(), " !", null);
+               textComponent.getDocument().insertString(textComponent.getCaretPosition(), " ", null);
             }
             catch ( BadLocationException ex ) {
                // Ignore
