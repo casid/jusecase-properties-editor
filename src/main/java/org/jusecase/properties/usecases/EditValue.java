@@ -5,15 +5,10 @@ import org.jusecase.properties.entities.Property;
 import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.PropertiesGateway;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-@Singleton
 public class EditValue implements Usecase<EditValue.Request, EditValue.Response> {
 
     private final PropertiesGateway propertiesGateway;
 
-    @Inject
     public EditValue(PropertiesGateway propertiesGateway) {
         this.propertiesGateway = propertiesGateway;
     }

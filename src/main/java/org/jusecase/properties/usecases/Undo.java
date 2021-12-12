@@ -5,16 +5,11 @@ import org.jusecase.UsecaseExecutor;
 import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.UndoableRequestGateway;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-@Singleton
 public class Undo implements Usecase<Undo.Request, Undo.Response> {
 
     private final UsecaseExecutor usecaseExecutor;
     private final UndoableRequestGateway undoableRequestGateway;
 
-    @Inject
     public Undo(UsecaseExecutor usecaseExecutor, UndoableRequestGateway undoableRequestGateway) {
         this.usecaseExecutor = usecaseExecutor;
         this.undoableRequestGateway = undoableRequestGateway;

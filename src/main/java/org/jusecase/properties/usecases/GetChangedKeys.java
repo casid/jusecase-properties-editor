@@ -11,9 +11,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import org.jusecase.Usecase;
 import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.PropertiesGateway;
@@ -22,8 +19,6 @@ import org.jusecase.properties.plugins.diff.Diff;
 import org.jusecase.properties.plugins.diff.DiffException;
 import org.jusecase.properties.plugins.diff.DiffPlugin;
 
-
-@Singleton
 public class GetChangedKeys implements Usecase<GetChangedKeys.Request, GetChangedKeys.Response> {
 
    private final UndoableRequestGateway undoableRequestGateway;
@@ -31,8 +26,6 @@ public class GetChangedKeys implements Usecase<GetChangedKeys.Request, GetChange
    private final PropertiesGateway      propertiesGateway;
    private final List<ChangeDetector>   changeDetectors;
 
-
-   @Inject
    public GetChangedKeys( UndoableRequestGateway undoableRequestGateway, DiffPlugin diffPlugin, PropertiesGateway propertiesGateway ) {
       this.undoableRequestGateway = undoableRequestGateway;
       this.diffPlugin = diffPlugin;

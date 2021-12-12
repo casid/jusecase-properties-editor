@@ -4,9 +4,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import org.jusecase.Usecase;
 import org.jusecase.properties.entities.Property;
 import org.jusecase.properties.entities.UndoableRequest;
@@ -15,13 +12,11 @@ import org.jusecase.properties.plugins.PluginManager;
 import org.jusecase.properties.plugins.importer.PropertiesImporter;
 
 
-@Singleton
 public class Import implements Usecase<Import.Request, Import.Response> {
 
     private final PropertiesGateway propertiesGateway;
     private final PluginManager pluginManager;
 
-    @Inject
     public Import( PropertiesGateway propertiesGateway, PluginManager pluginManager ) {
         this.propertiesGateway = propertiesGateway;
         this.pluginManager = pluginManager;

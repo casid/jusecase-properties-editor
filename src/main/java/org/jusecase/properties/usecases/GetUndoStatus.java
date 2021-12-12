@@ -4,15 +4,10 @@ import org.jusecase.Usecase;
 import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.UndoableRequestGateway;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-@Singleton
 public class GetUndoStatus implements Usecase<GetUndoStatus.Request, GetUndoStatus.Response> {
 
     private final UndoableRequestGateway undoableRequestGateway;
 
-    @Inject
     public GetUndoStatus(UndoableRequestGateway undoableRequestGateway) {
         this.undoableRequestGateway = undoableRequestGateway;
     }

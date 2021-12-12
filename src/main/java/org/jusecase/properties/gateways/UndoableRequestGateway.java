@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UndoableRequestGateway {
-    private List<UndoableRequest> requests = new ArrayList<>();
+    private final List<UndoableRequest> requests = new ArrayList<>();
     private int redoIndex;
 
     public void add(UndoableRequest request) {

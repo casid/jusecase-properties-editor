@@ -10,7 +10,7 @@ import java.util.List;
 
 public class TranslationsPanel extends JPanel {
     private final Application application;
-    private List<TranslationPanel> translationPanels = new ArrayList<>();
+    private final List<TranslationPanel> translationPanels = new ArrayList<>();
 
     public TranslationsPanel(Application application) {
         super(new MigLayout("insets 3 0 2 0", "[fill]"));

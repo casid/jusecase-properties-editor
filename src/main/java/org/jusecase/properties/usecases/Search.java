@@ -6,12 +6,9 @@ import org.jusecase.properties.entities.Key;
 import org.jusecase.properties.gateways.PropertiesGateway;
 import org.jusecase.properties.gateways.SettingsGateway;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.List;
 
-@Singleton
 public class Search implements Usecase<Search.Request, Search.Response> {
     private final PropertiesGateway propertiesGateway;
     private final UsecaseExecutor usecaseExecutor;
@@ -19,7 +16,6 @@ public class Search implements Usecase<Search.Request, Search.Response> {
 
     private Collection<String> changedKeys;
 
-    @Inject
     public Search(PropertiesGateway propertiesGateway, UsecaseExecutor usecaseExecutor, SettingsGateway settingsGateway) {
         this.propertiesGateway = propertiesGateway;
         this.usecaseExecutor = usecaseExecutor;

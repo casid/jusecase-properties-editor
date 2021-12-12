@@ -5,13 +5,10 @@ import org.jusecase.properties.gateways.PropertiesGateway;
 import org.jusecase.properties.gateways.SettingsGateway;
 import org.jusecase.properties.gateways.UndoableRequestGateway;
 
-import javax.inject.Inject;
-
 public class Initialize implements Usecase<Initialize.Request, Initialize.Response> {
 
     private final ReloadBundle reloadBundle;
 
-    @Inject
     public Initialize(PropertiesGateway propertiesGateway, SettingsGateway settingsGateway, UndoableRequestGateway undoableRequestGateway) {
         this.reloadBundle = new ReloadBundle(propertiesGateway, settingsGateway, undoableRequestGateway);
     }

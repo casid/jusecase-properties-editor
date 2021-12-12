@@ -3,15 +3,10 @@ package org.jusecase.properties.usecases;
 import org.jusecase.Usecase;
 import org.jusecase.properties.gateways.PropertiesGateway;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-@Singleton
 public class CheckModifications implements Usecase<CheckModifications.Request, CheckModifications.Response> {
 
     private final PropertiesGateway propertiesGateway;
 
-    @Inject
     public CheckModifications(PropertiesGateway propertiesGateway) {
         this.propertiesGateway = propertiesGateway;
     }

@@ -7,8 +7,6 @@ import org.jusecase.properties.gateways.PropertiesGateway;
 import org.jusecase.properties.gateways.SettingsGateway;
 import org.jusecase.properties.gateways.UndoableRequestGateway;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -18,14 +16,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Singleton
 public class LoadBundle implements Usecase<LoadBundle.Request, LoadBundle.Response> {
 
     private final PropertiesGateway propertiesGateway;
     private final SettingsGateway settingsGateway;
     private final UndoableRequestGateway undoableRequestGateway;
 
-    @Inject
     public LoadBundle(PropertiesGateway propertiesGateway, SettingsGateway settingsGateway, UndoableRequestGateway undoableRequestGateway) {
         this.propertiesGateway = propertiesGateway;
         this.settingsGateway = settingsGateway;

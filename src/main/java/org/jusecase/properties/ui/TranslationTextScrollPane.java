@@ -6,8 +6,8 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
 public class TranslationTextScrollPane extends JScrollPane {
-    private MouseWheelListener[] originalMouseWheelListeners;
-    private MouseWheelListener specialMouseWheelListener;
+    private final MouseWheelListener[] originalMouseWheelListeners;
+    private final MouseWheelListener specialMouseWheelListener;
     private boolean enabled;
 
 

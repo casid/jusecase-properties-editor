@@ -5,17 +5,13 @@ import org.jusecase.properties.entities.Property;
 import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.PropertiesGateway;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.List;
 
 
-@Singleton
 public class DeleteKey implements Usecase<DeleteKey.Request, DeleteKey.Response> {
 
     private final PropertiesGateway propertiesGateway;
 
-    @Inject
     public DeleteKey(PropertiesGateway propertiesGateway) {
         this.propertiesGateway = propertiesGateway;
     }

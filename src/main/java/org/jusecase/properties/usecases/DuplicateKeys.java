@@ -1,8 +1,5 @@
 package org.jusecase.properties.usecases;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import java.util.List;
 
 import org.jusecase.Usecase;
@@ -10,14 +7,11 @@ import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.PropertiesGateway;
 import org.jusecase.properties.plugins.validation.KeyValidator;
 
-
-@Singleton
 public class DuplicateKeys implements Usecase<DuplicateKeys.Request, DuplicateKeys.Response> {
 
     private final PropertiesGateway propertiesGateway;
     private final KeyValidator keyValidator = new KeyValidator();
 
-    @Inject
     public DuplicateKeys(PropertiesGateway propertiesGateway) {
         this.propertiesGateway = propertiesGateway;
     }

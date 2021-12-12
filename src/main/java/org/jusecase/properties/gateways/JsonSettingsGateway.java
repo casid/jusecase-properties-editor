@@ -3,21 +3,16 @@ package org.jusecase.properties.gateways;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jusecase.properties.entities.Settings;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-@Singleton
 public class JsonSettingsGateway implements SettingsGateway {
     private final Path file;
     private final ObjectMapper mapper = new ObjectMapper();
     private Settings settings;
 
-    @Inject
-    public JsonSettingsGateway(@Named("settingsFile") Path file) {
+    public JsonSettingsGateway(Path file) {
         this.file = file;
     }
 

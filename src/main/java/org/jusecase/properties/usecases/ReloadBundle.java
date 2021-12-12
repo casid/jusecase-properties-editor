@@ -6,7 +6,6 @@ import org.jusecase.properties.gateways.PropertiesGateway;
 import org.jusecase.properties.gateways.SettingsGateway;
 import org.jusecase.properties.gateways.UndoableRequestGateway;
 
-import javax.inject.Inject;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -15,7 +14,6 @@ public class ReloadBundle implements Usecase<ReloadBundle.Request, ReloadBundle.
     private final SettingsGateway settingsGateway;
     private final LoadBundle loadBundle;
 
-    @Inject
     public ReloadBundle(PropertiesGateway propertiesGateway, SettingsGateway settingsGateway, UndoableRequestGateway undoableRequestGateway) {
         this.settingsGateway = settingsGateway;
         this.loadBundle = new LoadBundle(propertiesGateway, null, undoableRequestGateway);

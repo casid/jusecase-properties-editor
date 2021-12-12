@@ -6,7 +6,6 @@ import org.jusecase.properties.entities.KeyPopulation;
 import org.jusecase.properties.entities.Property;
 import org.jusecase.properties.usecases.Search;
 
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,7 +19,6 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-@Singleton
 public class InMemoryPropertiesGateway implements PropertiesGateway {
     private List<Path> files;
     private Set<String> fileNames;
@@ -31,7 +29,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     private List<Property> properties;
     private Map<String, List<Property>> propertiesByKey;
     private String[] ignoreLocalesForKeyPopulation = {};
-    private Set<String> ignoreFilesForKeyPopulation = new HashSet<>();
+    private final Set<String> ignoreFilesForKeyPopulation = new HashSet<>();
     private boolean initialized;
     private boolean useMultipleThreads = true;
 

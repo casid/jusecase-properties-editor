@@ -5,18 +5,13 @@ import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.PropertiesGateway;
 import org.jusecase.properties.plugins.validation.KeyValidator;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.List;
 
-
-@Singleton
 public class RenameKeys implements Usecase<RenameKeys.Request, RenameKeys.Response> {
 
     private final PropertiesGateway propertiesGateway;
     private final KeyValidator keyValidator = new KeyValidator();
 
-    @Inject
     public RenameKeys(PropertiesGateway propertiesGateway) {
         this.propertiesGateway = propertiesGateway;
     }

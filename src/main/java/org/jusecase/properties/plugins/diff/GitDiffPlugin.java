@@ -42,7 +42,7 @@ public class GitDiffPlugin implements DiffPlugin {
    private String createDiffCommand( Collection<Path> files ) {
       String command = "git diff --unified=0";
       if (!files.isEmpty()) {
-         String filesAsString = String.join(" ", files.stream().map(Path::toString).collect(Collectors.toList()));
+         String filesAsString = files.stream().map(Path::toString).collect(Collectors.joining(" "));
          command += " " + filesAsString;
       }
       return command;

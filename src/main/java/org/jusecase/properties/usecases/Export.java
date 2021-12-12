@@ -7,7 +7,6 @@ import org.jusecase.properties.gateways.PropertiesGateway;
 import org.jusecase.properties.plugins.PluginManager;
 import org.jusecase.properties.plugins.exporter.PropertiesExporter;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +15,6 @@ public class Export implements Usecase<Export.Request, Export.Response> {
     private final PropertiesGateway propertiesGateway;
     private final PluginManager pluginManager;
 
-    @Inject
     public Export(PropertiesGateway propertiesGateway, PluginManager pluginManager) {
         this.propertiesGateway = propertiesGateway;
         this.pluginManager = pluginManager;

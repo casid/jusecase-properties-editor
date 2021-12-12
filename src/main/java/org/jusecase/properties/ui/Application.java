@@ -29,7 +29,7 @@ public class Application {
 
     private JFrame frame;
     private JList<Key> keyList;
-    private KeyListModel keyListModel = new KeyListModel();
+    private final KeyListModel keyListModel = new KeyListModel();
     private JTextField searchField;
     private JCheckBox caseSensitiveBox;
     private JCheckBox regexBox;
@@ -42,14 +42,14 @@ public class Application {
     protected static String applicationName = "Properties Editor";
     protected static Class<? extends Application> applicationClass = Application.class;
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
 
         macSetup(applicationName);
 
         SwingUtilities.invokeLater(() -> {
             try {
-                applicationClass.newInstance().start();
+                applicationClass.getDeclaredConstructor().newInstance().start();
             }
             catch ( Exception e ) {
                 throw new RuntimeException(e);
@@ -480,17 +480,17 @@ public class Application {
 
     public void undo() {
         execute(new Undo.Request(), (Undo.Response response) -> {
-            handleUndoOrRedoResponse(response.undoRequest, response.undoResponse);
+            handleUndoOrRedoResponse(response.undoRequest);
         });
     }
 
     public void redo() {
         execute(new Redo.Request(), (Redo.Response response) -> {
-            handleUndoOrRedoResponse(response.redoRequest, response.redoResponse);
+            handleUndoOrRedoResponse(response.redoRequest);
         });
     }
 
-    private void handleUndoOrRedoResponse(Object request, Object response) {
+    private void handleUndoOrRedoResponse(Object request) {
         if (request instanceof EditValue.Request) {
             EditValue.Request editValue = (EditValue.Request)request;
             if (editValue.property.key.equals(getSelectedKey())) {
@@ -545,11 +545,6 @@ public class Application {
 
     public void onKeyDeleted() {
         refreshSearch();
-    }
-
-    @SuppressWarnings("unused") // Used by derived projects
-    public void registerPlugin(Class<? extends Plugin> pluginClass) {
-        businessLogic.registerPlugin(pluginClass);
     }
 
     public void changeLookAndFeel(LookAndFeel lookAndFeel) {

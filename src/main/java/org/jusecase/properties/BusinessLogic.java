@@ -1,9 +1,6 @@
 package org.jusecase.properties;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.name.Names;
-import org.jusecase.UsecaseExecutor;
+import org.jusecase.executors.manual.ManualUsecaseExecutor;
 import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.*;
 import org.jusecase.properties.plugins.Plugin;
@@ -15,92 +12,63 @@ import org.jusecase.properties.usecases.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 
+public class BusinessLogic extends ManualUsecaseExecutor {
 
-public class BusinessLogic extends GuiceUsecaseExecutor {
+    private final UndoableRequestGateway undoableRequestGateway = new UndoableRequestGateway();
 
-    private UndoableRequestGateway undoableRequestGateway = new UndoableRequestGateway();
-    private PluginManager pluginManager;
-    private Map<Class<?>, Class<?>> externalDependencies = new HashMap<>();
+    private final GatewayModule gatewayModule;
+    private final PluginModule pluginModule;
 
     public BusinessLogic() {
-        setInjector(Guice.createInjector(
-                new GatewayModule(),
-                new PluginModule(),
-                new ExternalDependenciesModule(),
-                new BusinessLogicModule()
-        ));
+        gatewayModule = new GatewayModule();
+        pluginModule = new PluginModule();
 
-        addUsecase(LoadBundle.class);
-        addUsecase(ReloadBundle.class);
-        addUsecase(SaveBundle.class);
-        addUsecase(Search.class);
-        addUsecase(GetProperties.class);
-        addUsecase(Initialize.class);
-        addUsecase(EditValue.class);
-        addUsecase(NewKey.class);
-        addUsecase(RenameKey.class);
-        addUsecase(RenameKeys.class);
-        addUsecase(DuplicateKey.class);
-        addUsecase(DuplicateKeys.class);
-        addUsecase(DeleteKey.class);
-        addUsecase(Undo.class);
-        addUsecase(Redo.class);
-        addUsecase(GetUndoStatus.class);
-        addUsecase(CheckModifications.class);
-        addUsecase(IgnoreModifications.class);
-        addUsecase(Import.class);
-        addUsecase(GetPlugins.class);
-        addUsecase(IsAllowedToQuit.class);
-        addUsecase(Export.class);
-        addUsecase(GetChangedKeys.class);
-        addUsecase(LoadLookAndFeel.class);
-        addUsecase(SaveLookAndFeel.class);
-        addUsecase(GetSearchHistory.class);
+        addUsecase(new LoadBundle(gatewayModule.propertiesGateway, gatewayModule.settingsGateway, undoableRequestGateway));
+        addUsecase(new ReloadBundle(gatewayModule.propertiesGateway, gatewayModule.settingsGateway, undoableRequestGateway));
+        addUsecase(new SaveBundle(gatewayModule.propertiesGateway));
+        addUsecase(new Search(gatewayModule.propertiesGateway, this, gatewayModule.settingsGateway));
+        addUsecase(new GetProperties(gatewayModule.propertiesGateway));
+        addUsecase(new Initialize(gatewayModule.propertiesGateway, gatewayModule.settingsGateway, undoableRequestGateway));
+        addUsecase(new EditValue(gatewayModule.propertiesGateway));
+        addUsecase(new NewKey(gatewayModule.propertiesGateway));
+        addUsecase(new RenameKey(gatewayModule.propertiesGateway));
+        addUsecase(new RenameKeys(gatewayModule.propertiesGateway));
+        addUsecase(new DuplicateKey(gatewayModule.propertiesGateway));
+        addUsecase(new DuplicateKeys(gatewayModule.propertiesGateway));
+        addUsecase(new DeleteKey(gatewayModule.propertiesGateway));
+        addUsecase(new Undo(this, undoableRequestGateway));
+        addUsecase(new Redo(this, undoableRequestGateway));
+        addUsecase(new GetUndoStatus(undoableRequestGateway));
+        addUsecase(new CheckModifications(gatewayModule.propertiesGateway));
+        addUsecase(new IgnoreModifications(gatewayModule.propertiesGateway));
+        addUsecase(new Import(gatewayModule.propertiesGateway, pluginModule.pluginManager));
+        addUsecase(new GetPlugins(pluginModule.pluginManager));
+        addUsecase(new IsAllowedToQuit(gatewayModule.propertiesGateway));
+        addUsecase(new Export(gatewayModule.propertiesGateway, pluginModule.pluginManager));
+        addUsecase(new GetChangedKeys(undoableRequestGateway, pluginModule.diffPlugin, gatewayModule.propertiesGateway));
+        addUsecase(new LoadLookAndFeel(gatewayModule.settingsGateway));
+        addUsecase(new SaveLookAndFeel(gatewayModule.settingsGateway));
+        addUsecase(new GetSearchHistory(gatewayModule.settingsGateway));
 
-        registerPlugin(JavaPropertiesImporter.class);
+        registerPlugin(new JavaPropertiesImporter());
     }
 
-    private class GatewayModule extends AbstractModule {
-        private Path settingsDirectory = Paths.get(System.getProperty("user.home")).toAbsolutePath();
-        private Path settingsFile = settingsDirectory.resolve(".jusecase-properties-editor").resolve("settings.json");
+    public static final class GatewayModule {
+        public final Path settingsDirectory = Paths.get(System.getProperty("user.home")).toAbsolutePath();
+        public final Path settingsFile = settingsDirectory.resolve(".jusecase-properties-editor").resolve("settings.json");
+        public final PropertiesGateway propertiesGateway;
+        public final SettingsGateway settingsGateway;
 
-        @Override
-        protected void configure() {
-            bind(Path.class).annotatedWith(Names.named("settingsFile")).toInstance(settingsFile);
-
-            bind(PropertiesGateway.class).to(InMemoryPropertiesGateway.class);
-            bind(SettingsGateway.class).to(JsonSettingsGateway.class);
-            bind(UndoableRequestGateway.class).toInstance(undoableRequestGateway);
+        public GatewayModule() {
+            propertiesGateway = new InMemoryPropertiesGateway();
+            settingsGateway = new JsonSettingsGateway(settingsFile);
         }
     }
 
-    private class PluginModule extends AbstractModule {
-        @Override
-        protected void configure() {
-            bind(PluginManager.class).toProvider(BusinessLogic.this::getPluginManager);
-            bind(DiffPlugin.class).to(GitDiffPlugin.class);
-        }
-    }
-
-    private class ExternalDependenciesModule extends AbstractModule {
-        @Override
-        protected void configure() {
-            addExternalDependencies(externalDependencies);
-            externalDependencies.forEach(( from, to ) -> {
-                //noinspection unchecked
-                bind(from).to((Class)to);
-            });
-        }
-    }
-
-    private class BusinessLogicModule extends AbstractModule {
-        @Override
-        protected void configure() {
-            bind(UsecaseExecutor.class).toInstance(BusinessLogic.this);
-        }
+    public static final class PluginModule {
+        public final PluginManager pluginManager = new PluginManager();
+        public final DiffPlugin diffPlugin = new GitDiffPlugin();
     }
 
     @Override
@@ -118,18 +86,19 @@ public class BusinessLogic extends GuiceUsecaseExecutor {
         return response;
     }
 
-    public void registerPlugin(Class<? extends Plugin> pluginClass) {
-        getPluginManager().registerPlugin(pluginClass);
+    public PluginModule getPluginModule() {
+        return pluginModule;
+    }
+
+    public GatewayModule getGatewayModule() {
+        return gatewayModule;
+    }
+
+    public void registerPlugin(Plugin plugin) {
+        getPluginManager().registerPlugin(plugin);
     }
 
     public PluginManager getPluginManager() {
-        if (pluginManager == null) {
-            pluginManager = new PluginManager(getInjector());
-        }
-        return pluginManager;
-    }
-
-    @SuppressWarnings("unused") // Used by derived projects
-    protected void addExternalDependencies( Map<Class<?>, Class<?>> externalDependencies ) {
+        return getPluginModule().pluginManager;
     }
 }
