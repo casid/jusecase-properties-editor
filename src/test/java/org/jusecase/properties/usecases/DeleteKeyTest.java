@@ -2,7 +2,6 @@ package org.jusecase.properties.usecases;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.jusecase.UsecaseTest;
 import org.jusecase.properties.entities.Property;
 import org.jusecase.properties.gateways.PropertiesGatewayTrainer;
 import org.jusecase.properties.usecases.DeleteKey.Request;
@@ -14,7 +13,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DeleteKeyTest extends UsecaseTest<Request, Response> {
-    private PropertiesGatewayTrainer propertiesGatewayTrainer = new PropertiesGatewayTrainer();
+    PropertiesGatewayTrainer propertiesGatewayTrainer = new PropertiesGatewayTrainer();
 
     @Before
     public void setUp() {

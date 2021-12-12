@@ -1,21 +1,16 @@
 package org.jusecase.properties;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.jusecase.UsecaseExecutorTest;
+import org.jusecase.executors.UsecaseRequestResolver;
 import org.jusecase.properties.plugins.Plugin;
 import org.jusecase.properties.plugins.importer.JavaPropertiesImporter;
 import org.jusecase.properties.usecases.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class BusinessLogicTest extends UsecaseExecutorTest {
-    BusinessLogic businessLogic;
-
-    @Before
-    public void setUp() {
-        givenExecutor(businessLogic = new BusinessLogic());
-    }
+public class BusinessLogicTest {
+    BusinessLogic businessLogic = new BusinessLogic();
+    UsecaseRequestResolver requestResolver = new UsecaseRequestResolver();
 
     @Test
     public void usecases() {
@@ -53,5 +48,16 @@ public class BusinessLogicTest extends UsecaseExecutorTest {
 
     private void thenPluginIsAvailable(String id, Class<? extends Plugin> pluginClass) {
         assertThat(businessLogic.getPluginManager().getPlugin(id)).isInstanceOf(pluginClass);
+    }
+
+    private void thenUsecaseCanBeExecuted(Class<?> usecaseClass) {
+        Class<?> requestClass = requestResolver.getRequestClass(usecaseClass);
+        this.thenUsecaseCanBeExecuted(requestClass, usecaseClass);
+    }
+
+    private void thenUsecaseCanBeExecuted(Class<?> requestClass, Class<?> usecaseClass) {
+        Object usecase = businessLogic.getUsecase(requestClass);
+        assertThat(usecase).describedAs("No usecase was found for request '" + requestClass.getName() + "'").isNotNull();
+        assertThat(usecase.getClass()).isEqualTo(usecaseClass);
     }
 }

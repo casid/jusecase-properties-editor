@@ -2,7 +2,6 @@ package org.jusecase.properties.usecases;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.jusecase.UsecaseTest;
 import org.jusecase.properties.entities.Property;
 import org.jusecase.properties.gateways.PropertiesGatewayTrainer;
 import org.jusecase.properties.plugins.PluginManager;
@@ -20,9 +19,9 @@ import static org.jusecase.properties.entities.Builders.testPath;
 
 
 public class ImportTest extends UsecaseTest<Request, Response> {
-    private PropertiesGatewayTrainer propertiesGatewayTrainer = new PropertiesGatewayTrainer();
-    private PropertiesImporterTrainer propertiesImporterTrainer = new PropertiesImporterTrainer();
-    private PluginManager pluginManager = new PluginManager();
+    PropertiesGatewayTrainer propertiesGatewayTrainer = new PropertiesGatewayTrainer();
+    PropertiesImporterTrainer propertiesImporterTrainer = new PropertiesImporterTrainer();
+    PluginManager pluginManager = new PluginManager();
 
     @Before
     public void setUp() {

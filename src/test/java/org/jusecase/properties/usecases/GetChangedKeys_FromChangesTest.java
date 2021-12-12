@@ -11,7 +11,6 @@ import java.nio.file.Paths;
 import org.junit.Before;
 import org.junit.Test;
 import org.jusecase.UsecaseExecutor;
-import org.jusecase.UsecaseTest;
 import org.jusecase.properties.gateways.PropertiesGatewayTrainer;
 import org.jusecase.properties.gateways.UndoableRequestGateway;
 import org.jusecase.properties.plugins.diff.Diff;
@@ -27,6 +26,11 @@ public class GetChangedKeys_FromChangesTest extends UsecaseTest<GetChangedKeys.R
       @Override
       public <Request, Response> Response execute( Request request ) {
          return null;
+      }
+
+      @Override
+      public <Request> void executeVoid(Request request) {
+
       }
    }, undoableRequestGateway);
    DiffPluginTrainer        diffPluginTrainer        = new DiffPluginTrainer();

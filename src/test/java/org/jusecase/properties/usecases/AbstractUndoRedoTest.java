@@ -1,9 +1,7 @@
 package org.jusecase.properties.usecases;
 
-import org.junit.After;
 import org.junit.Before;
 import org.jusecase.Usecase;
-import org.jusecase.UsecaseTest;
 import org.jusecase.executors.manual.ManualUsecaseExecutor;
 import org.jusecase.properties.entities.UndoableRequest;
 import org.jusecase.properties.gateways.UndoableRequestGateway;
@@ -22,14 +20,6 @@ public class AbstractUndoRedoTest<Request, Response> extends UsecaseTest<Request
     @Before
     public void setUp() {
         usecaseExecutor.addUsecase(new UndoTest.DummyUsecase(actions));
-    }
-
-    @After
-    public void tearDown() {
-        if (error != null) {
-            error.printStackTrace();
-        }
-        assertThat(error).isNull();
     }
 
     protected void thenActionsAre(String ... expected) {

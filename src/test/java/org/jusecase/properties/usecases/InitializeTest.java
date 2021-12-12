@@ -2,7 +2,6 @@ package org.jusecase.properties.usecases;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.jusecase.UsecaseTest;
 import org.jusecase.properties.gateways.PropertiesGatewayTrainer;
 import org.jusecase.properties.gateways.SettingsGatewayTrainer;
 import org.jusecase.properties.gateways.UndoableRequestGateway;
@@ -15,9 +14,9 @@ import static org.jusecase.properties.entities.Builders.settings;
 import static org.jusecase.properties.entities.Builders.testPath;
 
 public class InitializeTest extends UsecaseTest<Request, Response> {
-    private PropertiesGatewayTrainer propertiesGatewayTrainer = new PropertiesGatewayTrainer();
-    private SettingsGatewayTrainer settingsGatewayTrainer = new SettingsGatewayTrainer();
-    private UndoableRequestGateway undoableRequestGateway = new UndoableRequestGateway();
+    PropertiesGatewayTrainer propertiesGatewayTrainer = new PropertiesGatewayTrainer();
+    SettingsGatewayTrainer settingsGatewayTrainer = new SettingsGatewayTrainer();
+    UndoableRequestGateway undoableRequestGateway = new UndoableRequestGateway();
 
     @Before
     public void setUp() {

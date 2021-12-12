@@ -2,7 +2,6 @@ package org.jusecase.properties.usecases;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.jusecase.UsecaseTest;
 import org.jusecase.properties.gateways.UndoableRequestGateway;
 import org.jusecase.properties.usecases.GetUndoStatus.Request;
 import org.jusecase.properties.usecases.GetUndoStatus.Response;
@@ -12,7 +11,7 @@ import static org.jusecase.Builders.an;
 import static org.jusecase.properties.entities.Builders.undoableRequest;
 
 public class GetUndoStatusTest extends UsecaseTest<Request, Response> {
-    private UndoableRequestGateway undoableRequestGateway = new UndoableRequestGateway();
+    private final UndoableRequestGateway undoableRequestGateway = new UndoableRequestGateway();
 
     @Before
     public void setUp() {

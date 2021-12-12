@@ -2,7 +2,6 @@ package org.jusecase.properties.usecases;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.jusecase.UsecaseTest;
 import org.jusecase.properties.gateways.PropertiesGatewayTrainer;
 import org.jusecase.properties.usecases.DuplicateKey.Request;
 import org.jusecase.properties.usecases.DuplicateKey.Response;
@@ -11,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class DuplicateKeyTest extends UsecaseTest<Request, Response> {
 
-    private PropertiesGatewayTrainer propertiesGatewayTrainer = new PropertiesGatewayTrainer();
+    PropertiesGatewayTrainer propertiesGatewayTrainer = new PropertiesGatewayTrainer();
 
     @Before
     public void setUp() {

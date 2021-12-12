@@ -2,14 +2,13 @@ package org.jusecase.properties.usecases;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.jusecase.UsecaseTest;
 import org.jusecase.properties.gateways.PropertiesGatewayTrainer;
 import org.jusecase.properties.usecases.CheckModifications.Request;
 import org.jusecase.properties.usecases.CheckModifications.Response;
 
 public class CheckModificationsTest extends UsecaseTest<Request, Response> {
 
-    private PropertiesGatewayTrainer propertiesGatewayTrainer = new PropertiesGatewayTrainer();
+    PropertiesGatewayTrainer propertiesGatewayTrainer = new PropertiesGatewayTrainer();
 
     @Before
     public void setUp() {

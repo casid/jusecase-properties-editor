@@ -2,7 +2,6 @@ package org.jusecase.properties.usecases;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.jusecase.UsecaseTest;
 import org.jusecase.properties.entities.Property;
 import org.jusecase.properties.gateways.PropertiesGatewayTrainer;
 import org.jusecase.properties.usecases.EditValue.Request;
@@ -14,7 +13,7 @@ import static org.jusecase.properties.entities.Builders.property;
 
 public class EditValueTest extends UsecaseTest<Request, Response> {
 
-    private PropertiesGatewayTrainer propertiesGatewayTrainer = new PropertiesGatewayTrainer();
+    PropertiesGatewayTrainer propertiesGatewayTrainer = new PropertiesGatewayTrainer();
 
     @Before
     public void setUp() {
