@@ -1,9 +1,9 @@
 package org.jusecase.properties.gateways;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.jusecase.properties.entities.Key;
 import org.jusecase.properties.entities.KeyPopulation;
 import org.jusecase.properties.entities.Property;
+import org.jusecase.properties.plugins.hash.FileHashPlugin;
 import org.jusecase.properties.usecases.Search;
 
 import java.io.IOException;
@@ -81,15 +81,9 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
     private FileSnapshot computeFileSnapshot(Path file) throws IOException {
         FileSnapshot fileSnapshot = new FileSnapshot();
         fileSnapshot.bytes = Files.size(file);
-        fileSnapshot.hash = computeFileHash(file);
+        fileSnapshot.hash = FileHashPlugin.hash(file);
         fileSnapshot.lineSeparator = guessLineSeparator(file);
         return fileSnapshot;
-    }
-
-    private String computeFileHash(Path file) throws IOException {
-        try (InputStream is = Files.newInputStream(file)) {
-            return DigestUtils.md5Hex(is);
-        }
     }
 
     private String guessLineSeparator(Path file) throws IOException {
@@ -481,7 +475,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
             try {
                 FileSnapshot lastSnapshot = fileSnapshots.get(file.getFileName().toString());
                 FileSnapshot currentSnapshot = computeFileSnapshot(file);
-                if (lastSnapshot.bytes != currentSnapshot.bytes || !Objects.equals(lastSnapshot.hash, currentSnapshot.hash)) {
+                if (lastSnapshot.bytes != currentSnapshot.bytes || !Arrays.equals(lastSnapshot.hash, currentSnapshot.hash)) {
                     return true;
                 }
             } catch (IOException e) {
@@ -599,7 +593,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
 
     private static class FileSnapshot {
         long bytes;
-        String hash;
+        byte[] hash;
         String lineSeparator;
     }
 
