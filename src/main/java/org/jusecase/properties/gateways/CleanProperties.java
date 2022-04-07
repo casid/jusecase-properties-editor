@@ -118,7 +118,7 @@ public class CleanProperties extends Properties {
          val = saveConvert(val, false, escUnicode);
          bw.write(key);
          bw.write("=");
-         bw.write(val.trim());
+         bw.write(val);
          bw.write(lineSeparator);
       }
 
