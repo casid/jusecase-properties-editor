@@ -1,8 +1,5 @@
 package org.jusecase.properties.ui;
 
-import com.bulenkov.darcula.DarculaLaf;
-import com.bulenkov.darcula.ui.DarculaTextFieldUI;
-import com.bulenkov.iconloader.IconLoader;
 import net.miginfocom.swing.MigLayout;
 import org.jusecase.properties.BusinessLogic;
 import org.jusecase.properties.entities.Key;
@@ -332,8 +329,7 @@ public class Application {
         });
         searchPanel.add(searchField, "pushx,growx,wmax 100%");
 
-        Icon icon = IconLoader.findIcon("/com/bulenkov/darcula/icons/searchWithHistory.png", DarculaTextFieldUI.class, true);
-        JButton searchHistoryButton = new JButton(icon);
+        JButton searchHistoryButton = new JButton(UIManager.getIcon("FileView.computerIcon"));
         searchHistoryButton.addActionListener(e -> {
             GetSearchHistory.Request request = new GetSearchHistory.Request();
             request.currentQuery = searchField.getText();
