@@ -47,7 +47,7 @@ public class BusinessLogic extends ManualUsecaseExecutor {
         addUsecase(new IsAllowedToQuit(gatewayModule.propertiesGateway));
         addUsecase(new Export(gatewayModule.propertiesGateway, pluginModule.pluginManager));
         addUsecase(new GetChangedKeys(undoableRequestGateway, pluginModule.diffPlugin, gatewayModule.propertiesGateway));
-        addUsecase(new LoadLookAndFeel(gatewayModule.settingsGateway));
+        addUsecase(new LoadLookAndFeel());
         addUsecase(new SaveLookAndFeel(gatewayModule.settingsGateway));
         addUsecase(new GetSearchHistory(gatewayModule.settingsGateway));
 

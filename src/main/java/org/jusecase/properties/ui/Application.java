@@ -559,14 +559,7 @@ public class Application {
 
     protected void applyLookAndFeel(LookAndFeel lookAndFeel) {
         try {
-            switch (lookAndFeel) {
-                case Default:
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                    break;
-                case Darcula:
-                    UIManager.setLookAndFeel(new DarculaLaf());
-                    break;
-            }
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
             this.lookAndFeel = lookAndFeel;
         } catch (Exception e) {

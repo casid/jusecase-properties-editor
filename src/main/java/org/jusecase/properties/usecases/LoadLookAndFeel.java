@@ -6,20 +6,10 @@ import org.jusecase.properties.gateways.SettingsGateway;
 import org.jusecase.properties.ui.LookAndFeel;
 
 public class LoadLookAndFeel implements Usecase<LoadLookAndFeel.Request, LookAndFeel> {
-    private final SettingsGateway settingsGateway;
-
-    public LoadLookAndFeel(SettingsGateway settingsGateway) {
-        this.settingsGateway = settingsGateway;
-    }
 
     @Override
     public LookAndFeel execute(Request request) {
-        Settings settings = settingsGateway.getSettings();
-        if (settings.lookAndFeel == null) {
-            return LookAndFeel.Default;
-        }
-
-        return settings.lookAndFeel;
+        return LookAndFeel.Default;
     }
 
     public static class Request {
