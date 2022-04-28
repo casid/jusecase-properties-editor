@@ -319,7 +319,7 @@ public class InMemoryPropertiesGateway implements PropertiesGateway {
             deleteProperty(property);
         } else {
             List<Property> storedProperties = propertiesByKey.get(property.key);
-            Property propertyInList = findPropertyInList(storedProperties, property);
+            Property propertyInList = storedProperties == null ? null : findPropertyInList(storedProperties, property);
             if (propertyInList != null) {
                 propertyInList.value = property.value;
                 propertyInList.valueLowercase = property.value.toLowerCase();
