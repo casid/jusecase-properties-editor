@@ -36,6 +36,7 @@ public class GetChangedKeys implements Usecase<GetChangedKeys.Request, GetChange
       changeDetectors.add(new DeleteKeyDetector());
       changeDetectors.add(new RenameKeyDetector());
       changeDetectors.add(new DuplicateKeyDetector());
+      changeDetectors.add(new DuplicateKeyAndSplitContentDetector());
       changeDetectors.add(new EditValueDetector());
    }
 
@@ -162,6 +163,24 @@ public class GetChangedKeys implements Usecase<GetChangedKeys.Request, GetChange
       @Override
       public void handle( UndoableRequest request, Map<String, Integer> keys ) {
          DuplicateKey.Request r = (DuplicateKey.Request)request;
+         if ( r.undo ) {
+            remove(keys, r.newKey);
+         } else {
+            add(keys, r.newKey);
+         }
+      }
+   }
+
+   private static class DuplicateKeyAndSplitContentDetector implements ChangeDetector {
+
+      @Override
+      public boolean canHandle( UndoableRequest request ) {
+         return request instanceof DuplicateKeyAndSplitContent.Request;
+      }
+
+      @Override
+      public void handle( UndoableRequest request, Map<String, Integer> keys ) {
+         DuplicateKeyAndSplitContent.Request r = (DuplicateKeyAndSplitContent.Request)request;
          if ( r.undo ) {
             remove(keys, r.newKey);
          } else {

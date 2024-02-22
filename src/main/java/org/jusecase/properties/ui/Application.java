@@ -530,6 +530,15 @@ public class Application {
             }
         }
 
+        if (request instanceof DuplicateKeyAndSplitContent.Request) {
+            DuplicateKeyAndSplitContent.Request duplicateKey = (DuplicateKeyAndSplitContent.Request) request;
+            if (duplicateKey.undo) {
+                onKeyDeleted();
+            } else {
+                onNewKeyAdded(duplicateKey.newKey);
+            }
+        }
+
         if (request instanceof RenameKey.Request || request instanceof RenameKeys.Request) {
             onKeyRenamed();
         }

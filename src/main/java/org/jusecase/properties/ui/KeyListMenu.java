@@ -16,6 +16,7 @@ public class KeyListMenu extends JPopupMenu {
 
         addNew();
         addDuplicate();
+        addDuplicateAndSplitContent();
         addSeparator();
         addRename();
         addSeparator();
@@ -92,6 +93,27 @@ public class KeyListMenu extends JPopupMenu {
                 String key = application.getSelectedKey();
                 addDuplicate(key);
             }
+        });
+        add(item);
+    }
+
+    private void addDuplicateAndSplitContent() {
+        JMenuItem item = new JMenuItem("Duplicate and split content");
+        item.addActionListener(event -> {
+            String key = application.getSelectedKey();
+
+            DuplicateKeyAndSplitContentDialog dialog = new DuplicateKeyAndSplitContentDialog(key);
+            dialog.setModal(true);
+            dialog.setVisible(true);
+            dialog.dispose();
+
+            DuplicateKeyAndSplitContent.Request request = dialog.getRequest();
+            if ( request != null) {
+                request.key = key;
+                application.execute(request);
+                application.onNewKeyAdded(request.newKey);
+            }
+
         });
         add(item);
     }

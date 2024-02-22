@@ -36,6 +36,7 @@ public class BusinessLogic extends ManualUsecaseExecutor {
         addUsecase(new RenameKeys(gatewayModule.propertiesGateway));
         addUsecase(new DuplicateKey(gatewayModule.propertiesGateway));
         addUsecase(new DuplicateKeys(gatewayModule.propertiesGateway));
+        addUsecase(new DuplicateKeyAndSplitContent(gatewayModule.propertiesGateway));
         addUsecase(new DeleteKey(gatewayModule.propertiesGateway));
         addUsecase(new Undo(this, undoableRequestGateway));
         addUsecase(new Redo(this, undoableRequestGateway));
