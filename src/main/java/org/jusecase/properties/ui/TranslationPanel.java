@@ -52,6 +52,10 @@ public class TranslationPanel extends JPanel {
         highlightSearchQuery();
     }
 
+    public String getFileName() {
+        return fileName;
+    }
+
     private void init() {
         isAvailable = new JCheckBox(fileName);
         isAvailable.addActionListener(event -> {

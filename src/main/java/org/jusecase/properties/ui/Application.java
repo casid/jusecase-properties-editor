@@ -15,6 +15,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.regex.PatternSyntaxException;
@@ -425,6 +426,14 @@ public class Application {
                 });
             }
         });
+    }
+
+    /**
+     * Can be overridden by a customized application, in order to sort the translation panels differently.
+     * This might be useful if you have many resource files and some of them are more important than others.
+     */
+    protected Comparator<String> getTranslationPanelComparator() {
+        return null;
     }
 
     protected Dimension getScreenSize() {
