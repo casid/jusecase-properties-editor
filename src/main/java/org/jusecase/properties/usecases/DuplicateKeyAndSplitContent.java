@@ -35,7 +35,7 @@ public class DuplicateKeyAndSplitContent implements Usecase<DuplicateKeyAndSplit
                 property.key = request.newKey;
 
                 if (property.value != null) {
-                    String[] split = property.value.split(request.splitRegex);
+                    String[] split = property.value.split(request.splitRegex, request.limit);
                     if ( request.splitIndex < split.length ) {
                         property.value = split[request.splitIndex];
                     }
@@ -52,6 +52,7 @@ public class DuplicateKeyAndSplitContent implements Usecase<DuplicateKeyAndSplit
         public String newKey;
         public String splitRegex;
         public int splitIndex;
+        public int limit;
 
         public Request() {
             name = "duplicate key and split content";

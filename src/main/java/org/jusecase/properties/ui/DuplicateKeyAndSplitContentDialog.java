@@ -14,6 +14,7 @@ public class DuplicateKeyAndSplitContentDialog extends JDialog {
    private final JTextField newKeyText;
    private final JTextField splitRegexText;
    private final JTextField splitIndexText;
+   private final JTextField limitText;
 
    private DuplicateKeyAndSplitContent.Request request;
 
@@ -36,6 +37,11 @@ public class DuplicateKeyAndSplitContentDialog extends JDialog {
       getContentPane().add(new JLabel("Split index (index of the split result to keep)"), "pushx,growx,wrap");
       getContentPane().add(splitIndexText, "pushx,growx,wrap");
 
+      limitText = new JTextField();
+      limitText.setText("");
+      getContentPane().add(new JLabel("Limit (same as index if unspecified)"), "pushx,growx,wrap");
+      getContentPane().add(limitText, "pushx,growx,wrap");
+
       JButton submitButton = new JButton("Submit");
       submitButton.addActionListener(e -> onSubmit());
       getContentPane().add(submitButton, "wrap");
@@ -48,7 +54,7 @@ public class DuplicateKeyAndSplitContentDialog extends JDialog {
    private void adjustDialogSize() {
       Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
       screenSize.width = (int)(0.2 * screenSize.width);
-      screenSize.height = (int)(0.2 * screenSize.height);
+      screenSize.height = (int)(0.3 * screenSize.height);
       setPreferredSize(screenSize);
       setSize(screenSize);
 
@@ -64,6 +70,16 @@ public class DuplicateKeyAndSplitContentDialog extends JDialog {
          request.splitIndex = Integer.parseInt(splitIndexText.getText());
       } catch ( NumberFormatException e ) {
          request.splitIndex = 0;
+      }
+
+      request.limit = request.splitIndex + 1;
+      if (!limitText.getText().isBlank()) {
+         try {
+            request.limit = Integer.parseInt(limitText.getText());
+         }
+         catch ( NumberFormatException e ) {
+            // Ignore
+         }
       }
 
       dispose();
