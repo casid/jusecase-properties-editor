@@ -8,8 +8,8 @@ import static org.jusecase.properties.entities.Builders.property;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jusecase.UsecaseExecutor;
 import org.jusecase.properties.gateways.PropertiesGatewayTrainer;
 import org.jusecase.properties.gateways.UndoableRequestGateway;
@@ -37,7 +37,7 @@ public class GetChangedKeys_FromChangesTest extends UsecaseTest<GetChangedKeys.R
    PropertiesGatewayTrainer propertiesGatewayTrainer = new PropertiesGatewayTrainer();
 
 
-   @Before
+   @BeforeEach
    public void before() {
       usecase = new GetChangedKeys(undoableRequestGateway, diffPluginTrainer, propertiesGatewayTrainer);
       diffPluginTrainer.givenDiffNotSupported();

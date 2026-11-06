@@ -1,7 +1,7 @@
 package org.jusecase.properties.usecases;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jusecase.properties.gateways.PropertiesGatewayTrainer;
 import org.jusecase.properties.gateways.SettingsGatewayTrainer;
 import org.jusecase.properties.gateways.UndoableRequestGateway;
@@ -18,7 +18,7 @@ public class InitializeTest extends UsecaseTest<Request, Response> {
     SettingsGatewayTrainer settingsGatewayTrainer = new SettingsGatewayTrainer();
     UndoableRequestGateway undoableRequestGateway = new UndoableRequestGateway();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         usecase = new Initialize(propertiesGatewayTrainer, settingsGatewayTrainer, undoableRequestGateway);
     }

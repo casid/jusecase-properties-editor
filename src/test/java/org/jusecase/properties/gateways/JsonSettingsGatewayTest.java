@@ -1,10 +1,11 @@
 package org.jusecase.properties.gateways;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.jusecase.properties.entities.Settings;
+
+import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jusecase.Builders.a;
@@ -12,12 +13,12 @@ import static org.jusecase.properties.entities.Builders.settings;
 
 public class JsonSettingsGatewayTest extends SettingsGatewayTest {
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @TempDir
+    Path temporaryFolder;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
-        gateway = new JsonSettingsGateway(temporaryFolder.getRoot().toPath().resolve("editor").resolve("settings.json"));
+        gateway = new JsonSettingsGateway(temporaryFolder.resolve("editor").resolve("settings.json"));
     }
 
     @Test

@@ -1,7 +1,7 @@
 package org.jusecase.properties.usecases;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jusecase.properties.plugins.PluginManager;
 import org.jusecase.properties.plugins.PluginTrainer;
 import org.jusecase.properties.plugins.importer.PropertiesImporter;
@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class GetPluginsTest extends UsecaseTest<Request, Response> {
     PluginManager pluginManager = new PluginManager();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         usecase = new GetPlugins(pluginManager);
     }

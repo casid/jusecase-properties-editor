@@ -1,7 +1,7 @@
 package org.jusecase.properties.usecases;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jusecase.properties.gateways.UndoableRequestGateway;
 import org.jusecase.properties.usecases.GetUndoStatus.Request;
 import org.jusecase.properties.usecases.GetUndoStatus.Response;
@@ -13,7 +13,7 @@ import static org.jusecase.properties.entities.Builders.undoableRequest;
 public class GetUndoStatusTest extends UsecaseTest<Request, Response> {
     private final UndoableRequestGateway undoableRequestGateway = new UndoableRequestGateway();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         usecase = new GetUndoStatus(undoableRequestGateway);
     }

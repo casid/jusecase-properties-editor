@@ -11,15 +11,15 @@ import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 
 public class GitDiffPluginTest {
 
    GitDiffPlugin plugin = new GitDiffPlugin();
 
-   @Ignore // Manual test
+   @Disabled // Manual test
    @Test
    public void testChangedFiles() {
       List<Diff> changedFiles = plugin.getChangedFiles( //
@@ -34,7 +34,7 @@ public class GitDiffPluginTest {
       }
    }
 
-   @Ignore // Manual test
+   @Disabled // Manual test
    @Test
    public void testGetRepositoryDirectory() {
       System.out.println(plugin.getRepositoryDirectory(Paths.get("/Users/andreas/dev/ws/c24-frontend/src/main/resources/c24/resources_de.properties")));
