@@ -1,6 +1,6 @@
 package org.jusecase.properties.gateways;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jusecase.properties.entities.UndoableRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;

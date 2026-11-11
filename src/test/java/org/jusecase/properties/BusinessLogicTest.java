@@ -1,6 +1,6 @@
 package org.jusecase.properties;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jusecase.executors.UsecaseRequestResolver;
 import org.jusecase.properties.plugins.Plugin;
 import org.jusecase.properties.plugins.importer.JavaPropertiesImporter;

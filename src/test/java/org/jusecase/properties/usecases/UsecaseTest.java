@@ -1,7 +1,7 @@
 package org.jusecase.properties.usecases;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.jusecase.Usecase;
 import org.jusecase.util.GenericTypeResolver;
 
@@ -15,7 +15,7 @@ public abstract class UsecaseTest<Request, Response> {
     private boolean errorAsserted;
 
     @SuppressWarnings("unchecked")
-    @Before
+    @BeforeEach
     public void createRequest() {
         try {
             Class<?> requestClass = GenericTypeResolver.resolve(UsecaseTest.class, getClass(), 0);
@@ -25,7 +25,7 @@ public abstract class UsecaseTest<Request, Response> {
         }
     }
 
-    @After
+    @AfterEach
     public void checkError() throws Throwable {
         if (error != null && !errorAsserted) {
             throw error;

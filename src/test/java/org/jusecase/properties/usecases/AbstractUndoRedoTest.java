@@ -1,6 +1,6 @@
 package org.jusecase.properties.usecases;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.jusecase.Usecase;
 import org.jusecase.executors.manual.ManualUsecaseExecutor;
 import org.jusecase.properties.entities.UndoableRequest;
@@ -17,7 +17,7 @@ public class AbstractUndoRedoTest<Request, Response> extends UsecaseTest<Request
 
     protected List<String> actions = new ArrayList<>();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         usecaseExecutor.addUsecase(new UndoTest.DummyUsecase(actions));
     }

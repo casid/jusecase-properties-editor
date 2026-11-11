@@ -1,7 +1,7 @@
 package org.jusecase.properties.usecases;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jusecase.properties.gateways.PropertiesGatewayTrainer;
 import org.jusecase.properties.usecases.NewKey.Request;
 import org.jusecase.properties.usecases.NewKey.Response;
@@ -12,7 +12,7 @@ public class NewKeyTest extends UsecaseTest<Request, Response> {
 
     PropertiesGatewayTrainer propertiesGatewayTrainer = new PropertiesGatewayTrainer();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         usecase = new NewKey(propertiesGatewayTrainer);
     }

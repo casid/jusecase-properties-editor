@@ -1,8 +1,8 @@
 package org.jusecase.properties.gateways;
 
 import org.assertj.core.api.ListAssert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jusecase.properties.entities.Key;
 import org.jusecase.properties.entities.KeyPopulation;
 import org.jusecase.properties.entities.Property;
@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.jusecase.Builders.a;
 import static org.jusecase.Builders.list;
 import static org.jusecase.properties.entities.Builders.property;
@@ -29,7 +30,7 @@ public abstract class PropertiesGatewayTest {
 
     private Search.Request searchRequest = new Search.Request();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         gateway = createGateway();
     }
@@ -59,9 +60,11 @@ public abstract class PropertiesGatewayTest {
         assertThat(gateway.getKeys()).hasSize(SAMPLE_KEY_COUNT);
     }
 
-    @Test(expected = GatewayException.class)
+    @Test
     public void loadProperties_doesNotExist() {
-        givenProperties("resources.properties", "resources_that_do_not_exist.properties");
+        assertThrows(GatewayException.class, () -> {
+            givenProperties("resources.properties", "resources_that_do_not_exist.properties");
+        });
     }
 
     @Test
@@ -501,10 +504,12 @@ public abstract class PropertiesGatewayTest {
         assertThatKeys(gateway.getKeys()).contains("key");
     }
 
-    @Test(expected = GatewayException.class)
+    @Test
     public void addKey_keyAlreadyExists() {
-        givenProperties("resources.properties");
-        gateway.addKey("sample1");
+        assertThrows(GatewayException.class, () -> {
+            givenProperties("resources.properties");
+            gateway.addKey("sample1");
+        });
     }
 
     @Test
@@ -519,12 +524,14 @@ public abstract class PropertiesGatewayTest {
         gateway.addProperties(new ArrayList<>()); // shall not throw
     }
 
-    @Test(expected = GatewayException.class)
+    @Test
     public void addProperties_unknownFileName() {
-        givenProperties("resources.properties");
-        gateway.addProperties(a(list(
-                a(property().withFileName("unknown.properties"))
-        )));
+        assertThrows(GatewayException.class, () -> {
+            givenProperties("resources.properties");
+            gateway.addProperties(a(list(
+                    a(property().withFileName("unknown.properties"))
+            )));
+        });
     }
 
     @Test
@@ -605,10 +612,12 @@ public abstract class PropertiesGatewayTest {
         assertThat(gateway.getProperties("sample9")).hasSize(1);
     }
 
-    @Test(expected = GatewayException.class)
+    @Test
     public void renameKey_alreadyExists() {
-        givenProperties("resources.properties");
-        gateway.renameKey("sample7", "sample8");
+        assertThrows(GatewayException.class, () -> {
+            givenProperties("resources.properties");
+            gateway.renameKey("sample7", "sample8");
+        });
     }
 
     @Test
@@ -630,10 +639,12 @@ public abstract class PropertiesGatewayTest {
         gateway.duplicateKey("sample8", "sample9"); // shall not throw
     }
 
-    @Test(expected = GatewayException.class)
+    @Test
     public void duplicateKey_alreadyExists() {
-        givenProperties("resources.properties");
-        gateway.duplicateKey("sample7", "sample8");
+        assertThrows(GatewayException.class, () -> {
+            givenProperties("resources.properties");
+            gateway.duplicateKey("sample7", "sample8");
+        });
     }
 
     @Test

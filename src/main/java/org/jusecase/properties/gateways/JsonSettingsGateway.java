@@ -1,6 +1,8 @@
 package org.jusecase.properties.gateways;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import org.jusecase.properties.entities.Settings;
 
 import java.io.IOException;
@@ -9,7 +11,7 @@ import java.nio.file.Path;
 
 public class JsonSettingsGateway implements SettingsGateway {
     private final Path file;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = JsonMapper.builder().build();
     private Settings settings;
 
     public JsonSettingsGateway(Path file) {
@@ -30,7 +32,7 @@ public class JsonSettingsGateway implements SettingsGateway {
             this.settings = settings;
             Files.createDirectories(file.getParent());
             mapper.writeValue(file.toFile(), settings);
-        } catch (IOException e) {
+        } catch (IOException | JacksonException e) {
             throw new GatewayException("Failed to store app settings", e);
         }
     }
@@ -39,7 +41,7 @@ public class JsonSettingsGateway implements SettingsGateway {
     public void reloadFromDisk() {
         try {
             settings = mapper.readValue(file.toFile(), Settings.class);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             settings = new Settings(); // If no settings exist yet, create new ones
         }
     }

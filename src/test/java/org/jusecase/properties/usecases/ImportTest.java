@@ -1,7 +1,7 @@
 package org.jusecase.properties.usecases;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jusecase.properties.entities.Property;
 import org.jusecase.properties.gateways.PropertiesGatewayTrainer;
 import org.jusecase.properties.plugins.PluginManager;
@@ -23,7 +23,7 @@ public class ImportTest extends UsecaseTest<Request, Response> {
     PropertiesImporterTrainer propertiesImporterTrainer = new PropertiesImporterTrainer();
     PluginManager pluginManager = new PluginManager();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         usecase = new Import(propertiesGatewayTrainer, pluginManager);
         request.pluginId = "pluginId";

@@ -1,6 +1,7 @@
 package org.jusecase.properties.usecases;
 
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jusecase.properties.usecases.Redo.Request;
 import org.jusecase.properties.usecases.Redo.Response;
 
@@ -9,6 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RedoTest extends AbstractUndoRedoTest<Request, Response> {
 
     @Override
+    @BeforeEach
     public void setUp() {
         super.setUp();
         usecase = new Redo(usecaseExecutor, undoableRequestGateway);
